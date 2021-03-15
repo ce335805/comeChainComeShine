@@ -1,0 +1,31 @@
+RUNNING THE L-BFGS-B CODE
+
+it    = iteration number
+nf    = number of function evaluations
+nseg  = number of segments explored during the Cauchy search
+nact  = number of active bounds at the generalized Cauchy point
+sub   = manner in which the subspace minimization terminated:
+        con = converged, bnd = a bound was reached
+itls  = number of iterations performed in the line search
+stepl = step length used
+tstep = norm of the displacement (total step)
+projg = norm of the projected gradient
+f     = function value
+
+           * * *
+
+Machine precision = 2.220D-16
+ N =          401     M =           10
+
+   it   nf  nseg  nact  sub  itls  stepl    tstep     projg        f
+    0    1     -     -   -     -     -        -     1.000D+00 -1.500D+00
+    1    4   133   336  ---    2  1.0D+00  1.2D+01  1.000D+00 -2.421D+02
+    2    5    34   369  ---    0  1.0D+00  2.6D+00  3.129D-01 -2.515D+02
+    3    6    13   381  ---    0  1.0D+00  1.1D+00  2.480D-01 -2.530D+02
+    4    7     9   389  ---    0  1.0D+00  6.9D-01  1.882D-01 -2.535D+02
+    5    8    13   401  ---    0  1.0D+00  1.9D+00  0.000D+00 -2.541D+02
+
+CONVERGENCE: NORM_OF_PROJECTED_GRADIENT_<=_PGTOL            
+
+ Total User time 6.769E-02 seconds.
+
