@@ -49,9 +49,13 @@ def gfNumPointT(kVec, tVec, eta):
     x = np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) + np.diag(
         np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1)
     gk = 2. * prms.t * np.sin(kVec) * eta
-
+    eK = 2. * prms.t * np.cos(kVec)
+    photonOne = np.diag(np.ones(prms.maxPhotonNumber))
     iHt = 1j * H[None, :, :] * tVec[:, None, None]
-    iHtSinCos = - iHt - 1j * gk[:, None, None, None] * x[None, None, :, :] * tVec[None, :, None, None]
+    iHtSinCos = - iHt \
+                - 1j * gk[:, None, None, None] * x[None, None, :, :] * tVec[None, :, None, None] \
+                - 1j * eK[:, None, None, None] * tVec[None, :, None, None] * photonOne[None, None, :, :]
+
 
     expiHt = np.zeros(iHt.shape, dtype='complex')
     for t in range(iHt.shape[0]):
@@ -68,7 +72,6 @@ def gfNumPointT(kVec, tVec, eta):
         for tInd in range(len(tVec)):
             expHH[kInd, tInd, :, :] = np.dot(expiHt[tInd, :, :], expiHtSinCos[kInd, tInd, :, :])
 
-    print(np.real(expHH[0, 5, :, :]))
     GF = np.dot(np.dot(phGS, expHH), phGS)
 
     return - 1j * GF

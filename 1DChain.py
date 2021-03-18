@@ -27,13 +27,13 @@ def main():
     eta = 0.0
 
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
-    tVec = np.linspace(0., 50. , 100)
+    tVec = np.linspace(0., 500. , 200)
 
     gfNum = green.gfNumVecT(kVec, tVec, eta)
 
     gfT = green.anaGreenVecT(kVec, tVec, eta)
     #g0T = green.g0VecT(kVec, tVec)
-    compPlot.compareArrays(kVec, np.imag(gfNum[:, 23]), np.imag(gfT[:, 23]))
+    compPlot.compareArrays(tVec, np.imag(gfNum[23, :]), np.imag(gfT[23, :]))
 
     print("")
     print("The calculation has finished - Juhu!")
