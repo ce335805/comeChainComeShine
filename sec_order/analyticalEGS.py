@@ -7,6 +7,22 @@ import utils
 import sec_order.photonNumber
 
 
+def findGS1st(state, eta):
+    pauliBounds = np.zeros((len(state), 2), dtype='double')
+    pauliBounds[0: param.chainLength, 1] = 1.0
+    pauliBounds[-1, 1] = np.inf
+    maxiter = param.maxiter
+    optionsDict = {"maxiter": maxiter, "disp": False}
+    constraintsDict = {"type": 'eq', "fun": utils.electronNumberZero}
+    result = minimize(eF.hA1st, state, args=eta, bounds=pauliBounds, tol=param.accuracy, options=optionsDict, constraints=constraintsDict)
+
+    if result.success:
+        print('The optimization was : --- SUCCESSFULL! ---')
+    else:
+        print('The optimization: --- FAILED! ---')
+
+    return result.x
+
 def findGS(state, eta):
     pauliBounds = np.zeros((len(state), 2), dtype='double')
     pauliBounds[0: param.chainLength, 1] = 1.0

@@ -10,34 +10,39 @@ def h0(state):
     indices = 2. * param.t * np.cos(2. * np.pi / float(param.chainLength) * indices)
     return 0.5 * param.w0 + param.w0 * state[-1] + np.sum(np.multiply(state[0:-1], indices))
 
-
+#input only electronic part of state
 def TVec(state):
     kinetic = np.arange(len(state))
     kinetic = 2. * param.t * np.cos(2. * np.pi / float(param.chainLength) * kinetic)
     return kinetic
 
 
+#input only electronic part of state
 def T(state):
     return np.sum(np.multiply(TVec(state), state))
 
 
+#input only electronic part of state
 def minusT(state):
     return - T(state)
 
 
-def JVec(state):
-    current = np.arange(len(state))
+def JVec(electronicState):
+    current = np.arange(len(electronicState))
     current = - 2. * param.t * np.sin(2. * np.pi / float(param.chainLength) * current)
     return current
 
 
-def J(state):
-    return np.sum(np.multiply(JVec(state), state))
+def J(electronicState):
+    return np.sum(np.multiply(JVec(electronicState), electronicState))
 
 
-def minusJ(state):
-    return - J(state)
+def minusJ(electronicState):
+    return - J(electronicState)
 
+def hA1st(state, eta):
+    return param.w0 * (state[-1] + 0.5) + T(state[0 : -1]) - \
+           ((eta * eta) / param.w0) * J(state[0 : -1]) * J(state[0 : -1])
 
 def hA2nd(state, eta):
     return param.w0 * (1. - (eta * eta / param.w0) * T(state[0 : -1])) * (state[-1] + 0.5) - \

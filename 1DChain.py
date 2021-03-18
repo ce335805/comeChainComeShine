@@ -2,14 +2,17 @@ import globalSystemParams as prms
 import arb_order.arbOrder as GSarb
 import numpy as np
 import comparisonPlots as compPlot
-import sec_order.secOrder as secOrder
+import sec_order.analyticalEGS as secOrder
 import energyFunctions as eF
 import utils
 import greensFunction as green
 import beuatifulPlots as bPlots
+from automatedTests import gfTests
 
 def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))
+
+    gfTests.g1stEQg0()
 
     etas = np.linspace(0.0, .5, 30)
 
@@ -21,13 +24,16 @@ def main():
     #gsEnergiesSecExact = secOrder.findGSEnergyExactSec(etas)
     #compPlot.compareArrays(etas, gsEnergies, gsEnergies)
 
-    eta = 0.1
+    eta = 0.0
 
-    kVec = np.linspace(-np.pi, np.pi, prms.chainLength)
-    wVec = np.linspace(- (prms.w0 - 3. * prms.t), 30. * prms.w0 - 1. * prms.t , 5000)
+    kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
+    tVec = np.linspace(0., 50. , 100)
 
-    spec = green.calcSpectral(kVec, wVec, eta)
-    bPlots.plotSpec(kVec, wVec, spec)
+    gfNum = green.gfNumVecT(kVec, tVec, eta)
+
+    gfT = green.anaGreenVecT(kVec, tVec, eta)
+    #g0T = green.g0VecT(kVec, tVec)
+    compPlot.compareArrays(kVec, np.imag(gfNum[:, 23]), np.imag(gfT[:, 23]))
 
     print("")
     print("The calculation has finished - Juhu!")
