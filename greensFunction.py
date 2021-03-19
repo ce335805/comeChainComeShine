@@ -3,6 +3,7 @@ import sec_order.analyticalEGS as anaGS
 import globalSystemParams as prms
 import energyFunctions as eF
 from arb_order import photonState as phState
+from arb_order import numHamiltonians as numH
 import scipy.linalg as sciLin
 
 
@@ -44,7 +45,7 @@ def anaGreenVecT(kVec, tVec, eta):
 def gfNumPointT(kVec, tVec, eta):
     print("calculating GF numrically")
 
-    phGS = getPhGS(eta)
+    phGS = getPhGSH1(eta)
     print(phGS)
 
     H = getH1(eta)
@@ -89,12 +90,12 @@ def gfNumVecT(kVec, tVec, eta):
     return GF
 
 
-def getPhGS(eta):
+def getPhGSH1(eta):
     initialState = np.zeros(prms.chainLength + 1, dtype='double')
     gs = anaGS.findGS1st(initialState, eta)
     gsJ = eF.J(gs[0: -1])
     gsT = eF.T(gs[0: -1])
-    return phState.findPhotonGS([gsT, gsJ], eta)
+    return phState.findPhotonGS([gsT, gsJ], eta, 1)
 
 
 def getH1(eta):
@@ -102,7 +103,7 @@ def getH1(eta):
     gs = anaGS.findGS1st(initialState, eta)
     gsJ = eF.J(gs[0: -1])
     gsT = eF.T(gs[0: -1])
-    return phState.setupPhotonHamiltonian1st(gsT, gsJ, eta)
+    return numH.setupPhotonHamiltonian1st(gsT, gsJ, eta)
 
 
 def calcSpectralPoint(kPoint, wPoint, eta):

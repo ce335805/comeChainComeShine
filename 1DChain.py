@@ -32,7 +32,7 @@ def main():
     gfNum0 = green.gfNumVecT(kVec, tVec, eta)
     gfT0 = green.anaGreenVecT(kVec, tVec, eta)
 
-    eta = 0.05
+    eta = 0.3
 
     gfNum = green.gfNumVecT(kVec, tVec, eta)
     gfT = green.anaGreenVecT(kVec, tVec, eta)
