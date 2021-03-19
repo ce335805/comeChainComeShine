@@ -12,7 +12,7 @@ from automatedTests import gfTests
 def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))
 
-    gfTests.g1stEQg0()
+    gfTests.runAllTests()
 
     etas = np.linspace(0.0, .5, 30)
 

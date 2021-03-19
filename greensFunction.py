@@ -37,7 +37,6 @@ def anaGreenVecT(kVec, tVec, eta):
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
     GF = anaGreenPointT(kVec, tVec, gsJ, eta)
     GF = np.multiply(1 - occupations, GF)
-    print("GF.shape = {}".format(GF.shape))
 
     return GF
 
@@ -46,7 +45,6 @@ def gfNumPointT(kVec, tVec, eta):
     print("calculating GF numrically")
 
     phGS = getPhGSH1(eta)
-    print(phGS)
 
     H = getH1(eta)
     x = np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) + np.diag(
