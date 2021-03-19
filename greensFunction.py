@@ -21,10 +21,11 @@ def g0VecT(kVec, tVec):
 
 def anaGreenPointT(kPoint, tPoint, gsJ, eta):
     epsK = 2. * prms.t * np.cos(kPoint[:, None])
-    coupling = eta ** 2 / prms.w0 * (2. * prms.t * np.sin(kPoint[:, None]) + gsJ) * 2. * prms.t * np.sin(
-        kPoint[:, None])
-    eTime = -1j * epsK * tPoint[None, :] + 1j * coupling * tPoint[None, :]
-    ptTime = - 2. * eta * prms.t * np.sin(kPoint[:, None]) / prms.w0 * (1. - np.exp(-1j * prms.w0 * tPoint[None, :]))
+    coupling = - eta ** 2 / prms.w0 * \
+               (2. * (-2. * gsJ * prms.t * np.sin(kPoint[:, None])) + (-2. * prms.t * np.sin(kPoint[:, None]))**2)
+
+    eTime = -1j * epsK * tPoint[None, :] - 1j * coupling * tPoint[None, :]
+    ptTime = - (- 2. * eta * prms.t * np.sin(kPoint[:, None]))**2 / prms.w0**2 * (1. - np.exp(-1j * prms.w0 * tPoint[None, :]))
     return -1j * np.exp(eTime + ptTime)
 
 
@@ -44,11 +45,12 @@ def gfNumPointT(kVec, tVec, eta):
     print("calculating GF numrically")
 
     phGS = getPhGS(eta)
+    print(phGS)
 
     H = getH1(eta)
     x = np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) + np.diag(
         np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1)
-    gk = 2. * prms.t * np.sin(kVec) * eta
+    gk = - 2. * prms.t * np.sin(kVec) * eta
     eK = 2. * prms.t * np.cos(kVec)
     photonOne = np.diag(np.ones(prms.maxPhotonNumber))
     iHt = 1j * H[None, :, :] * tVec[:, None, None]

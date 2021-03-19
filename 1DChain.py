@@ -24,16 +24,26 @@ def main():
     #gsEnergiesSecExact = secOrder.findGSEnergyExactSec(etas)
     #compPlot.compareArrays(etas, gsEnergies, gsEnergies)
 
-    eta = 0.0
 
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
-    tVec = np.linspace(0., 500. , 200)
+    tVec = np.linspace(0., 80. , 100)
+
+    eta = 0.0
+    gfNum0 = green.gfNumVecT(kVec, tVec, eta)
+    gfT0 = green.anaGreenVecT(kVec, tVec, eta)
+
+    eta = 0.05
 
     gfNum = green.gfNumVecT(kVec, tVec, eta)
-
     gfT = green.anaGreenVecT(kVec, tVec, eta)
-    #g0T = green.g0VecT(kVec, tVec)
-    compPlot.compareArrays(tVec, np.imag(gfNum[23, :]), np.imag(gfT[23, :]))
+
+    #compPlot.compareArrays(tVec, np.imag(gfT0[18, :]), np.imag(gfT[18, :]))
+    #compPlot.compareArrays(tVec, np.imag(gfNum0[18, :]), np.imag(gfNum[18, :]))
+    compPlot.compareArrays(tVec, np.imag(gfNum[18, :]) - np.imag(gfT[18, :]), np.real(gfNum[18, :]) - np.real(gfT[18, :]))
+    #compPlot.compareArrays(tVec, np.imag(gfT0[18, :]) - np.imag(gfT[18, :]), np.real(gfT0[18, :]) - np.real(gfT[18, :]))
+    #compPlot.compareArrays(tVec, np.imag(gfNum0[18, :]) - np.imag(gfNum[18, :]), np.real(gfNum0[18, :]) - np.real(gfNum[18, :]))
+
+
 
     print("")
     print("The calculation has finished - Juhu!")

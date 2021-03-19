@@ -45,8 +45,9 @@ def findSmalestEigenvalue(TJ, eta):
 
 
 def findPhotonGS(TJ, eta):
+    hamiltonian = setupPhotonHamiltonian1st(TJ[0], TJ[1], eta)
     # hamiltonian = setupPhotonHamiltonian2nd(TJ[0], TJ[1], eta)
-    hamiltonian = setupPhotonHamiltonianInf(TJ[0], TJ[1], eta)
+    #hamiltonian = setupPhotonHamiltonianInf(TJ[0], TJ[1], eta)
     v, eVec = np.linalg.eigh(hamiltonian)
     return eVec[0, :]
 
