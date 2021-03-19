@@ -5,6 +5,7 @@ import energyFunctions as eF
 from arb_order import photonState as phState
 from arb_order import numHamiltonians as numH
 import scipy.linalg as sciLin
+import time
 
 
 def g0T(kPoint, tPoint):
@@ -40,7 +41,6 @@ def anaGreenVecT(kVec, tVec, eta):
 
     return GF
 
-
 def gfNumPointT(kVec, tVec, eta):
     print("calculating GF numrically")
 
@@ -58,25 +58,15 @@ def gfNumPointT(kVec, tVec, eta):
                 - 1j * eK[:, None, None, None] * tVec[None, :, None, None] * photonOne[None, None, :, :]
 
 
-    expiHt = np.zeros(iHt.shape, dtype='complex')
-    for t in range(iHt.shape[0]):
-        expiHt[t, :, :] = sciLin.expm(iHt[t, :, :])
-    expiHtSinCos = np.zeros(iHtSinCos.shape, dtype='complex')
-    for k in range(iHtSinCos.shape[0]):
-        for t in range(iHtSinCos.shape[1]):
-            expiHtSinCos[k, t] = sciLin.expm(iHtSinCos[k, t, :, :])
+    GF = np.zeros((len(kVec), len(tVec)), dtype='complex')
+    for tInd in range(len(tVec)):
+        prod1 = np.dot(phGS, sciLin.expm(iHt[tInd, :, :]))
+        for kInd in range(len(kVec)):
+            prod2 = np.dot(sciLin.expm(iHtSinCos[kInd, tInd, :, :]), phGS)
+            GF[kInd, tInd] += np.dot(prod1, prod2)
 
-    print("expiHt.shape = {}".format(expiHt.shape))
-
-    expHH = np.zeros((len(kVec), len(tVec), prms.maxPhotonNumber, prms.maxPhotonNumber), dtype='complex')
-    for kInd in range(len(kVec)):
-        for tInd in range(len(tVec)):
-            expHH[kInd, tInd, :, :] = np.dot(expiHt[tInd, :, :], expiHtSinCos[kInd, tInd, :, :])
-
-    GF = np.dot(np.dot(phGS, expHH), phGS)
 
     return - 1j * GF
-
 
 def gfNumVecT(kVec, tVec, eta):
     initialState = np.zeros(prms.chainLength + 1, dtype='double')

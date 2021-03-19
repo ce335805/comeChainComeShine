@@ -8,6 +8,7 @@ import utils
 import greensFunction as green
 import beuatifulPlots as bPlots
 from automatedTests import gfTests
+import time
 
 def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))
@@ -26,22 +27,9 @@ def main():
 
 
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
-    tVec = np.linspace(0., 80. , 100)
-
-    eta = 0.0
-    gfNum0 = green.gfNumVecT(kVec, tVec, eta)
-    gfT0 = green.anaGreenVecT(kVec, tVec, eta)
+    tVec = np.linspace(0., 80. , 50)
 
     eta = 0.3
-
-    gfNum = green.gfNumVecT(kVec, tVec, eta)
-    gfT = green.anaGreenVecT(kVec, tVec, eta)
-
-    #compPlot.compareArrays(tVec, np.imag(gfT0[18, :]), np.imag(gfT[18, :]))
-    #compPlot.compareArrays(tVec, np.imag(gfNum0[18, :]), np.imag(gfNum[18, :]))
-    compPlot.compareArrays(tVec, np.imag(gfNum[18, :]) - np.imag(gfT[18, :]), np.real(gfNum[18, :]) - np.real(gfT[18, :]))
-    #compPlot.compareArrays(tVec, np.imag(gfT0[18, :]) - np.imag(gfT[18, :]), np.real(gfT0[18, :]) - np.real(gfT[18, :]))
-    #compPlot.compareArrays(tVec, np.imag(gfNum0[18, :]) - np.imag(gfNum[18, :]), np.real(gfNum0[18, :]) - np.real(gfNum[18, :]))
 
 
 
