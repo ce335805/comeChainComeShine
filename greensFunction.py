@@ -21,7 +21,7 @@ def g0VecT(kVec, tVec):
     return GF
 
 
-def anaGreenPointT(kPoint, tPoint, gsJ, eta):
+def anaGreenPointTGreater(kPoint, tPoint, gsJ, eta):
     epsK = 2. * prms.t * np.cos(kPoint[:, None])
     coupling = - eta ** 2 / prms.w0 * \
                (2. * (-2. * gsJ * prms.t * np.sin(kPoint[:, None])) + (-2. * prms.t * np.sin(kPoint[:, None]))**2)
@@ -30,16 +30,52 @@ def anaGreenPointT(kPoint, tPoint, gsJ, eta):
     ptTime = - (- 2. * eta * prms.t * np.sin(kPoint[:, None]))**2 / prms.w0**2 * (1. - np.exp(-1j * prms.w0 * tPoint[None, :]))
     return -1j * np.exp(eTime + ptTime)
 
+def anaGreenPointTLesser(kPoint, tPoint, gsJ, eta):
+    epsK = 2. * prms.t * np.cos(kPoint[:, None])
+    coupling = - eta ** 2 / prms.w0 * \
+               (2. * (-2. * gsJ * prms.t * np.sin(kPoint[:, None])) + (-2. * prms.t * np.sin(kPoint[:, None]))**2)
 
-def anaGreenVecT(kVec, tVec, eta):
+    eTime = 1j * epsK * tPoint[None, :] - 1j * coupling * tPoint[None, :]
+    ptTime = - (- 2. * eta * prms.t * np.sin(kPoint[:, None]))**2 / prms.w0**2 * (1. - np.exp(-1j * prms.w0 * tPoint[None, :]))
+    return -1j * np.exp(eTime + ptTime)
+
+
+
+
+def anaGreenVecTGreater(kVec, tVec, eta):
     initialState = np.zeros(prms.chainLength + 1, dtype='double')
     gs = anaGS.findGS1st(initialState, eta)
     gsJ = eF.J(gs[0: -1])
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
-    GF = anaGreenPointT(kVec, tVec, gsJ, eta)
+    GF = anaGreenPointTGreater(kVec, tVec, gsJ, eta)
     GF = np.multiply(1 - occupations, GF)
 
     return GF
+
+def anaGreenVecTLesser(kVec, tVec, eta):
+    initialState = np.zeros(prms.chainLength + 1, dtype='double')
+    gs = anaGS.findGS1st(initialState, eta)
+    gsJ = eF.J(gs[0: -1])
+    _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
+    GF = anaGreenPointTLesser(kVec, tVec, gsJ, eta)
+    GF = np.multiply(occupations, GF)
+
+    return GF
+
+def anaGreenVecTComplete(kVec, tVec, eta, damping):
+    tLess = tVec[:len(tVec)//2 + 1]
+    tGreat = tVec[len(tVec)//2 + 1:]
+    GFL = anaGreenVecTLesser(kVec, tLess, eta)
+    GFG = anaGreenVecTGreater(kVec, tGreat, eta)
+    GF = np.concatenate((GFL, GFG), axis=1)
+
+    dampingArr, _ = np.meshgrid(np.exp(- damping * tVec), np.ones(kVec.shape))
+    GF = np.multiply(dampingArr, GF)
+
+    print("GF.shape = {}".format(GF.shape))
+
+    return GF
+
 
 def gfNumPointT(kVec, tVec, eta):
     print("calculating GF numrically")

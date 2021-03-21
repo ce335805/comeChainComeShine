@@ -7,5 +7,5 @@ def plotSpec(kVec, wVec, spec):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     CS = ax.contourf(kVec, wVec, spec, 500, cmap = 'gnuplot2')
-    cbar = fig.colorbar(CS, ax=ax)
+    fig.colorbar(CS, ax=ax)
     plt.show()
