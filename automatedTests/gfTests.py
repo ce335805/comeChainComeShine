@@ -1,5 +1,7 @@
 import numpy as np
 import greensFunction as green
+import greenAna1st as greenAna
+import green0
 import globalSystemParams as prms
 
 
@@ -8,8 +10,8 @@ def g1stEQg0():
     eta = 0.0
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
     tVec = np.linspace(0., 10. , 10)
-    gfT = green.anaGreenVecTGreater(kVec, tVec, eta)
-    g0T = green.g0VecT(kVec, tVec)
+    gfT = greenAna.anaGreenVecTGreater(kVec, tVec, eta, 0.)
+    g0T = green0.g0VecT(kVec, tVec)
 
     failArr = (np.abs(gfT - g0T) > prms.accuracy)
 
@@ -24,7 +26,7 @@ def g1NumEQg1Ana():
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
     tVec = np.linspace(0., 10. , 10)
 
-    gfAna = green.anaGreenVecTGreater(kVec, tVec, eta)
+    gfAna = greenAna.anaGreenVecTGreater(kVec, tVec, eta, 0.)
     gfNum = green.gfNumVecT(kVec, tVec, eta)
 
     failArr = (np.abs(gfAna - gfNum) > prms.accuracy)
@@ -38,3 +40,11 @@ def g1NumEQg1Ana():
 def runAllTests():
     g1stEQg0()
     g1NumEQg1Ana()
+
+    print("")
+    print("")
+    print("---------------------------")
+    print("--- Green's function tests finished! ---")
+    print("---------------------------")
+    print("")
+    print("")

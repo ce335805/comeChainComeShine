@@ -9,6 +9,7 @@ import greensFunction as green
 import beuatifulPlots as bPlots
 from automatedTests import gfTests
 import fourierTrafo as FT
+import greenAna1st
 
 def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))
@@ -25,29 +26,34 @@ def main():
     #gsEnergiesSecExact = secOrder.findGSEnergyExactSec(etas)
     #compPlot.compareArrays(etas, gsEnergies, gsEnergies)
 
-    damping = .005
-    samplesT = 5001 #take an uneven number
-    tBound = 50000.
+    eta = 1.1
+    damping = .0025
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
-    tVec = np.linspace(-tBound, tBound , samplesT, endpoint=False)
+    wVec = np.linspace(-0.15, 0.15, 2001)
 
-    eta = .0
+    tVec = FT.tVecFromWVec(wVec)
+    tVecPos = tVec[len(tVec)//2 : ]
+    GFTG = greenAna1st.anaGreenVecTGreater(kVec, tVecPos, eta, damping)
+    #compPlot.compareArrays(tVecPos, np.imag(GFTG[25, :]), np.imag(GFTG[25, :]))
 
-    gfT = green.anaGreenVecTComplete(kVec, tVec, eta, damping)
-    wVec, gfW = FT.FT(tVec, gfT)
-    wVec = np.sort(wVec)
-    #compPlot.compareArrays(tVec, np.imag(gfT[25, :]), np.real(gfT[25, :]))
-    #compPlot.compareArrays(wVec, np.imag(gfW[25, :]), np.imag(gfW[25, :]))
-    bPlots.plotSpec(kVec, wVec, np.transpose(np.imag(gfW[:, :])))
+    GFWG = greenAna1st.anaGreenVecWGreater(kVec, wVec, eta, damping)
+    #print("GFWG.shape = {}".format(GFWG.shape))
+    #compPlot.compareArrays(wVec, np.imag(GFWG[25, :]), np.real(GFWG[25, :]))
+    bPlots.plotSpec(kVec, wVec, np.transpose(np.imag(GFWG)))
 
-    #damping = .1
-    #samplesT = 400
-    #tBound = 200.
-    #tVec = np.linspace(-tBound, tBound, samplesT)
-    #f = np.exp(-1j * (-.5) * tVec - damping * np.abs(tVec))
-    #wVec, g = FT.FT(tVec, f)
-    ##compPlot.compareArrays(tVec, np.real(f), np.imag(f))
-    #compPlot.compareArrays(wVec, np.real(g), np.imag(g))
+    #samplesT = 5001 #take an uneven number
+    #tBound = 50000.
+    #kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
+    #tVec = np.linspace(-tBound, tBound , samplesT, endpoint=False)
+#
+    #eta = .0
+#
+    #gfT = green.anaGreenVecTComplete(kVec, tVec, eta, damping)
+    #wVec, gfW = FT.FT(tVec, gfT)
+    #wVec = np.sort(wVec)
+    ##compPlot.compareArrays(tVec, np.imag(gfT[25, :]), np.real(gfT[25, :]))
+    ##compPlot.compareArrays(wVec, np.imag(gfW[25, :]), np.imag(gfW[25, :]))
+    #bPlots.plotSpec(kVec, wVec, np.transpose(np.imag(gfW[:, :])))
 
     print("")
     print("The calculation has finished - Juhu!")
