@@ -7,8 +7,7 @@ from arb_order import numHamiltonians as numH
 import scipy.linalg as sciLin
 
 
-def gfNumPointT(kVec, tVec, eta):
-    print("calculating GF numrically")
+def gfNumPointTGreater(kVec, tVec, eta):
 
     phGS = getPhGSH1(eta)
 
@@ -23,6 +22,39 @@ def gfNumPointT(kVec, tVec, eta):
                 - 1j * gk[:, None, None, None] * x[None, None, :, :] * tVec[None, :, None, None] \
                 - 1j * eK[:, None, None, None] * tVec[None, :, None, None] * photonOne[None, None, :, :]
 
+    GF = np.zeros((len(kVec), len(tVec)), dtype='complex')
+    for tInd in range(len(tVec)):
+        prod1 = np.dot(phGS, sciLin.expm(iHt[tInd, :, :]))
+        for kInd in range(len(kVec)):
+            prod2 = np.dot(sciLin.expm(iHtSinCos[kInd, tInd, :, :]), phGS)
+            GF[kInd, tInd] += np.dot(prod1, prod2)
+
+    return - 1j * GF
+
+
+def gfNumVecTGreater(kVec, tVec, eta):
+    initialState = np.zeros(prms.chainLength + 1, dtype='double')
+    gs = anaGS.findGS1st(initialState, eta)
+    _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
+    GF = gfNumPointTGreater(kVec, tVec, eta)
+    GF = np.multiply(1 - occupations, GF)
+
+    return GF
+
+def gfNumPointTLesser(kVec, tVec, eta):
+
+    phGS = getPhGSH1(eta)
+
+    H = getH1(eta)
+    x = np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) + np.diag(
+        np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1)
+    gk = - 2. * prms.t * np.sin(kVec) * eta
+    eK = 2. * prms.t * np.cos(kVec)
+    photonOne = np.diag(np.ones(prms.maxPhotonNumber))
+    iHt = 1j * H[None, :, :] * tVec[:, None, None]
+    iHtSinCos = - iHt \
+                + 1j * gk[:, None, None, None] * x[None, None, :, :] * tVec[None, :, None, None] \
+                + 1j * eK[:, None, None, None] * tVec[None, :, None, None] * photonOne[None, None, :, :]
 
     GF = np.zeros((len(kVec), len(tVec)), dtype='complex')
     for tInd in range(len(tVec)):
@@ -31,15 +63,15 @@ def gfNumPointT(kVec, tVec, eta):
             prod2 = np.dot(sciLin.expm(iHtSinCos[kInd, tInd, :, :]), phGS)
             GF[kInd, tInd] += np.dot(prod1, prod2)
 
+    return 1j * GF
 
-    return - 1j * GF
 
-def gfNumVecT(kVec, tVec, eta):
+def gfNumVecTLesser(kVec, tVec, eta):
     initialState = np.zeros(prms.chainLength + 1, dtype='double')
     gs = anaGS.findGS1st(initialState, eta)
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
-    GF = gfNumPointT(kVec, tVec, eta)
-    GF = np.multiply(1 - occupations, GF)
+    GF = gfNumPointTLesser(kVec, tVec, eta)
+    GF = np.multiply(occupations, GF)
 
     return GF
 

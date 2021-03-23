@@ -1,16 +1,11 @@
 import globalSystemParams as prms
-import arb_order.arbOrder as GSarb
 import numpy as np
 import comparisonPlots as compPlot
-import sec_order.analyticalEGS as secOrder
-import energyFunctions as eF
-import utils
-import greensFunction as green
-import beuatifulPlots as bPlots
 from automatedTests import gfTests
 from automatedTests import ftTests
 import fourierTrafo as FT
-import greenAna1st
+from greensFunction import greenAna1st
+
 
 def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))

@@ -1,7 +1,5 @@
 import numpy as np
-import greensFunction as green
-import greenAna1st as greenAna
-import green0
+from greensFunction import green0, greenAna1st as greenAna, greenNum1st as green
 import globalSystemParams as prms
 from automatedTests import testUtils as util
 
@@ -22,29 +20,47 @@ def g1stEQg0():
         print("G 1st consistent with G0! ------ CHECK PASSED :)")
         return True
 
-def g1NumEQg1Ana():
+def g1NumEQg1AnaGreater():
     eta = .1
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
     tVec = np.linspace(0., 10. , 10)
 
     gfAna = greenAna.anaGreenVecTGreater(kVec, tVec, eta, 0.)
-    gfNum = green.gfNumVecT(kVec, tVec, eta)
+    gfNum = green.gfNumVecTGreater(kVec, tVec, eta)
 
     failArr = (np.abs(gfAna - gfNum) > prms.accuracy)
 
     if(np.any(failArr)):
-        print("Numerical GF1 not consistent with analytical GF1!!! ------ CHECK FAILED!!!")
+        print("Numerical GF1 Greater not consistent with analytical GF1!!! ------ CHECK FAILED!!!")
         return False
     else:
-        print("Numerical GF1 consistent with analytical GF1! ------ CHECK PASSED :)")
+        print("Numerical GF1 Greater consistent with analytical GF1! ------ CHECK PASSED :)")
+        return True
+
+def g1NumEQg1AnaLesser():
+    eta = .1
+    kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
+    tVec = np.linspace(0., 10. , 10)
+
+    gfAna = greenAna.anaGreenVecTLesser(kVec, tVec, eta, 0.)
+    gfNum = green.gfNumVecTLesser(kVec, tVec, eta)
+
+    failArr = (np.abs(gfAna - gfNum) > prms.accuracy)
+
+    if(np.any(failArr)):
+        print("Numerical GF1 Lesser not consistent with analytical GF1!!! ------ CHECK FAILED!!!")
+        return False
+    else:
+        print("Numerical GF1 Lesser consistent with analytical GF1! ------ CHECK PASSED :)")
         return True
 
 def runAllTests():
     check1 = g1stEQg0()
-    check2 = g1NumEQg1Ana()
+    check2 = g1NumEQg1AnaGreater()
+    check3 = g1NumEQg1AnaLesser()
 
     print("---------------------------")
     print("--- Green's function tests finished! ---")
     print("---------------------------")
-    success = check1 and check2
+    success = check1 and check2 and check3
     util.printSuccessMessage(success)
