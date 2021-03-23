@@ -3,7 +3,7 @@ import greensFunction as green
 import greenAna1st as greenAna
 import green0
 import globalSystemParams as prms
-
+from automatedTests import testUtils as util
 
 def g1stEQg0():
 
@@ -17,9 +17,10 @@ def g1stEQg0():
 
     if(np.any(failArr)):
         print("G 1st not consistent with G0!!! ------ CHECK FAILED!!!")
-        exit()
+        return False
     else:
         print("G 1st consistent with G0! ------ CHECK PASSED :)")
+        return True
 
 def g1NumEQg1Ana():
     eta = .1
@@ -33,18 +34,17 @@ def g1NumEQg1Ana():
 
     if(np.any(failArr)):
         print("Numerical GF1 not consistent with analytical GF1!!! ------ CHECK FAILED!!!")
-        exit()
+        return False
     else:
         print("Numerical GF1 consistent with analytical GF1! ------ CHECK PASSED :)")
+        return True
 
 def runAllTests():
-    g1stEQg0()
-    g1NumEQg1Ana()
+    check1 = g1stEQg0()
+    check2 = g1NumEQg1Ana()
 
-    print("")
-    print("")
     print("---------------------------")
     print("--- Green's function tests finished! ---")
     print("---------------------------")
-    print("")
-    print("")
+    success = check1 and check2
+    util.printSuccessMessage(success)

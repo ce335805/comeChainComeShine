@@ -45,7 +45,7 @@ def anaGreenVecTGreater(kVec, tVec, eta, damping):
 
 def anaGreenVecTLesser(kVec, tVec, eta, damping):
 
-    assert(tVec[0] < 0 and tVec[-1] == 0)
+    #assert(tVec[0] < 0 and tVec[-1] == 0)
 
     initialState = np.zeros(prms.chainLength + 1, dtype='double')
     gs = anaGS.findGS1st(initialState, eta)
@@ -72,12 +72,14 @@ def anaGreenVecWGreater(kVec, wVec, eta, damping):
     assert((np.abs(wVec - wVecCheck) < 1e-10).all)
     return GFW
 
-
 def anaGreenVecWLesser(kVec, wVec, eta, damping):
-    dw = wVec[1] - wVec[0]
-    t0 = - np.pi / dw
-    tVec = np.linspace(t0, -t0, len(wVec), endpoint=False)
-    GFT = anaGreenVecTLesser(kVec, tVec, eta, damping)
+    tVec = FT.tVecFromWVec(wVec)
+    tVecNeg = tVec[: len(tVec)//2 + 1]
+    print(tVecNeg)
+    GFT = anaGreenVecTLesser(kVec, tVecNeg, eta, damping)
+    GFZero = np.zeros((len(kVec), len(tVec)//2), dtype='complex')
+    GFT = np.concatenate((GFT, GFZero), axis=1)
+
     wVecCheck, GFW = FT.FT(tVec, GFT)
 
     assert((np.abs(wVec - wVecCheck) < 1e-10).all)
