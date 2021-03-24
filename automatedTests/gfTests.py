@@ -26,7 +26,7 @@ def g1NumEQg1AnaGreater():
     tVec = np.linspace(0., 10. , 10)
 
     gfAna = greenAna.anaGreenVecTGreater(kVec, tVec, eta, 0.)
-    gfNum = green.gfNumVecTGreater(kVec, tVec, eta)
+    gfNum = green.gfNumVecTGreater(kVec, tVec, eta, 0.)
 
     failArr = (np.abs(gfAna - gfNum) > prms.accuracy)
 
@@ -43,7 +43,7 @@ def g1NumEQg1AnaLesser():
     tVec = np.linspace(0., 10. , 10)
 
     gfAna = greenAna.anaGreenVecTLesser(kVec, tVec, eta, 0.)
-    gfNum = green.gfNumVecTLesser(kVec, tVec, eta)
+    gfNum = green.gfNumVecTLesser(kVec, tVec, eta, 0.)
 
     failArr = (np.abs(gfAna - gfNum) > prms.accuracy)
 

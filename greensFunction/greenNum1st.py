@@ -5,6 +5,7 @@ import energyFunctions as eF
 from arb_order import photonState as phState
 from arb_order import numHamiltonians as numH
 import scipy.linalg as sciLin
+import fourierTrafo as FT
 
 
 def gfNumPointTGreater(kVec, tVec, eta):
@@ -32,12 +33,15 @@ def gfNumPointTGreater(kVec, tVec, eta):
     return - 1j * GF
 
 
-def gfNumVecTGreater(kVec, tVec, eta):
+def gfNumVecTGreater(kVec, tVec, eta, damping):
     initialState = np.zeros(prms.chainLength + 1, dtype='double')
     gs = anaGS.findGS1st(initialState, eta)
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
     GF = gfNumPointTGreater(kVec, tVec, eta)
     GF = np.multiply(1 - occupations, GF)
+
+    dampingArr, _ = np.meshgrid(np.exp(- damping * np.abs(tVec)), np.ones(kVec.shape))
+    GF = np.multiply(dampingArr, GF)
 
     return GF
 
@@ -66,14 +70,31 @@ def gfNumPointTLesser(kVec, tVec, eta):
     return 1j * GF
 
 
-def gfNumVecTLesser(kVec, tVec, eta):
+def gfNumVecTLesser(kVec, tVec, eta, damping):
     initialState = np.zeros(prms.chainLength + 1, dtype='double')
     gs = anaGS.findGS1st(initialState, eta)
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
     GF = gfNumPointTLesser(kVec, tVec, eta)
     GF = np.multiply(occupations, GF)
 
+    dampingArr, _ = np.meshgrid(np.exp(- damping * np.abs(tVec)), np.ones(kVec.shape))
+    GF = np.multiply(dampingArr, GF)
+
     return GF
+
+
+def numGreenVecWGreater(kVec, wVec, eta, damping):
+    tVec = FT.tVecFromWVec(wVec)
+    tVecPos = tVec[len(tVec)//2 + 1: ]
+    GFT = gfNumVecTGreater(kVec, tVecPos, eta, damping)
+    GFZero = np.zeros((len(kVec), len(tVec)//2 + 1), dtype='complex')
+    GFT = np.concatenate((GFZero, GFT), axis=1)
+
+    wVecCheck, GFW = FT.FT(tVec, GFT)
+
+    assert((np.abs(wVec - wVecCheck) < 1e-10).all)
+    return GFW
+
 
 
 def getPhGSH1(eta):
