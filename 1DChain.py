@@ -6,6 +6,7 @@ from automatedTests import ftTests
 import fourierTrafo as FT
 from greensFunction import greenAna1st
 from greensFunction import greenNum1st
+from greensFunction import greenNumArb
 import beuatifulPlots as bPlots
 
 
@@ -29,16 +30,17 @@ def main():
     eta = .2
     damping = .001
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
-    wVec = np.linspace(-0.15, 0.15, 201)
+    wVec = np.linspace(-0.15, 0.15, 1001)
 
     tVec = FT.tVecFromWVec(wVec)
     tVecPos = tVec[len(tVec)//2 : ]
     #GFTG = greenAna1st.anaGreenVecTGreater(kVec, tVecPos, eta, damping)
-    GFWG = greenNum1st.numGreenVecWGreater(kVec, wVec, eta, damping)
+    #GFWG1st = greenNum1st.numGreenVecWGreater(kVec, wVec, eta, damping)
+    GFWGarb = greenNumArb.numGreenVecWGreater(kVec, wVec, eta, damping)
 
     #print("GFWG.shape = {}".format(GFWG.shape))
-    #compPlot.compareArrays(wVec, np.imag(GFWG[25, :]), np.real(GFWG[25, :]))
-    bPlots.plotSpec(kVec, wVec, np.transpose(np.imag(GFWG)))
+    #compPlot.compareArrays(wVec, np.imag(GFWGarb[15, :]), np.imag(GFWGarb[25, :]))
+    bPlots.plotSpec(kVec, wVec, np.transpose(np.imag(GFWGarb)))
     #bPlots.plotSpec(kVec, wVec, np.transpose(np.imag(GFWL)))
     #compPlot.compareArrays(wVec, np.imag(GFWL[5, :]), np.imag(GFWL[12, :]))
 
