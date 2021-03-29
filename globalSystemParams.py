@@ -6,4 +6,4 @@ w0 = 0.05
 numberElectrons = chainLength//2
 accuracy = 1e-10
 maxiter = 1e10
-maxPhotonNumber = 30
+maxPhotonNumber = 50

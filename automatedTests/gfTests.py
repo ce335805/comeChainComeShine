@@ -21,7 +21,7 @@ def g1stEQg0():
         return True
 
 def g1NumEQg1AnaGreater():
-    eta = .1
+    eta = .3
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
     tVec = np.linspace(0., 10. , 10)
 
@@ -38,7 +38,7 @@ def g1NumEQg1AnaGreater():
         return True
 
 def g1NumEQg1AnaLesser():
-    eta = .1
+    eta = .3
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
     tVec = np.linspace(0., 10. , 10)
 

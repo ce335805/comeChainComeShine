@@ -12,7 +12,6 @@ from arb_order import arbOrder
 def gfNumPointTGreater(kVec, tVec, eta):
 
     phGS = getPhGSH1(eta)
-    print(phGS)
     H = getH1(eta)
 
     x = np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) + np.diag(
@@ -36,45 +35,14 @@ def gfNumPointTGreater(kVec, tVec, eta):
 
     return - 1j * GF
 
-def gfNumPointTGreaterTrafo(kVec, tVec, eta):
-
-    phGS = getPhGSH1(0.)
-    H = getDiagPtH()
-
-    p = np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) - np.diag(
-        np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1)
-    gk = - 2. * prms.t * np.sin(kVec) * eta
-    iHt = 1j * H[None, :, :] * tVec[:, None, None]
-    cohExponent = (gk[:, None, None] / prms.w0) * p[None, :, :]
-    mCohExponent = - (gk[:, None, None] / prms.w0) * p[None, :, :]
-
-    GF = np.zeros((len(kVec), len(tVec)), dtype='complex')
-    for tInd in range(len(tVec)):
-        for kInd in range(len(kVec)):
-            expIHT = sciLin.expm(iHt[tInd, :, :])
-            expCoh = sciLin.expm(cohExponent[kInd, :, :])
-            expMCoh = sciLin.expm(mCohExponent[kInd, :, :])
-            prod1 = np.dot(expCoh, phGS)
-            prod2 = np.dot(np.conj(expIHT), prod1)
-            prod3 = np.dot(expMCoh, prod2)
-            prod4 = np.dot(expIHT, prod3)
-
-            GF[kInd, tInd] = np.dot(np.conj(phGS), prod4)
-
-    gsJ = getGsJ(eta)
-    epsK = 2. * prms.t * np.cos(kVec)
-    coupling = - eta ** 2 / prms.w0 * \
-               (2. * ( gsJ * (-2.) * prms.t * np.sin(kVec)) + (-2. * prms.t * np.sin(kVec))**2)
-
-
-    iPhiT = -1j * (epsK[:, None] + coupling[:, None]) * tVec[None, :]
-    GF = np.multiply(np.exp(iPhiT), GF)
-
-    return - 1j * GF
 
 def gfNumVecTGreater(kVec, tVec, eta, damping):
+    initialState = np.zeros(prms.chainLength, dtype='double')
+    initialState[0: prms.numberElectrons] = 1.0
+    gs = arbOrder.findGS(initialState, eta, 1)
+    _, occupations = np.meshgrid(np.ones(tVec.shape), gs[:])
     GF = gfNumPointTGreater(kVec, tVec, eta)
-    #GF = gfNumPointTGreaterTrafo(kVec, tVec, eta)
+    GF = np.multiply(1 - occupations, GF)
     dampingArr, _ = np.meshgrid(np.exp(- damping * np.abs(tVec)), np.ones(kVec.shape))
     GF = np.multiply(dampingArr, GF)
 
@@ -130,6 +98,16 @@ def numGreenVecWGreater(kVec, wVec, eta, damping):
 
     return GFW
 
+def numGreenVecWLesser(kVec, wVec, eta, damping):
+    tVec = FT.tVecFromWVec(wVec)
+    tVecNeg = tVec[: len(tVec) // 2 + 1]
+    GFT = gfNumVecTLesser(kVec, tVecNeg, eta, damping)
+    GFZero = np.zeros((len(kVec), len(tVec) // 2), dtype='complex')
+    GFT = np.concatenate((GFT, GFZero), axis=1)
+    wVecCheck, GFW = FT.FT(tVec, GFT)
+    assert ((np.abs(wVec - wVecCheck) < 1e-10).all)
+    return GFW
+
 
 
 def getPhGSH1(eta):
@@ -148,19 +126,6 @@ def getH1(eta):
     gsJ = eF.J(gs)
     gsT = eF.T(gs)
     return numH.setupPhotonHamiltonian1st(gsT, gsJ, eta)
-
-def getDiagPtH():
-    indices = np.arange(prms.maxPhotonNumber)
-    diagonal = prms.w0 * (indices + .5)
-    return np.diag(diagonal, 0)
-
-
-def getGsJ(eta):
-    initialState = np.zeros(prms.chainLength, dtype='double')
-    initialState[0: prms.numberElectrons] = 1.0
-    gs = arbOrder.findGS(initialState, eta, 1)
-    gsJ = eF.J(gs)
-    return gsJ
 
 
 

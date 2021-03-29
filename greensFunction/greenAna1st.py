@@ -29,14 +29,10 @@ def anaGreenPointTLesser(kPoint, tPoint, gsJ, eta):
 
 def anaGreenVecTGreater(kVec, tVec, eta, damping):
 
-    #assert(tVec[0] == 0 and tVec[-1] > 0)
-
     initialState = np.zeros(prms.chainLength + 1, dtype='double')
     initialState[0: prms.numberElectrons] = 1.0
     gs = anaGS.findGS1st(initialState, eta)
     gsJ = eF.J(gs[0: -1])
-    #gsJ = 0.
-    print("J-ana = {}".format(gsJ))
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
     GF = anaGreenPointTGreater(kVec, tVec, gsJ, eta)
     GF = np.multiply(1 - occupations, GF)
@@ -47,8 +43,6 @@ def anaGreenVecTGreater(kVec, tVec, eta, damping):
     return GF
 
 def anaGreenVecTLesser(kVec, tVec, eta, damping):
-
-    #assert(tVec[0] < 0 and tVec[-1] == 0)
 
     initialState = np.zeros(prms.chainLength + 1, dtype='double')
     initialState[0: prms.numberElectrons] = 1.0
@@ -79,7 +73,6 @@ def anaGreenVecWGreater(kVec, wVec, eta, damping):
 def anaGreenVecWLesser(kVec, wVec, eta, damping):
     tVec = FT.tVecFromWVec(wVec)
     tVecNeg = tVec[: len(tVec)//2 + 1]
-    print(tVecNeg)
     GFT = anaGreenVecTLesser(kVec, tVecNeg, eta, damping)
     GFZero = np.zeros((len(kVec), len(tVec)//2), dtype='complex')
     GFT = np.concatenate((GFT, GFZero), axis=1)
