@@ -7,8 +7,8 @@ import globalSystemParams as param
 
 def compareArrays(x, y1, y2):
     fig, ax = plt.subplots(nrows=1, ncols=1)
-    ax.plot(x, y1, marker ='x', color = 'b', linestyle = '-', label = r"GF - num")
-    ax.plot(x, y2, marker = 'x', color = 'r', linestyle = '--', label = r"Gf - ana")
+    ax.plot(x, y1, marker ='x', color = 'b', linestyle = '-', label = r"GF - 1st-order")
+    ax.plot(x, y2, marker = 'x', color = 'r', linestyle = '--', label = r"Gf - $\infty$-order")
     plt.legend()
     plt.show()
 

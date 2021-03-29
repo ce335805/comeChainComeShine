@@ -21,14 +21,15 @@ def g1stEQg0():
         return True
 
 def g1NumEQg1AnaGreater():
-    eta = .3
+    eta = .2
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
     tVec = np.linspace(0., 10. , 10)
 
     gfAna = greenAna.anaGreenVecTGreater(kVec, tVec, eta, 0.)
     gfNum = green.gfNumVecTGreater(kVec, tVec, eta, 0.)
 
-    failArr = (np.abs(gfAna - gfNum) > 1e-8)
+    failArr = (np.abs(gfAna - gfNum) > 1e-5)
+    print("Max difference of G-Greater = {}".format(np.amax(np.abs(gfAna - gfNum))))
 
     if(np.any(failArr)):
         print("Numerical GF1 Greater not consistent with analytical GF1!!! ------ CHECK FAILED!!!")
@@ -38,14 +39,15 @@ def g1NumEQg1AnaGreater():
         return True
 
 def g1NumEQg1AnaLesser():
-    eta = .3
+    eta = .2
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
     tVec = np.linspace(0., 10. , 10)
 
     gfAna = greenAna.anaGreenVecTLesser(kVec, tVec, eta, 0.)
     gfNum = green.gfNumVecTLesser(kVec, tVec, eta, 0.)
 
-    failArr = (np.abs(gfAna - gfNum) > 1e-8)
+    failArr = (np.abs(gfAna - gfNum) > 1e-5)
+    print("Max difference of G-Greater = {}".format(np.amax(np.abs(gfAna - gfNum))))
 
     if(np.any(failArr)):
         print("Numerical GF1 Lesser not consistent with analytical GF1!!! ------ CHECK FAILED!!!")

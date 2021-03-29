@@ -10,16 +10,17 @@ import matplotlib.pyplot as plt
 from arb_order import photonState
 from greensFunction import greenAna1st
 from greensFunction import greenNum1st
+from greensFunction import greenNumArb
 import fourierTrafo as FT
 import beuatifulPlots as bPlots
 
 def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))
 
-    gfTests.runAllTests()
+    #gfTests.runAllTests()
     ftTests.runAllTests()
     #gsTests.runAllTests()
-    gsIsEigenstate.runAllTests()
+    #gsIsEigenstate.runAllTests()
 
     #eta = 0.2
 
@@ -39,19 +40,22 @@ def main():
 
 
 
-    eta = .3
-    damping = .002
+    eta = .2
+    damping = .0025
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
-    wVec = np.linspace(-0.15, 0.15, 501)
+    wVec = np.linspace(-.15, .15, 1001)
 
-#    GFWGAna = greenAna1st.anaGreenVecWGreater(kVec, wVec, eta, damping)
-#    GFWGNum = greenNum1st.numGreenVecWGreater(kVec, wVec, eta, damping)
-    GFWLAna = greenAna1st.anaGreenVecWLesser(kVec, wVec, eta, damping)
-    GFWLNum = greenNum1st.numGreenVecWLesser(kVec, wVec, eta, damping)
+    #GFWGAna = greenAna1st.anaGreenVecWGreater(kVec, wVec, eta, damping)
+    #GFWGNum1st = greenNum1st.numGreenVecWGreater(kVec, wVec, eta, damping)
+    #GFWGNumArb = greenNumArb.numGreenVecWGreater(kVec, wVec, eta, damping)
+    #GFWLAna = greenAna1st.anaGreenVecWLesser(kVec, wVec, eta, damping)
+    #GFWLNum = greenNum1st.numGreenVecWLesser(kVec, wVec, eta, damping)
+
+    aGreaterArb = greenNumArb.spectralGreater(kVec, wVec, eta, damping)
 
     #compPlot.compareArrays(tVecPos, np.imag(GFTGAna[31, :]) - np.imag(GFTGNum[31, :]), np.imag(GFTGAna[31, :]) - np.imag(GFTGNum[31, :]))
-    compPlot.compareArrays(wVec, np.imag(GFWLNum[5, :]), np.imag(GFWLAna[5, :]))
-    #bPlots.plotSpec(kVec, wVec, np.transpose(np.imag(GFWGNum)))
+    #compPlot.compareArrays(wVec, np.imag(GFWGNum1st[20, :]), np.imag(GFWGNumArb[20, :]))
+    bPlots.plotSpec(kVec, wVec, damping * np.transpose(aGreaterArb))
 
     print("")
     print("The calculation has finished - Juhu!")
