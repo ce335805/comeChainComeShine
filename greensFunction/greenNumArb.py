@@ -6,6 +6,7 @@ from arb_order import photonState as phState
 from arb_order import numHamiltonians as numH
 import scipy.linalg as sciLin
 import fourierTrafo as FT
+from arb_order import arbOrder
 
 
 def gfNumPointTGreater(kVec, tVec, eta):
@@ -36,7 +37,8 @@ def gfNumPointTGreater(kVec, tVec, eta):
 
 def gfNumVecTGreater(kVec, tVec, eta, damping):
     initialState = np.zeros(prms.chainLength + 1, dtype='double')
-    gs = anaGS.findGS1st(initialState, eta)
+    initialState[0: prms.numberElectrons] = 1.0
+    gs = arbOrder.findGS(initialState, eta, 3)
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
     GF = gfNumPointTGreater(kVec, tVec, eta)
     GF = np.multiply(1 - occupations, GF)
@@ -74,7 +76,8 @@ def gfNumPointTLesser(kVec, tVec, eta):
 
 def gfNumVecTLesser(kVec, tVec, eta, damping):
     initialState = np.zeros(prms.chainLength + 1, dtype='double')
-    gs = anaGS.findGS1st(initialState, eta)
+    initialState[0: prms.numberElectrons] = 1.0
+    gs = arbOrder.findGS(initialState, eta, 3)
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
     GF = gfNumPointTLesser(kVec, tVec, eta)
     GF = np.multiply(occupations, GF)
@@ -101,7 +104,8 @@ def numGreenVecWGreater(kVec, wVec, eta, damping):
 
 def getPhGSH1(eta):
     initialState = np.zeros(prms.chainLength + 1, dtype='double')
-    gs = anaGS.findGS1st(initialState, eta)
+    initialState[0: prms.numberElectrons] = 1.0
+    gs = arbOrder.findGS(initialState, eta, 3)
     gsJ = eF.J(gs[0: -1])
     gsT = eF.T(gs[0: -1])
     return phState.findPhotonGS([gsT, gsJ], eta, 1)
@@ -109,7 +113,8 @@ def getPhGSH1(eta):
 
 def getH1(eta):
     initialState = np.zeros(prms.chainLength + 1, dtype='double')
-    gs = anaGS.findGS1st(initialState, eta)
+    initialState[0: prms.numberElectrons] = 1.0
+    gs = arbOrder.findGS(initialState, eta, 3)
     gsJ = eF.J(gs[0: -1])
     gsT = eF.T(gs[0: -1])
     return numH.setupPhotonHamiltonian1st(gsT, gsJ, eta)

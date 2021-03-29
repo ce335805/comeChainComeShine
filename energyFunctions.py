@@ -54,54 +54,6 @@ def hA2ndVec(state, eta):
            ((eta * eta) / param.w0) * np.multiply(JVec(state[0 : -1]), JVec(state[0 : -1])) + TVec(state[0 : -1])
 
 
-def TBounds():
-    initialState = np.zeros(param.chainLength, dtype='double')
-    initialState[0: param.numberElectrons] = 1.0
-
-    pauliBounds = np.zeros((len(initialState), 2), dtype='double')
-    pauliBounds[:, 1] = 1.0
-    maxiter = 1e3
-    optionsDict = {"maxiter": maxiter, "disp": False}
-    constraintsDict = {"type": 'eq', "fun": utils.electronNumberZero}
-    resultMin = minimize(T, initialState, bounds=pauliBounds, tol=param.accuracy, options=optionsDict,
-                         constraints=constraintsDict)
-
-    resultMax = minimize(minusT, initialState, bounds=pauliBounds, tol=param.accuracy, options=optionsDict,
-                         constraints=constraintsDict)
-    if resultMin.success and resultMax.success:
-        print('TBounds optimization was : --- SUCCESSFULL! ---')
-    else:
-        print('TBounds optimization: --- FAILED! ---')
-
-    TMin = T(resultMin.x)
-    TMax = T(resultMax.x)
-
-    return [TMin, TMax]
-
-
-def JBounds():
-    initialState = np.zeros(param.chainLength, dtype='double')
-    initialState[0: param.numberElectrons] = 1.0
-    pauliBounds = np.zeros((len(initialState), 2), dtype='double')
-    pauliBounds[:, 1] = 1.0
-    maxiter = 1e3
-    optionsDict = {"maxiter": maxiter, "disp": False}
-    constraintsDict = {"type": 'eq', "fun": utils.electronNumberZero}
-    resultMin = minimize(J, initialState, bounds=pauliBounds, tol=param.accuracy, options=optionsDict,
-                         constraints=constraintsDict)
-
-    resultMax = minimize(minusJ, initialState, bounds=pauliBounds, tol=param.accuracy, options=optionsDict,
-                         constraints=constraintsDict)
-    if resultMin.success and resultMax.success:
-        print('JBounds optimization was : --- SUCCESSFULL! ---')
-    else:
-        print('JBounds optimization: --- FAILED! ---')
-
-    JMin = J(resultMin.x)
-    JMax = J(resultMax.x)
-
-    return [JMin, JMax]
-
 
 def firstOrderHamiltonian(state, eta):
     eState = state[0 : param.chainLength]
@@ -110,10 +62,9 @@ def firstOrderHamiltonian(state, eta):
         - eta**2 / param.w0 * J(eState)**2 \
         + T(eState)
 
-    return H.real
+    return H
 
 def secOrderHamiltonian(state, eta):
-    #return firstOrderHamiltonian(state, eta)
     eState = state[0 : param.chainLength]
     gam = gamma(eState, eta)
     epsilon = cmath.sqrt(1. - gam**2)

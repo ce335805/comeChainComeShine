@@ -28,7 +28,7 @@ def g1NumEQg1AnaGreater():
     gfAna = greenAna.anaGreenVecTGreater(kVec, tVec, eta, 0.)
     gfNum = green.gfNumVecTGreater(kVec, tVec, eta, 0.)
 
-    failArr = (np.abs(gfAna - gfNum) > prms.accuracy)
+    failArr = (np.abs(gfAna - gfNum) > 1e-8)
 
     if(np.any(failArr)):
         print("Numerical GF1 Greater not consistent with analytical GF1!!! ------ CHECK FAILED!!!")
@@ -45,7 +45,7 @@ def g1NumEQg1AnaLesser():
     gfAna = greenAna.anaGreenVecTLesser(kVec, tVec, eta, 0.)
     gfNum = green.gfNumVecTLesser(kVec, tVec, eta, 0.)
 
-    failArr = (np.abs(gfAna - gfNum) > prms.accuracy)
+    failArr = (np.abs(gfAna - gfNum) > 1e-8)
 
     if(np.any(failArr)):
         print("Numerical GF1 Lesser not consistent with analytical GF1!!! ------ CHECK FAILED!!!")

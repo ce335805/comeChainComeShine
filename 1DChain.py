@@ -3,46 +3,54 @@ import numpy as np
 import comparisonPlots as compPlot
 from automatedTests import gfTests
 from automatedTests import ftTests
-import fourierTrafo as FT
+from automatedTests import gsTests
+from automatedTests import gsIsEigenstate
+from arb_order import arbOrder
+import matplotlib.pyplot as plt
+from arb_order import photonState
 from greensFunction import greenAna1st
 from greensFunction import greenNum1st
-from greensFunction import greenNumArb
+import fourierTrafo as FT
 import beuatifulPlots as bPlots
-
 
 def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))
 
-    gfTests.runAllTests()
-    ftTests.runAllTests()
+    #gfTests.runAllTests()
+    #ftTests.runAllTests()
+    #gsTests.runAllTests()
+    gsIsEigenstate.runAllTests()
+
+    #eta = 0.2
+
+    #initialState = np.zeros(prms.chainLength, dtype='double')
+    #initialState[0: prms.numberElectrons] = 1.0
+    #gsE = arbOrder.findGS(initialState, eta, 3)
+
+    #fig, ax = plt.subplots(nrows=1, ncols=1)
+    #ax.plot(gsE[:])
+    #plt.show()
+
+    #phState = photonState.photonGS(gsE, eta, 3)
+
+    #fig, ax = plt.subplots(nrows=1, ncols=1)
+    #ax.plot(np.abs(phState[:]))
+    #plt.show()
 
 
-    #etas = np.linspace(0.0, .5, 30)
 
-    #avPhNumbers = GSarb.findPhotonNumbers(etas)
-    #avPhNumbersExSec = secOrder.findPhotonNumberExactSec(etas)
-    #compPlot.compareArrays(etas, avPhNumbers, avPhNumbers)
-
-    #gsEnergies = GSarb.findGSEnergies(etas)
-    #gsEnergiesSecExact = secOrder.findGSEnergyExactSec(etas)
-    #compPlot.compareArrays(etas, gsEnergies, gsEnergies)
-
-    eta = .2
-    damping = .001
+    eta = .3
+    damping = .002
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
-    wVec = np.linspace(-0.15, 0.15, 1001)
+    wVec = np.linspace(-0.15, 0.15, 501)
 
-    tVec = FT.tVecFromWVec(wVec)
-    tVecPos = tVec[len(tVec)//2 : ]
-    #GFTG = greenAna1st.anaGreenVecTGreater(kVec, tVecPos, eta, damping)
-    #GFWG1st = greenNum1st.numGreenVecWGreater(kVec, wVec, eta, damping)
-    GFWGarb = greenNumArb.numGreenVecWGreater(kVec, wVec, eta, damping)
+    GFWGAna = greenAna1st.anaGreenVecWGreater(kVec, wVec, eta, damping)
+    GFWGNum = greenNum1st.numGreenVecWGreater(kVec, wVec, eta, damping)
+    #GFWGarb = greenNumArb.numGreenVecWGreater(kVec, wVec, eta, damping)
 
-    #print("GFWG.shape = {}".format(GFWG.shape))
-    #compPlot.compareArrays(wVec, np.imag(GFWGarb[15, :]), np.imag(GFWGarb[25, :]))
-    bPlots.plotSpec(kVec, wVec, np.transpose(np.imag(GFWGarb)))
-    #bPlots.plotSpec(kVec, wVec, np.transpose(np.imag(GFWL)))
-    #compPlot.compareArrays(wVec, np.imag(GFWL[5, :]), np.imag(GFWL[12, :]))
+    #compPlot.compareArrays(tVecPos, np.imag(GFTGAna[31, :]) - np.imag(GFTGNum[31, :]), np.imag(GFTGAna[31, :]) - np.imag(GFTGNum[31, :]))
+    compPlot.compareArrays(wVec, np.imag(GFWGNum[31, :]), np.imag(GFWGAna[31, :]))
+    #bPlots.plotSpec(kVec, wVec, np.transpose(np.imag(GFWGAna)))
 
     print("")
     print("The calculation has finished - Juhu!")

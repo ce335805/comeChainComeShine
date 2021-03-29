@@ -90,6 +90,27 @@ def findPhotonNumberExactSec(etas):
         photonNumber[indEta] = phNum
     return photonNumber
 
+def findPhotonNumber1st(etas):
+    initialState = np.zeros(param.chainLength + 1, dtype='double')
+    initialState[0 : param.numberElectrons] = 1.0
+    photonNumber = np.zeros((len(etas)), dtype='double')
+    for indEta in np.arange(len(etas)):
+        gsTemp = findGS1st(initialState, etas[indEta])
+        phNum = sec_order.photonNumber.avPhotonNumber1st(gsTemp, etas[indEta])
+        photonNumber[indEta] = phNum
+    return photonNumber
+
+def findGSEnergy1st(etas):
+    initialState = np.zeros(param.chainLength + 1, dtype='double')
+    initialState[0 : param.numberElectrons] = 1.0
+    gsEnergy = np.zeros((len(etas)), dtype='double')
+    for indEta in np.arange(len(etas)):
+        gsTemp = findGS1st(initialState, etas[indEta])
+        gsEnTemp = eF.firstOrderHamiltonian(gsTemp, etas[indEta])
+        gsEnergy[indEta] = gsEnTemp
+    return gsEnergy
+
+
 def findGSEnergyExactSec(etas):
     initialState = np.zeros(param.chainLength + 1, dtype='double')
     initialState[0 : param.numberElectrons] = 1.0

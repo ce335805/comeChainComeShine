@@ -11,7 +11,7 @@ import fourierTrafo as FT
 def anaGreenPointTGreater(kPoint, tPoint, gsJ, eta):
     epsK = 2. * prms.t * np.cos(kPoint[:, None])
     coupling = - eta ** 2 / prms.w0 * \
-               (2. * (-2. * gsJ * prms.t * np.sin(kPoint[:, None])) + (-2. * prms.t * np.sin(kPoint[:, None]))**2)
+               (2. * ( gsJ * (-2.) * prms.t * np.sin(kPoint[:, None])) + (-2. * prms.t * np.sin(kPoint[:, None]))**2)
 
     eTime = -1j * epsK * tPoint[None, :] - 1j * coupling * tPoint[None, :]
     ptTime = - (- 2. * eta * prms.t * np.sin(kPoint[:, None]))**2 / prms.w0**2 * (1. - np.exp(-1j * prms.w0 * tPoint[None, :]))
@@ -32,8 +32,11 @@ def anaGreenVecTGreater(kVec, tVec, eta, damping):
     #assert(tVec[0] == 0 and tVec[-1] > 0)
 
     initialState = np.zeros(prms.chainLength + 1, dtype='double')
+    initialState[0: prms.numberElectrons] = 1.0
     gs = anaGS.findGS1st(initialState, eta)
     gsJ = eF.J(gs[0: -1])
+    #gsJ = 0.
+    print("J-ana = {}".format(gsJ))
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
     GF = anaGreenPointTGreater(kVec, tVec, gsJ, eta)
     GF = np.multiply(1 - occupations, GF)
@@ -48,6 +51,7 @@ def anaGreenVecTLesser(kVec, tVec, eta, damping):
     #assert(tVec[0] < 0 and tVec[-1] == 0)
 
     initialState = np.zeros(prms.chainLength + 1, dtype='double')
+    initialState[0: prms.numberElectrons] = 1.0
     gs = anaGS.findGS1st(initialState, eta)
     gsJ = eF.J(gs[0: -1])
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])

@@ -14,7 +14,7 @@ def findGS(state, eta, orderH):
     maxiter = param.maxiter
     optionsDict = {"maxiter": maxiter, "disp": False}
     constraintsDict = {"type": 'eq', "fun": utils.electronNumberZero}
-    result = minimize(ptState.energyFromState, state, args=[eta, orderH], bounds=pauliBounds, tol=param.accuracy, options=optionsDict, constraints=constraintsDict)
+    result = minimize(ptState.energyFromState, state, args=(eta, orderH), bounds=pauliBounds, tol=param.accuracy, options=optionsDict, constraints=constraintsDict)
 
     if result.success:
         print('The optimization was : --- SUCCESSFULL! ---')

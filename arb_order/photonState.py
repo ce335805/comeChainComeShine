@@ -11,7 +11,7 @@ def findSmalestEigenvalue(TJ, eta, orderH):
 def findPhotonGS(TJ, eta, orderH):
     hamiltonian = setupHOrder(TJ, eta, orderH)
     v, eVec = np.linalg.eigh(hamiltonian)
-    return eVec[0, :]
+    return eVec[:, 0]
 
 def averagePhotonNumber(TJ, eta, orderH):
     hamiltonian = setupHOrder(TJ, eta, orderH)
