@@ -6,7 +6,7 @@ from automatedTests import testUtils as util
 
 
 def electronicGSMatches1st():
-    eta = .3
+    eta = .2
 
     iniAna = np.zeros(prms.chainLength + 1, dtype='double')
     iniAna[0: prms.numberElectrons] = 1.0
@@ -48,7 +48,7 @@ def electronicGSMatches2nd():
         return True
 
 def gsEnergyMatches1st():
-    etas = [.0, .1, .2, .3]
+    etas = [.0, .1, .2]
 
     iniAna = np.zeros(prms.chainLength + 1, dtype='double')
     iniAna[0: prms.numberElectrons] = 1.0
@@ -92,7 +92,7 @@ def gsEnergyMatches2nd():
         return True
 
 def gsPhotonNumberMatches1st():
-    etas = [.0, .05, .1, .2, .3]
+    etas = [.0, .05, .1, .2]
 
 
     iniAna = np.zeros(prms.chainLength + 1, dtype='double')

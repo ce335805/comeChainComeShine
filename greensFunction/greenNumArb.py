@@ -52,8 +52,8 @@ def gfNumVecTGreater(kVec, tVec, eta, damping):
 def gfNumPointTLesser(kVec, tVec, eta):
 
     phGS = getPhGS(eta)
-
     H = getH(eta)
+
     gk = - 2. * prms.t * np.sin(kVec)
     eK = 2. * prms.t * np.cos(kVec)
     x = eta * (np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) + np.diag(
@@ -62,15 +62,17 @@ def gfNumPointTLesser(kVec, tVec, eta):
     cosX = sciLin.cosm(x)
     iHt = 1j * H[None, :, :] * tVec[:, None, None]
     iHtSinCos = - 1j * H[None, None, :, :] * tVec[None, :, None, None] \
-                + 1j * gk[:, None, None, None] * sinX[None, None, :, :] * tVec[None, :, None, None] \
-                + 1j * eK[:, None, None, None] * cosX[None, None, :, :] * tVec[None, :, None, None]
+                - 1j * gk[:, None, None, None] * sinX[None, None, :, :] * tVec[None, :, None, None] \
+                - 1j * eK[:, None, None, None] * cosX[None, None, :, :] * tVec[None, :, None, None]
+
 
     GF = np.zeros((len(kVec), len(tVec)), dtype='complex')
     for tInd in range(len(tVec)):
-        prod1 = np.dot(phGS, sciLin.expm(iHt[tInd, :, :]))
         for kInd in range(len(kVec)):
-            prod2 = np.dot(sciLin.expm(iHtSinCos[kInd, tInd, :, :]), phGS)
-            GF[kInd, tInd] = np.dot(prod1, prod2)
+            prod1 = np.dot( sciLin.expm(iHtSinCos[kInd, tInd, :, :]), phGS)
+            prod2 = np.dot( sciLin.expm(iHt[tInd, :, :]), prod1)
+            res = np.dot(np.conj(phGS), prod2)
+            GF[kInd, tInd] = res
 
     return 1j * GF
 
@@ -91,7 +93,7 @@ def gfNumVecTLesser(kVec, tVec, eta, damping):
 
 def numGreenVecWGreater(kVec, wVec, eta, damping):
     tVec = FT.tVecFromWVec(wVec)
-    tVecPos = tVec[len(tVec)//2 + 1: ]
+    tVecPos = tVec[len(tVec) // 2 + 1: ]
     GFT = gfNumVecTGreater(kVec, tVecPos, eta, damping)
     GFZero = np.zeros((len(kVec), len(tVec)//2 + 1), dtype='complex')
     GFT = np.concatenate((GFZero, GFT), axis=1)
@@ -99,10 +101,6 @@ def numGreenVecWGreater(kVec, wVec, eta, damping):
     wVecCheck, GFW = FT.FT(tVec, GFT)
 
     return GFW
-
-def spectralGreater(kVec, wVec, eta, damping):
-    return -2. * np.imag(numGreenVecWGreater(kVec, wVec, eta, damping))
-
 
 def numGreenVecWLesser(kVec, wVec, eta, damping):
     tVec = FT.tVecFromWVec(wVec)
@@ -114,6 +112,11 @@ def numGreenVecWLesser(kVec, wVec, eta, damping):
     assert ((np.abs(wVec - wVecCheck) < 1e-10).all)
     return GFW
 
+def spectralGreater(kVec, wVec, eta, damping):
+    return -2. * np.imag(numGreenVecWGreater(kVec, wVec, eta, damping))
+
+def spectralLesser(kVec, wVec, eta, damping):
+    return -2. * np.imag(numGreenVecWLesser(kVec, wVec, eta, damping))
 
 
 def getPhGS(eta):

@@ -6,7 +6,7 @@ from automatedTests import testUtils as util
 def g1stEQg0():
 
     eta = 0.0
-    kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
+    kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
     tVec = np.linspace(0., 10. , 10)
     gfT = greenAna.anaGreenVecTGreater(kVec, tVec, eta, 0.)
     g0T = green0.g0VecT(kVec, tVec)
@@ -22,7 +22,7 @@ def g1stEQg0():
 
 def g1NumEQg1AnaGreater():
     eta = .2
-    kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
+    kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
     tVec = np.linspace(0., 10. , 10)
 
     gfAna = greenAna.anaGreenVecTGreater(kVec, tVec, eta, 0.)
@@ -40,7 +40,7 @@ def g1NumEQg1AnaGreater():
 
 def g1NumEQg1AnaLesser():
     eta = .2
-    kVec = np.linspace(0, 2. * np.pi, prms.chainLength)
+    kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
     tVec = np.linspace(0., 10. , 10)
 
     gfAna = greenAna.anaGreenVecTLesser(kVec, tVec, eta, 0.)

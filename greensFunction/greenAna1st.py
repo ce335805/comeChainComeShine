@@ -18,11 +18,11 @@ def anaGreenPointTGreater(kPoint, tPoint, gsJ, eta):
     return -1j * np.exp(eTime + ptTime)
 
 def anaGreenPointTLesser(kPoint, tPoint, gsJ, eta):
-    epsK = -2. * prms.t * np.cos(kPoint[:, None])
-    coupling = + eta ** 2 / prms.w0 * \
-               (2. * (-2. * gsJ * prms.t * np.sin(kPoint[:, None])) - (-2. * prms.t * np.sin(kPoint[:, None]))**2)
+    epsK = 2. * prms.t * np.cos(kPoint[:, None])
+    coupling = - eta ** 2 / prms.w0 * \
+               (2. * ( gsJ * (-2.) * prms.t * np.sin(kPoint[:, None])) + (-2. * prms.t * np.sin(kPoint[:, None]))**2)
 
-    eTime = - 1j * epsK * tPoint[None, :] - 1j * coupling * tPoint[None, :]
+    eTime = -1j * epsK * tPoint[None, :] - 1j * coupling * tPoint[None, :]
     ptTime = - (- 2. * eta * prms.t * np.sin(kPoint[:, None]))**2 / prms.w0**2 * (1. - np.exp(-1j * prms.w0 * tPoint[None, :]))
     return 1j * np.exp(eTime + ptTime)
 
@@ -60,7 +60,7 @@ def anaGreenVecTLesser(kVec, tVec, eta, damping):
 
 def anaGreenVecWGreater(kVec, wVec, eta, damping):
     tVec = FT.tVecFromWVec(wVec)
-    tVecPos = tVec[len(tVec)//2 + 1: ]
+    tVecPos = tVec[len(tVec) // 2 + 1: ]
     GFT = anaGreenVecTGreater(kVec, tVecPos, eta, damping)
     GFZero = np.zeros((len(kVec), len(tVec)//2 + 1), dtype='complex')
     GFT = np.concatenate((GFZero, GFT), axis=1)
@@ -72,7 +72,7 @@ def anaGreenVecWGreater(kVec, wVec, eta, damping):
 
 def anaGreenVecWLesser(kVec, wVec, eta, damping):
     tVec = FT.tVecFromWVec(wVec)
-    tVecNeg = tVec[: len(tVec)//2 + 1]
+    tVecNeg = tVec[: len(tVec) // 2 + 1]
     GFT = anaGreenVecTLesser(kVec, tVecNeg, eta, damping)
     GFZero = np.zeros((len(kVec), len(tVec)//2), dtype='complex')
     GFT = np.concatenate((GFT, GFZero), axis=1)

@@ -17,7 +17,7 @@ def averagePhotonNumber(TJ, eta, orderH):
     hamiltonian = setupHOrder(TJ, eta, orderH)
 
     v, eVec = np.linalg.eigh(hamiltonian)
-    eVec = eVec[0, :]
+    eVec = eVec[:, 0]
     occ = np.multiply(eVec, np.conj(eVec))
     avPhNum = np.sum(np.multiply(np.arange(len(eVec)), occ))
     return avPhNum

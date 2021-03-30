@@ -25,7 +25,7 @@ def plotFunctions(func1, funcArr, paramArray, xArr):
 
 def compareFunctions(dArr):
 
-    kArr = np.linspace(- np.pi / 2., np.pi / 2., 500)
+    kArr = np.linspace(- np.pi / 2., np.pi / 2., 500, endpoint=False)
 
     cos = cosFunc(kArr)
     coscos = np.zeros((len(dArr), len(kArr)), dtype='double')

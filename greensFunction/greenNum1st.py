@@ -51,27 +51,28 @@ def gfNumVecTGreater(kVec, tVec, eta, damping):
 def gfNumPointTLesser(kVec, tVec, eta):
 
     phGS = getPhGSH1(eta)
-
     H = getH1(eta)
+
     x = np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) + np.diag(
         np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1)
     gk = - 2. * prms.t * np.sin(kVec) * eta
     eK = 2. * prms.t * np.cos(kVec)
     photonOne = np.diag(np.ones(prms.maxPhotonNumber))
     iHt = 1j * H[None, :, :] * tVec[:, None, None]
-    iHtSinCos = - iHt \
-                + 1j * gk[:, None, None, None] * x[None, None, :, :] * tVec[None, :, None, None] \
-                + 1j * eK[:, None, None, None] * tVec[None, :, None, None] * photonOne[None, None, :, :]
+    iHtSinCos = - 1j * H[None, None, :, :] * tVec[None, :, None, None] \
+                - 1j * gk[:, None, None, None] * x[None, None, :, :] * tVec[None, :, None, None] \
+                - 1j * eK[:, None, None, None] * photonOne[None, None, :, :] * tVec[None, :, None, None]
+
 
     GF = np.zeros((len(kVec), len(tVec)), dtype='complex')
     for tInd in range(len(tVec)):
-        prod1 = np.dot(phGS, sciLin.expm(iHt[tInd, :, :]))
         for kInd in range(len(kVec)):
-            prod2 = np.dot(sciLin.expm(iHtSinCos[kInd, tInd, :, :]), phGS)
-            GF[kInd, tInd] = np.dot(prod1, prod2)
+            prod1 = np.dot( sciLin.expm(iHtSinCos[kInd, tInd, :, :]), phGS)
+            prod2 = np.dot( sciLin.expm(iHt[tInd, :, :]), prod1)
+            res = np.dot(np.conj(phGS), prod2)
+            GF[kInd, tInd] = res
 
     return 1j * GF
-
 
 def gfNumVecTLesser(kVec, tVec, eta, damping):
     initialState = np.zeros(prms.chainLength, dtype='double')
@@ -89,7 +90,7 @@ def gfNumVecTLesser(kVec, tVec, eta, damping):
 
 def numGreenVecWGreater(kVec, wVec, eta, damping):
     tVec = FT.tVecFromWVec(wVec)
-    tVecPos = tVec[len(tVec)//2 + 1: ]
+    tVecPos = tVec[len(tVec) // 2 + 1: ]
     GFT = gfNumVecTGreater(kVec, tVecPos, eta, damping)
     GFZero = np.zeros((len(kVec), len(tVec)//2 + 1), dtype='complex')
     GFT = np.concatenate((GFZero, GFT), axis=1)

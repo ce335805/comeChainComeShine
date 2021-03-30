@@ -14,7 +14,7 @@ def compareArrays(x, y1, y2):
 
 
 def plotTwoEGS(state1, state2):
-    kVec = np.linspace(0, 2. * np.pi, param.chainLength)
+    kVec = np.linspace(0, 2. * np.pi, param.chainLength, endpoint=False)
     energyVec1 = np.cos(kVec)
     energyVec2 = np.cos(kVec) + 0.2
 
