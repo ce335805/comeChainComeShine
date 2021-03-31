@@ -7,16 +7,9 @@ from arb_order import arbOrder
 from arb_order import photonState as phState
 
 def currentGS(eta):
-    initialState = np.zeros(prms.chainLength, dtype='double')
-    initialState[ : prms.numberElectrons // 2 + 1] = 1.0
-    initialState[ prms.chainLength - prms.numberElectrons//2 - 0: ] = 1.0
-    print(initialState)
-    gs = arbOrder.findGS(initialState, eta, 3)
+    gs = arbOrder.findGS(eta, 3)
     gsJ = eF.J(gs)
     gsT = eF.T(gs)
-
-    gsE = phState.energyFromState(gs, eta, 3)
-    print("gsE = {}".format(gsE - .5))
 
     ptGS = phState.findPhotonGS([gsT, gsJ], eta, 3)
     jOp = setupCurrentOperator(gsT, gsJ, eta)
@@ -25,9 +18,7 @@ def currentGS(eta):
     return current
 
 def expectA(eta):
-    initialState = np.zeros(prms.chainLength, dtype='double')
-    initialState[0: prms.numberElectrons] = 1.0
-    gs = arbOrder.findGS(initialState, eta, 3)
+    gs = arbOrder.findGS(eta, 3)
     gsJ = eF.J(gs)
     gsT = eF.T(gs)
 
@@ -38,9 +29,7 @@ def expectA(eta):
 
 
 def expectCosA(eta):
-    initialState = np.zeros(prms.chainLength, dtype='double')
-    initialState[0: prms.numberElectrons] = 1.0
-    gs = arbOrder.findGS(initialState, eta, 3)
+    gs = arbOrder.findGS(eta, 3)
     gsJ = eF.J(gs)
     gsT = eF.T(gs)
 
@@ -51,9 +40,7 @@ def expectCosA(eta):
     return np.dot(np.conj(ptGS), np.dot(cosX, ptGS))
 
 def expectAnnihil(eta):
-    initialState = np.zeros(prms.chainLength, dtype='double')
-    initialState[0: prms.numberElectrons] = 1.0
-    gs = arbOrder.findGS(initialState, eta, 3)
+    gs = arbOrder.findGS(eta, 3)
     gsJ = eF.J(gs)
     gsT = eF.T(gs)
 
@@ -63,9 +50,7 @@ def expectAnnihil(eta):
     return np.dot(np.conj(ptGS), np.dot(a, ptGS))
 
 def expectSinA(eta):
-    initialState = np.zeros(prms.chainLength, dtype='double')
-    initialState[0: prms.numberElectrons] = 1.0
-    gs = arbOrder.findGS(initialState, eta, 3)
+    gs = arbOrder.findGS(eta, 3)
     gsJ = eF.J(gs)
     gsT = eF.T(gs)
 

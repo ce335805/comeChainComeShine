@@ -6,8 +6,10 @@ import globalSystemParams as param
 import utils
 import sec_order.photonNumber
 
+import initialState as ini
 
-def findGS1st(state, eta):
+def findGS1st(eta):
+    state = ini.getG0InitialStateAna()
     pauliBounds = np.zeros((len(state), 2), dtype='double')
     pauliBounds[0: param.chainLength, 1] = 1.0
     pauliBounds[-1, 1] = np.inf
@@ -23,7 +25,8 @@ def findGS1st(state, eta):
 
     return result.x
 
-def findGS(state, eta):
+def findGS(eta):
+    state = ini.getG0InitialStateAna()
     pauliBounds = np.zeros((len(state), 2), dtype='double')
     pauliBounds[0: param.chainLength, 1] = 1.0
     pauliBounds[-1, 1] = np.inf
@@ -40,7 +43,8 @@ def findGS(state, eta):
     return result.x
 
 
-def findGSExactSec(state, eta):
+def findGSExactSec(eta):
+    state = ini.getG0InitialStateAna()
     pauliBounds = np.zeros((len(state), 2), dtype='double')
     pauliBounds[0: param.chainLength, 1] = 1.0
     pauliBounds[-1, 1] = np.inf
@@ -57,12 +61,12 @@ def findGSExactSec(state, eta):
     return result.x
 
 
-def getFSSchifts(state):
+def getFSSchifts():
     etas = np.linspace(0.0, 0.2, 50)
     shifts = np.zeros((0), dtype='double')
     for currentEta in etas:
         #print('looking for GS at eta = {}'.format(currentEta))
-        GS = findGS(state, currentEta)
+        GS = findGS(currentEta)
         shift = findFSShift(GS)
         shifts = np.append(shifts, [shift])
         print('The boson number in the GS is ------------ {}'.format(GS[-1]))
@@ -70,53 +74,43 @@ def getFSSchifts(state):
     return shifts
 
 def findPhotonNumberInGS2nd(etas):
-    initialState = np.zeros(param.chainLength + 1, dtype='double')
-    initialState[0 : param.numberElectrons] = 1.0
     photonNumber = np.zeros((len(etas)), dtype='double')
     for indEta in np.arange(len(etas)):
-        gsTemp = findGS(initialState, etas[indEta])
+        gsTemp = findGS(etas[indEta])
         print("J(GS) = {}".format(eF.J(gsTemp[0 : -1])))
         phNum = sec_order.photonNumber.avPhotonNumber2nd(gsTemp, etas[indEta])
         photonNumber[indEta] = phNum
     return photonNumber
 
 def findPhotonNumberExactSec(etas):
-    initialState = np.zeros(param.chainLength + 1, dtype='double')
-    initialState[0 : param.numberElectrons] = 1.0
     photonNumber = np.zeros((len(etas)), dtype='double')
     for indEta in np.arange(len(etas)):
-        gsTemp = findGSExactSec(initialState, etas[indEta])
+        gsTemp = findGSExactSec(etas[indEta])
         phNum = sec_order.photonNumber.avPhotonNumber2nd(gsTemp, etas[indEta])
         photonNumber[indEta] = phNum
     return photonNumber
 
 def findPhotonNumber1st(etas):
-    initialState = np.zeros(param.chainLength + 1, dtype='double')
-    initialState[0 : param.numberElectrons] = 1.0
     photonNumber = np.zeros((len(etas)), dtype='double')
     for indEta in np.arange(len(etas)):
-        gsTemp = findGS1st(initialState, etas[indEta])
+        gsTemp = findGS1st(etas[indEta])
         phNum = sec_order.photonNumber.avPhotonNumber1st(gsTemp, etas[indEta])
         photonNumber[indEta] = phNum
     return photonNumber
 
 def findGSEnergy1st(etas):
-    initialState = np.zeros(param.chainLength + 1, dtype='double')
-    initialState[0 : param.numberElectrons] = 1.0
     gsEnergy = np.zeros((len(etas)), dtype='double')
     for indEta in np.arange(len(etas)):
-        gsTemp = findGS1st(initialState, etas[indEta])
+        gsTemp = findGS1st(etas[indEta])
         gsEnTemp = eF.firstOrderHamiltonian(gsTemp, etas[indEta])
         gsEnergy[indEta] = gsEnTemp
     return gsEnergy
 
 
 def findGSEnergyExactSec(etas):
-    initialState = np.zeros(param.chainLength + 1, dtype='double')
-    initialState[0 : param.numberElectrons] = 1.0
     gsEnergy = np.zeros((len(etas)), dtype='double')
     for indEta in np.arange(len(etas)):
-        gsTemp = findGSExactSec(initialState, etas[indEta])
+        gsTemp = findGSExactSec(etas[indEta])
         gsEnTemp = eF.secOrderHamiltonian(gsTemp, etas[indEta])
         gsEnergy[indEta] = gsEnTemp
     return gsEnergy

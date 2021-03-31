@@ -5,14 +5,13 @@ from arb_order import numHamiltonians
 import energyFunctions as eF
 from arb_order import photonState as phState
 from automatedTests import testUtils as util
+import initialState as ini
 
 def eighWorksAsExpected():
 
     eta = .5
 
-    initialState = np.zeros(prms.chainLength, dtype='double')
-    initialState[0: prms.numberElectrons] = 1.0
-    eGS = arbOrder.findGS(initialState, eta, 1)
+    eGS = arbOrder.findGS(eta, 1)
     gsJ = eF.J(eGS)
     gsT = eF.T(eGS)
 
@@ -36,9 +35,7 @@ def photonGSIsEigenstate():
 
     eta = .5
 
-    initialState = np.zeros(prms.chainLength, dtype='double')
-    initialState[0: prms.numberElectrons] = 1.0
-    eGS = arbOrder.findGS(initialState, eta, 1)
+    eGS = arbOrder.findGS(eta, 1)
     gsJ = eF.J(eGS)
     gsT = eF.T(eGS)
 

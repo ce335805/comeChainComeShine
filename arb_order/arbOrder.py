@@ -4,11 +4,13 @@ import globalSystemParams as param
 import energyFunctions as eF
 import arb_order.photonState as ptState
 from scipy.optimize import minimize
+import initialState as ini
 
 
 
 
-def findGS(state, eta, orderH):
+def findGS(eta, orderH):
+    state = ini.getG0InitialStateNum()
     pauliBounds = np.zeros((len(state), 2), dtype='double')
     pauliBounds[0: param.chainLength, 1] = 1.0
     maxiter = param.maxiter
@@ -25,24 +27,20 @@ def findGS(state, eta, orderH):
 
 def findPhotonNumbers(etas, orderH):
 
-    initialState = np.zeros(param.chainLength, dtype='double')
-    initialState[0: param.numberElectrons] = 1.0
     avPhotonNumbers = np.zeros((len(etas)), dtype='double')
 
     for indEta in range(len(etas)):
-        gsTemp = findGS(initialState, etas[indEta], orderH)
+        gsTemp = findGS(etas[indEta], orderH)
         avPhotonNumbers[indEta] = ptState.avPhotonNum(gsTemp, etas[indEta], orderH)
     return avPhotonNumbers
 
 
 def findGSEnergies(etas, orderH):
 
-    initialState = np.zeros(param.chainLength, dtype='double')
-    initialState[0: param.numberElectrons] = 1.0
     gsEnergies = np.zeros((len(etas)), dtype='double')
 
     for indEta in range(len(etas)):
-        gsTemp = findGS(initialState, etas[indEta], orderH)
+        gsTemp = findGS(etas[indEta], orderH)
         gsEnergies[indEta] = ptState.energyFromState(gsTemp, etas[indEta], orderH)
     return gsEnergies
 

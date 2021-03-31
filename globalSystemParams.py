@@ -1,9 +1,9 @@
 import numpy as np
 
-chainLength = 10
-t = - 1.
-w0 = 1.
+chainLength = 50
+t = - 1./chainLength
+w0 = .05
 numberElectrons = chainLength//2
-accuracy = 1e-12
+accuracy = 1e-10
 maxiter = 1e10
-maxPhotonNumber = 20
+maxPhotonNumber = 50

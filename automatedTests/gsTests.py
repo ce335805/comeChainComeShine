@@ -8,14 +8,10 @@ from automatedTests import testUtils as util
 def electronicGSMatches1st():
     eta = .2
 
-    iniAna = np.zeros(prms.chainLength + 1, dtype='double')
-    iniAna[0: prms.numberElectrons] = 1.0
-    gsAna = analytical.findGS1st(iniAna, eta)
+    gsAna = analytical.findGS1st(eta)
     gsAna = gsAna[:-1]
 
-    iniNum = np.zeros(prms.chainLength, dtype='double')
-    iniNum[0: prms.numberElectrons] = 1.0
-    gsNum = numerical.findGS(iniNum, eta, 1)
+    gsNum = numerical.findGS(eta, 1)
 
     failArr = (np.abs(gsAna - gsNum) > 1e-8)
 
@@ -29,14 +25,10 @@ def electronicGSMatches1st():
 def electronicGSMatches2nd():
     eta = .2
 
-    iniAna = np.zeros(prms.chainLength + 1, dtype='double')
-    iniAna[0: prms.numberElectrons] = 1.0
-    gsAna = analytical.findGSExactSec(iniAna, eta)
+    gsAna = analytical.findGSExactSec(eta)
     gsAna = gsAna[:-1]
 
-    iniNum = np.zeros(prms.chainLength, dtype='double')
-    iniNum[0: prms.numberElectrons] = 1.0
-    gsNum = numerical.findGS(iniNum, eta, 2)
+    gsNum = numerical.findGS(eta, 2)
 
     failArr = (np.abs(gsAna - gsNum) > 1e-8)
 
@@ -50,12 +42,8 @@ def electronicGSMatches2nd():
 def gsEnergyMatches1st():
     etas = [.0, .1, .2]
 
-    iniAna = np.zeros(prms.chainLength + 1, dtype='double')
-    iniAna[0: prms.numberElectrons] = 1.0
     eAna = analytical.findGSEnergy1st(etas)
 
-    iniNum = np.zeros(prms.chainLength, dtype='double')
-    iniNum[0: prms.numberElectrons] = 1.0
     eNum = numerical.findGSEnergies(etas, 1)
 
     diffArr = eAna - eNum
@@ -72,12 +60,8 @@ def gsEnergyMatches1st():
 def gsEnergyMatches2nd():
     etas = [.0, .05, .1, .2]
 
-    iniAna = np.zeros(prms.chainLength + 1, dtype='double')
-    iniAna[0: prms.numberElectrons] = 1.0
     eAna = analytical.findGSEnergyExactSec(etas)
 
-    iniNum = np.zeros(prms.chainLength, dtype='double')
-    iniNum[0: prms.numberElectrons] = 1.0
     eNum = numerical.findGSEnergies(etas, 2)
 
     diffArr = eAna - eNum
@@ -94,13 +78,8 @@ def gsEnergyMatches2nd():
 def gsPhotonNumberMatches1st():
     etas = [.0, .05, .1, .2]
 
-
-    iniAna = np.zeros(prms.chainLength + 1, dtype='double')
-    iniAna[0: prms.numberElectrons] = 1.0
     phAna = analytical.findPhotonNumber1st(etas)
 
-    iniNum = np.zeros(prms.chainLength, dtype='double')
-    iniNum[0: prms.numberElectrons] = 1.0
     phNum = numerical.findPhotonNumbers(etas, 1)
 
     failArr = (np.abs(phAna - phNum) > 1e-8)
@@ -118,13 +97,8 @@ def gsPhotonNumberMatches1st():
 def gsPhotonNumberMatches2nd():
     etas = [.0, .05, .1, .2]
 
-
-    iniAna = np.zeros(prms.chainLength + 1, dtype='double')
-    iniAna[0: prms.numberElectrons] = 1.0
     phAna = analytical.findPhotonNumberExactSec(etas)
 
-    iniNum = np.zeros(prms.chainLength, dtype='double')
-    iniNum[0: prms.numberElectrons] = 1.0
     phNum = numerical.findPhotonNumbers(etas, 2)
 
     failArr = (np.abs(phAna - phNum) > 1e-8)

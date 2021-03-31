@@ -37,9 +37,7 @@ def gfNumPointTGreater(kVec, tVec, eta):
 
 
 def gfNumVecTGreater(kVec, tVec, eta, damping):
-    initialState = np.zeros(prms.chainLength, dtype='double')
-    initialState[0: prms.numberElectrons] = 1.0
-    gs = arbOrder.findGS(initialState, eta, 1)
+    gs = arbOrder.findGS(eta, 1)
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[:])
     GF = gfNumPointTGreater(kVec, tVec, eta)
     GF = np.multiply(1 - occupations, GF)
@@ -75,9 +73,7 @@ def gfNumPointTLesser(kVec, tVec, eta):
     return 1j * GF
 
 def gfNumVecTLesser(kVec, tVec, eta, damping):
-    initialState = np.zeros(prms.chainLength, dtype='double')
-    initialState[0: prms.numberElectrons] = 1.0
-    gs = arbOrder.findGS(initialState, eta, 1)
+    gs = arbOrder.findGS(eta, 1)
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[:])
     GF = gfNumPointTLesser(kVec, tVec, eta)
     GF = np.multiply(occupations, GF)
@@ -112,18 +108,14 @@ def numGreenVecWLesser(kVec, wVec, eta, damping):
 
 
 def getPhGSH1(eta):
-    initialState = np.zeros(prms.chainLength, dtype='double')
-    initialState[0: prms.numberElectrons] = 1.0
-    gs = arbOrder.findGS(initialState, eta, 1)
+    gs = arbOrder.findGS(eta, 1)
     gsJ = eF.J(gs)
     gsT = eF.T(gs)
     return phState.findPhotonGS([gsT, gsJ], eta, 1)
 
 
 def getH1(eta):
-    initialState = np.zeros(prms.chainLength, dtype='double')
-    initialState[0: prms.numberElectrons] = 1.0
-    gs = arbOrder.findGS(initialState, eta, 1)
+    gs = arbOrder.findGS(eta, 1)
     gsJ = eF.J(gs)
     gsT = eF.T(gs)
     return numH.setupPhotonHamiltonian1st(gsT, gsJ, eta)

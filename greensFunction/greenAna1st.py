@@ -29,9 +29,7 @@ def anaGreenPointTLesser(kPoint, tPoint, gsJ, eta):
 
 def anaGreenVecTGreater(kVec, tVec, eta, damping):
 
-    initialState = np.zeros(prms.chainLength + 1, dtype='double')
-    initialState[0: prms.numberElectrons] = 1.0
-    gs = anaGS.findGS1st(initialState, eta)
+    gs = anaGS.findGS1st(eta)
     gsJ = eF.J(gs[0: -1])
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
     GF = anaGreenPointTGreater(kVec, tVec, gsJ, eta)
@@ -44,9 +42,7 @@ def anaGreenVecTGreater(kVec, tVec, eta, damping):
 
 def anaGreenVecTLesser(kVec, tVec, eta, damping):
 
-    initialState = np.zeros(prms.chainLength + 1, dtype='double')
-    initialState[0: prms.numberElectrons] = 1.0
-    gs = anaGS.findGS1st(initialState, eta)
+    gs = anaGS.findGS1st(eta)
     gsJ = eF.J(gs[0: -1])
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
     GF = anaGreenPointTLesser(kVec, tVec, gsJ, eta)
