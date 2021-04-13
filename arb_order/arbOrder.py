@@ -44,4 +44,8 @@ def findGSEnergies(etas, orderH):
         gsEnergies[indEta] = ptState.energyFromState(gsTemp, etas[indEta], orderH)
     return gsEnergies
 
+def getPhotonGS(eta, orderH):
+    gs = findGS(eta, orderH)
+    ptGS = ptState.photonGS(gs, eta, orderH)
+    return ptGS
 

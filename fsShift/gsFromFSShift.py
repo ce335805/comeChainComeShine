@@ -3,12 +3,13 @@ import globalSystemParams as prms
 from arb_order import photonState
 import matplotlib.pyplot as plt
 
-def plotLandscapes(etas):
-    landscapes = getManyEnergyLandscapes(etas)
+def plotLandscapes(etas, orderH):
+    bins = 150
+    landscapes = getManyEnergyLandscapes(etas, orderH, bins)
 
     fig, ax = plt.subplots(nrows=1, ncols=1)
     cmap = plt.cm.get_cmap('terrain')
-    xArr = np.linspace(0., 2. * np.pi, 50)
+    xArr = np.linspace(0., 2. * np.pi, bins)
     for indEta in range(len(etas)):
         eta = etas[indEta]
         color = cmap(eta / (etas[-1] + 0.1))
@@ -19,33 +20,32 @@ def plotLandscapes(etas):
     plt.legend()
     plt.show()
 
-def getManyEnergyLandscapes(etas):
-    bins = 50
+def getManyEnergyLandscapes(etas, orderH, bins):
     landscapes = np.zeros((len(etas), bins))
     for indEta in range(len(etas)):
-        landscapes[indEta, :] = getEnergyLandscape(etas[indEta], bins)
+        landscapes[indEta, :] = getEnergyLandscape(etas[indEta], orderH, bins)
 
     return landscapes
 
-def getEnergyLandscape(eta, bins):
+def getEnergyLandscape(eta, orderH, bins):
     xArr = np.linspace(0., 2. * np.pi, bins)
-    eArr = energyLandscapeShifts(eta, xArr)
+    eArr = energyLandscapeShifts(eta, xArr, orderH)
 
     return eArr
 
 
-def energyLandscapeShifts(eta, xArr):
+def energyLandscapeShifts(eta, xArr, orderH):
     eArr = np.zeros((len(xArr)), dtype='double')
     for indX in range(len(xArr)):
-        eArr[indX] = eFromShift(xArr[indX], eta)
+        eArr[indX] = eFromShift(xArr[indX], eta, orderH)
 
     return eArr
 
 
-def eFromShift(x, eta):
+def eFromShift(x, eta, orderH):
     T = tFromShift(x)
     J = jFromShift(x)
-    E = photonState.findSmalestEigenvalue([T, J], eta, 3)
+    E = photonState.findSmalestEigenvalue([T, J], eta, orderH)
     return E
 
 def tFromShift(x):

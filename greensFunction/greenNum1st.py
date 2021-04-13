@@ -7,7 +7,7 @@ from arb_order import numHamiltonians as numH
 import scipy.linalg as sciLin
 import fourierTrafo as FT
 from arb_order import arbOrder
-
+from coherentState import coherentState
 
 def gfNumPointTGreater(kVec, tVec, eta):
 
@@ -49,6 +49,8 @@ def gfNumVecTGreater(kVec, tVec, eta, damping):
 def gfNumPointTLesser(kVec, tVec, eta):
 
     phGS = getPhGSH1(eta)
+    #phGS = coherentState.getCoherentStateForN(5.616105733404439)
+
     H = getH1(eta)
 
     x = np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) + np.diag(
@@ -86,9 +88,9 @@ def gfNumVecTLesser(kVec, tVec, eta, damping):
 
 def numGreenVecWGreater(kVec, wVec, eta, damping):
     tVec = FT.tVecFromWVec(wVec)
-    tVecPos = tVec[len(tVec) // 2 + 1: ]
+    tVecPos = tVec[len(tVec) // 2: ]
     GFT = gfNumVecTGreater(kVec, tVecPos, eta, damping)
-    GFZero = np.zeros((len(kVec), len(tVec)//2 + 1), dtype='complex')
+    GFZero = np.zeros((len(kVec), len(tVec)//2), dtype='complex')
     GFT = np.concatenate((GFZero, GFT), axis=1)
 
     wVecCheck, GFW = FT.FT(tVec, GFT)
@@ -99,13 +101,18 @@ def numGreenVecWLesser(kVec, wVec, eta, damping):
     tVec = FT.tVecFromWVec(wVec)
     tVecNeg = tVec[: len(tVec) // 2 + 1]
     GFT = gfNumVecTLesser(kVec, tVecNeg, eta, damping)
-    GFZero = np.zeros((len(kVec), len(tVec) // 2), dtype='complex')
+    GFZero = np.zeros((len(kVec), len(tVec) // 2 - 1), dtype='complex')
     GFT = np.concatenate((GFT, GFZero), axis=1)
     wVecCheck, GFW = FT.FT(tVec, GFT)
     assert ((np.abs(wVec - wVecCheck) < 1e-10).all)
     return GFW
 
 
+def spectralGreater(kVec, wVec, eta, damping):
+    return -2. * np.imag(numGreenVecWGreater(kVec, wVec, eta, damping))
+
+def spectralLesser(kVec, wVec, eta, damping):
+    return -2. * np.imag(numGreenVecWLesser(kVec, wVec, eta, damping))
 
 def getPhGSH1(eta):
     gs = arbOrder.findGS(eta, 1)
