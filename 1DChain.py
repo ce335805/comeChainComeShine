@@ -22,6 +22,8 @@ from fsShift import gsFromFSShift
 from thermodynamicLimit import photonOccupancies
 from thermodynamicLimit import  diagonalizeH
 from floquet import spectralFunction
+from nonEqGreen import nonEqGreen
+from exactGS import exactGS
 
 def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))
@@ -30,53 +32,34 @@ def main():
     #ftTests.runAllTests()
     #gsTests.runAllTests()
     #gsIsEigenstate.runAllTests()
-    nonEqTests.runAllTests()
+    #nonEqTests.runAllTests()
 
 
-    #tArr = np.linspace(-10., -10000., 201)
-    #eta = 1.
-    #diagonalizeH.plotPtOcc(tArr, eta)
+    #eta = 3.
+    #ptState = exactGS.getExactGS(eta)
+    #bPlots.plotPtGS(ptState, eta)
+    #xVar = exactGS.xVar(eta)
+    #pVar = exactGS.pVar(eta)
+    #print("xVar = {}".format(xVar))
+    #print("pVar = {}".format(pVar))
+    #print("xVar x pVar = {}".format(xVar * pVar))
 
-    #etaArr = np.linspace(0., 1., 11)
-    #lArr = np.array([10, 50, 100, 200])
-    #photonOccupancies.plotPhotonOcc(lArr, etaArr, 2)
+    eta = .1 / np.sqrt(prms.chainLength)
 
-    #etas = np.linspace(0., 1., 11) / np.sqrt(prms.chainLength)
-    #gsFromFSShift.plotLandscapes(etas, 2)
+    damping = .1
+    kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
+    wVec = np.linspace(-20., 20., 2000, endpoint=False)
+    tAv = np.array([0., 100., 10000., 1000000.])
+    tAv = np.linspace(0., 1000., 21)
 
-    #exit()
+    gfNonEq = nonEqGreen.gfGSWLesser(kVec, wVec, tAv, eta, damping)
+    gfNonEqCoh = nonEqGreen.gfCohWLesser(kVec, wVec, tAv, eta, damping, 10.)
 
-    #eta = .1
-    #etas = np.linspace(0., 2., 21)
-    #phNumbers = arbOrder.findPhotonNumbers(etas, 3)
-    #plt.plot(etas, phNumbers)
-    #plt.show()
+    print("gfNonEq.shape = {}".format(gfNonEq.shape))
 
-    #gsE = arbOrder.findGS(eta, 3)
-    #energyGS = photonState.energyFromState(gsE, eta, 3)
-    #print("GS energy = {:.3f}".format(energyGS))
+    for indTAv in range(len(tAv)):
+        compPlot.compareArraysLog(wVec, np.imag(gfNonEq[prms.chainLength // 4, :, indTAv]), np.imag(gfNonEqCoh[prms.chainLength // 4, :, indTAv]))
 
-    #plt.plot(gsE)
-    #plt.show()
-
-    #jGauge = current.currentGS(eta)
-    #print("jGS = {}".format(jGauge))
-
-    #ptGS = arbOrder.getPhotonGS(eta, 3)
-    #eGS = arbOrder.findGS(eta, 3)
-    #N = photonState.avPhotonNum(eGS, eta, 3)
-    #print("N_pt = {}".format(N))
-
-    #bPlots.plotPtGSWithCoh(ptGS, N, eta)
-
-    #exit()
-
-    #eta = 2. / np.sqrt(prms.chainLength)
-
-    #damping = .1
-    #kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
-    #wVec = np.linspace(-100., 100., 20000, endpoint=False)
-    #A0 = 1.
 
     #aGreater = greenNumArb.spectralGreater(kVec, wVec, eta, damping)
     #aLesser = - greenNumArb.spectralLesser(kVec, wVec, eta, damping)

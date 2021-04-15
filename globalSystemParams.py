@@ -1,8 +1,8 @@
 import numpy as np
 
-chainLength = 50
+chainLength = 30
 t = - 1.
-w0 = 20.
+w0 = 5.
 numberElectrons = chainLength//2
 accuracy = 1e-8
 maxiter = 1e16

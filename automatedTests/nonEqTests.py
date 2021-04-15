@@ -12,7 +12,7 @@ def GreensEqual():
     tAv = t
 
     gfEq = greenNumArb.gfNumPointTGreater(kVec, t, eta)
-    gfNonEq = nonEqGreen.gfNumPointTGS(kVec, tAv, tRel, eta)
+    gfNonEq = nonEqGreen.gfPointTGS(kVec, tAv, tRel, eta)
     compGfNonEq = np.zeros((len(kVec), len(t)), dtype='complex')
     for indK in range(len(kVec)):
         compGfNonEq[indK, :] = np.diag(gfNonEq[indK, :, :])

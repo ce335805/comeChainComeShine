@@ -10,8 +10,8 @@ from arb_order import arbOrder
 from coherentState import coherentState
 
 
-def gfPointTCoh(kVec, tAv, tRel, eta):
-    phState = coherentState.getCoherentStateForN(1.)
+def gfPointTCoh(kVec, tRel, tAv, eta, N):
+    phState = coherentState.getCoherentStateForN(N)
     H = getH(eta)
 
     gk = - 2. * prms.t * np.sin(kVec)
@@ -29,8 +29,51 @@ def gfPointTCoh(kVec, tAv, tRel, eta):
 
     return - 1j * GF
 
+def gfCohExpDampingGreater(kVec, tRel, tAv, eta, damping, N):
+    gsOcc = np.zeros(prms.chainLength, dtype=complex)
+    gsOcc[prms.numberElectrons // 2 : - prms.numberElectrons // 2] = 1.
+    print(gsOcc)
+    dampExptRel = np.exp(- damping * np.abs(tRel))
+    GF = gfPointTCoh(kVec, tRel, tAv, eta, N)
+    GFDamp = GF[:, :, :] * dampExptRel[None, :, None]
+    GFOcc = GFDamp[:, :, :] * gsOcc[:, None, None]
+    return GFOcc
 
-def gfNumPointTGS(kVec, tAv, tRel, eta):
+def gfCohExpDampingLesser(kVec, tRel, tAv, eta, damping, N):
+    gsOcc = np.zeros(prms.chainLength, dtype='double')
+    gsOcc[ : prms.numberElectrons // 2 + 1] = 1.
+    gsOcc[-prms.numberElectrons // 2 + 1 : ] = 1.
+    print(gsOcc)
+    dampExptRel = np.exp(- damping * np.abs(tRel))
+    GF = gfPointTCoh(kVec, tRel, tAv, eta, N)
+    GFDamp = GF[:, :, :] * dampExptRel[None, :, None]
+    GFOcc = GFDamp[:, :, :] * gsOcc[:, None, None]
+    return GFOcc
+
+def gfCohWGreater(kVec, wRel, tAv, eta, damping, N):
+    tRel = FT.tVecFromWVec(wRel)
+    tRelPos = tRel[len(tRel) // 2 : ]
+    GFT = gfCohExpDampingGreater(kVec, tRelPos, tAv, eta, damping, N)
+    GFZero = np.zeros((len(kVec), len(tRel)//2, len(tAv)), dtype='complex')
+    GFT = np.concatenate((GFZero, GFT), axis=1)
+    _, GFW = FT.FTOneOfTwoTimes(tRel, GFT)
+
+    return GFW
+
+
+def gfCohWLesser(kVec, wRel, tAv, eta, damping, N):
+    tRel = FT.tVecFromWVec(wRel)
+    tRelNeg = tRel[: len(tRel) // 2 + 1]
+    GFT = gfCohExpDampingLesser(kVec, tRelNeg, tAv, eta, damping, N)
+    GFZero = np.zeros((len(kVec), len(tRel) // 2 - 1, len(tAv)), dtype='complex')
+    GFT = np.concatenate((GFT, GFZero), axis=1)
+    _, GFW = FT.FTOneOfTwoTimes(tRel, GFT)
+
+    return GFW
+
+
+
+def gfPointTGS(kVec, tRel, tAv, eta):
     phState = getPhGS(eta)
     H = getH(eta)
 
@@ -49,13 +92,56 @@ def gfNumPointTGS(kVec, tAv, tRel, eta):
 
     return - 1j * GF
 
+def gfGSExpDampingGreater(kVec, tRel, tAv, eta, damping):
+    gsOcc = np.zeros(prms.chainLength, dtype=complex)
+    gsOcc[prms.numberElectrons // 2 : - prms.numberElectrons // 2] = 1.
+    print(gsOcc)
+    dampExptRel = np.exp(- damping * np.abs(tRel))
+    GF = gfPointTGS(kVec, tRel, tAv, eta)
+    GFDamp = GF[:, :, :] * dampExptRel[None, :, None]
+    GFOcc = GFDamp[:, :, :] * gsOcc[:, None, None]
+    return GFOcc
+
+def gfGSExpDampingLesser(kVec, tRel, tAv, eta, damping):
+    gsOcc = np.zeros(prms.chainLength, dtype='double')
+    gsOcc[ : prms.numberElectrons // 2 + 1] = 1.
+    gsOcc[-prms.numberElectrons // 2 + 1 : ] = 1.
+    print(gsOcc)
+    dampExptRel = np.exp(- damping * np.abs(tRel))
+    GF = gfPointTGS(kVec, tRel, tAv, eta)
+    GFDamp = GF[:, :, :] * dampExptRel[None, :, None]
+    GFOcc = GFDamp[:, :, :] * gsOcc[:, None, None]
+    return GFOcc
+
+def gfGSWGreater(kVec, wRel, tAv, eta, damping):
+    tRel = FT.tVecFromWVec(wRel)
+    tRelPos = tRel[len(tRel) // 2 : ]
+    GFT = gfGSExpDampingGreater(kVec, tRelPos, tAv, eta, damping)
+    GFZero = np.zeros((len(kVec), len(tRel)//2, len(tAv)), dtype='complex')
+    GFT = np.concatenate((GFZero, GFT), axis=1)
+    _, GFW = FT.FTOneOfTwoTimes(tRel, GFT)
+
+    return GFW
+
+
+def gfGSWLesser(kVec, wRel, tAv, eta, damping):
+    tRel = FT.tVecFromWVec(wRel)
+    tRelNeg = tRel[: len(tRel) // 2 + 1]
+    GFT = gfGSExpDampingLesser(kVec, tRelNeg, tAv, eta, damping)
+    GFZero = np.zeros((len(kVec), len(tRel) // 2 - 1, len(tAv)), dtype='complex')
+    GFT = np.concatenate((GFT, GFZero), axis=1)
+    _, GFW = FT.FTOneOfTwoTimes(tRel, GFT)
+
+    return GFW
+
+
+
 
 def evaluateBraKet(expiHt, expiHtDash, exptRel, kVec, phState, tAv, tRel):
     prod1 = np.zeros((len(tRel), len(tAv), prms.maxPhotonNumber), dtype='complex')
-    print("prod1.shape = {}".format(prod1.shape))
     for tAvInd in range(len(tAv)):
         for tRelInd in range(len(tRel)):
-            prod1[tAvInd, tRelInd, :] = np.dot(expiHtDash[tAvInd, tRelInd, :, :], phState[:])
+            prod1[tRelInd, tAvInd, :] = np.dot(expiHtDash[tRelInd, tAvInd, :, :], phState[:])
     prod2 = np.zeros((len(kVec), len(tRel), len(tAv), prms.maxPhotonNumber), dtype='complex')
     for tAvInd in range(len(tAv)):
         for tRelInd in range(len(tRel)):
