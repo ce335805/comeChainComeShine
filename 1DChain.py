@@ -34,31 +34,33 @@ def main():
     #gsIsEigenstate.runAllTests()
     #nonEqTests.runAllTests()
 
-
-    #eta = 3.
-    #ptState = exactGS.getExactGS(eta)
-    #bPlots.plotPtGS(ptState, eta)
-    #xVar = exactGS.xVar(eta)
-    #pVar = exactGS.pVar(eta)
-    #print("xVar = {}".format(xVar))
-    #print("pVar = {}".format(pVar))
-    #print("xVar x pVar = {}".format(xVar * pVar))
-
-    eta = .1 / np.sqrt(prms.chainLength)
-
     damping = .1
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
-    wVec = np.linspace(-20., 20., 2000, endpoint=False)
-    tAv = np.array([0., 100., 10000., 1000000.])
-    tAv = np.linspace(0., 1000., 21)
+    wVec = np.linspace(-10., 10., 2000, endpoint=False)
+    tau = 2. * np.pi / prms.w0
+    tAv = np.linspace(0, tau, 101)
+    A0 = .1
+    gWFloquet = spectralFunction.gLesserW(kVec, wVec, tAv, A0, damping)
+    gWFloquetInt = 1. / tau * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
 
-    gfNonEq = nonEqGreen.gfGSWLesser(kVec, wVec, tAv, eta, damping)
-    gfNonEqCoh = nonEqGreen.gfCohWLesser(kVec, wVec, tAv, eta, damping, 10.)
+    compPlot.compareArraysLog(wVec, np.imag(gWFloquetInt[prms.chainLength // 4, :]), np.imag(gWFloquetInt[0, :]))
 
-    print("gfNonEq.shape = {}".format(gfNonEq.shape))
 
-    for indTAv in range(len(tAv)):
-        compPlot.compareArraysLog(wVec, np.imag(gfNonEq[prms.chainLength // 4, :, indTAv]), np.imag(gfNonEqCoh[prms.chainLength // 4, :, indTAv]))
+    #eta = .5 / np.sqrt(prms.chainLength)
+    #damping = .1
+    #kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
+    #wVec = np.linspace(-10., 10., 1000, endpoint=False)
+    ##tAv = np.array([0., 100., 1000.])
+    #tau = 2. * np.pi / prms.w0
+    #tAv = np.linspace(0. * tau, 100. * tau, 500, endpoint=False)
+    #gfNonEq = -nonEqGreen.gfGSWLesser(kVec, wVec, np.array([0.]), eta, damping)
+    #gfNonEqCoh = -nonEqGreen.gfCohWLesser(kVec, wVec, tAv, eta, damping, 10.)
+    #gfNonEqCohN0 = 1. / tau * (tAv[1] - tAv[0]) * np.sum(gfNonEqCoh, axis=2)
+
+
+    #for indTAv in range(len(tAv)):
+    #    compPlot.compareArraysLog(wVec, np.imag(gfNonEq[prms.chainLength // 4, :, indTAv]), np.imag(gfNonEqCoh[prms.chainLength // 4, :, indTAv]))
+    #compPlot.compareArraysLog(wVec, np.imag(gfNonEq[prms.chainLength // 4, :, 0]), np.imag(gfNonEqCohN0[prms.chainLength // 4, :]))
 
 
     #aGreater = greenNumArb.spectralGreater(kVec, wVec, eta, damping)

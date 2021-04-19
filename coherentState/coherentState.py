@@ -2,7 +2,7 @@ import numpy as np
 import globalSystemParams as prms
 from scipy.special import factorial
 
-import scipy.linalg
+import scipy.linalg as sciLin
 
 def getCoherentStateForN(N):
     #alpha = np.sqrt(N)
@@ -21,6 +21,31 @@ def getCoherentStateForN(N):
     cohState = np.zeros((prms.maxPhotonNumber), dtype=complex)
     index = np.arange(prms.maxPhotonNumber)
     for i in index:
-        cohState[i] = (-1)**i * np.sqrt(np.exp(-N) * N**i / factorial(i))
+        cohState[i] = (1)**i * np.sqrt(np.exp(-N) * N**i / factorial(i))
 
     return cohState
+
+def getSqueezedStateFor(N):
+    aDag = aDagOp()
+    a = aOp()
+
+    aDagSq = np.matmul(aDag, aDag)
+    aSq = np.matmul(a, a)
+
+    fac = .5 * np.arcsinh(N)
+
+    operator = sciLin.expm(fac * (aDagSq - aSq))
+
+    ptState = np.zeros(prms.maxPhotonNumber, dtype=complex)
+    ptState[0] = 1.
+
+    ptState = np.dot(operator, ptState)
+
+    return ptState
+
+
+def aDagOp():
+    return np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1)
+
+def aOp():
+    return np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1)

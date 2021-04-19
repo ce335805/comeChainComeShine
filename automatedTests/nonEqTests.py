@@ -26,11 +26,33 @@ def GreensEqual():
         print("G-Eq is consistent with G-Non-Eq! ------ CHECK PASSED :)")
         return True
 
+def gsWNonEqRightIntegral():
+    eta = .5 / np.sqrt(prms.chainLength)
+
+    damping = .1
+    kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
+    wVec = np.linspace(-50., 50., 10000, endpoint=False)
+    tAv = np.array([0.])
+    # tAv = np.linspace(0., 1000., 3)
+
+    gfNonEq = nonEqGreen.gfGSWLesser(kVec, wVec, tAv, eta, damping)
+    gfNonEqCoh = nonEqGreen.gfCohWLesser(kVec, wVec, tAv, eta, damping, 3.)
+
+    dw = wVec[1] - wVec[0]
+    intGS = np.sum(gfNonEq[0, :, 0]) * dw
+    intCoh = np.sum(gfNonEqCoh[0, :, 0]) * dw
+
+    print("int GF(w) = {}".format(1j * intGS/np.sqrt(2. * np.pi)))
+    print("int GF-Coh(w) = {}".format(1j* intCoh/np.sqrt(2. * np.pi)))
+
+    return True
+
 def runAllTests():
     check1 = GreensEqual()
+    check2 = gsWNonEqRightIntegral()
 
     print("---------------------------")
     print("--- Equilibrium vs non-Equilibrium tests finished! ---")
     print("---------------------------")
-    success = check1
+    success = check1 and check2
     util.printSuccessMessage(success)

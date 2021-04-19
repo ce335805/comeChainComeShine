@@ -8,7 +8,7 @@ import globalSystemParams as prms
 def compareArrays(x, y1, y2):
     fig, ax = plt.subplots(nrows=1, ncols=1)
     ax.plot(x, y1, marker = '', color = 'skyblue', linestyle = '-')
-    ax.plot(x, y2, marker='', color='wheat', linestyle='--')
+    #ax.plot(x, y2, marker='', color='wheat', linestyle='--')
 #    plt.legend()
     plt.show()
 
@@ -25,6 +25,8 @@ def compareArraysLog(x, y1, y2):
     labelString = "L = {:.0f} \n$\omega$ = {:.1f}".format(prms.chainLength, prms.w0)
     ax.text(-7.5, 2., labelString, fontsize = 14)
     plt.show()
+    #saveString = "AwTavEQ" + str(tAv) + ".pdf"
+    #plt.savefig(saveString)
 
 
 def plotTwoEGS(state1, state2):

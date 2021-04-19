@@ -12,6 +12,7 @@ from coherentState import coherentState
 
 def gfPointTCoh(kVec, tRel, tAv, eta, N):
     phState = coherentState.getCoherentStateForN(N)
+    #phState = coherentState.getSqueezedStateFor(N)
     H = getH(eta)
 
     gk = - 2. * prms.t * np.sin(kVec)
