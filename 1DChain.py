@@ -32,9 +32,9 @@ def main():
     #ftTests.runAllTests()
     #gsTests.runAllTests()
     #gsIsEigenstate.runAllTests()
-    #nonEqTests.runAllTests()
+    nonEqTests.runAllTests()
 
-    bPlots.calculateAndPlotShakeOffs()
+    #bPlots.calculateAndPlotShakeOffs()
 
     exit()
 

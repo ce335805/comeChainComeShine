@@ -26,6 +26,18 @@ def FTOneOfTwoTimes(tVec, f):
     g = np.fft.fft(fTilde, axis=1)  # per default performs fft on last dimension
     return wVec, phaseFac[None, :, None] * g[:, :, :]
 
+def FTOneOfTwoTimesPoint(tVec, f):
+    t0 = tVec[0]
+    dt = tVec[1] - tVec[0]
+    wVec = wVecFromTVec(tVec)
+    w0 = wVec[0]
+    dw = wVec[1] - wVec[0]
+    wVecPrefac = np.arange(len(wVec))
+    phaseFac = dt * np.exp(-1j * wVecPrefac * dw * t0) / np.sqrt(2. * np.pi)
+    fTilde = f[:, :] * np.exp(-1j * w0 * tVec)[:, None]
+    g = np.fft.fft(fTilde, axis=0)  # per default performs fft on last dimension
+    return wVec, phaseFac[:, None] * g[:, :]
+
 
 def tVecFromWVec(wVec):
     dw = wVec[1] - wVec[0]

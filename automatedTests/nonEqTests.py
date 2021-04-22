@@ -3,6 +3,7 @@ import globalSystemParams as prms
 from greensFunction import greenNumArb
 from nonEqGreen import nonEqGreen
 from automatedTests import testUtils as util
+from nonEqGreen import nonEqGreenPoint
 
 def GreensEqual():
     eta = .1
@@ -17,9 +18,9 @@ def GreensEqual():
     for indK in range(len(kVec)):
         compGfNonEq[indK, :] = np.diag(gfNonEq[indK, :, :])
 
-    print(compGfNonEq)
-    print()
-    print(gfEq)
+    #print(compGfNonEq)
+    #print()
+    #print(gfEq)
 
     failArr = (np.abs(gfEq - compGfNonEq) > prms.accuracy)
 
@@ -51,12 +52,52 @@ def gsWNonEqRightIntegral():
 
     return True
 
+def vecAndPointVersionsMatchCoh():
+    eta = .1
+    kVec = np.array([1.1234])
+    wVec = np.linspace(-10, 10, 10, endpoint=False)
+    tAv  = np.linspace(0., 10., 10, endpoint=False)
+
+    gfNonEq = nonEqGreen.gfCohWLesser(kVec, wVec, tAv, eta, 0.1, 1.)
+    gfNonEqPoint = nonEqGreenPoint.gfCohWLesser(kVec[0], wVec, tAv, eta, 0.1, 1.)
+
+    failArr = (np.abs(gfNonEq - gfNonEqPoint) > prms.accuracy)
+
+    if(np.any(failArr)):
+        print("G-Non-Eq-Vec non consistent with G-Non-Eq-Point - Coh!!! ------ CHECK FAILED!!!")
+        return False
+    else:
+        print("G-Non-Eq-Vec is consistent with G-Non-Eq-Point - Coh! ------ CHECK Passed!!!")
+        return True
+
+def vecAndPointVersionsMatchGS():
+    eta = .1
+    kVec = np.array([1.1234])
+    wVec = np.linspace(-10, 10, 10, endpoint=False)
+    tAv  = np.linspace(0., 10., 10, endpoint=False)
+
+    gfNonEq = nonEqGreen.gfGSWLesser(kVec, wVec, tAv, eta, .1)
+    gfNonEqPoint = nonEqGreenPoint.gfGSWLesser(kVec[0], wVec, tAv, eta, 0.1)
+
+    failArr = (np.abs(gfNonEq - gfNonEqPoint) > prms.accuracy)
+
+    if(np.any(failArr)):
+        print("G-Non-Eq-Vec non consistent with G-Non-Eq-Point - GS!!! ------ CHECK FAILED!!!")
+        return False
+    else:
+        print("G-Non-Eq-Vec is consistent with G-Non-Eq-Point - GS! ------ CHECK Passed!!!")
+        return True
+
+
 def runAllTests():
     check1 = GreensEqual()
-    check2 = gsWNonEqRightIntegral()
+    #check2 = gsWNonEqRightIntegral()
+    check3 = vecAndPointVersionsMatchCoh()
+    check4 = vecAndPointVersionsMatchGS()
 
     print("---------------------------")
     print("--- Equilibrium vs non-Equilibrium tests finished! ---")
     print("---------------------------")
-    success = check1 and check2
+    #success = check1 and check2 and check3
+    success = check1 and check3 and check4
     util.printSuccessMessage(success)

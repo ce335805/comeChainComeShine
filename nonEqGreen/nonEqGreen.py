@@ -120,14 +120,15 @@ def gfGSExpDampingGreater(kVec, tRel, tAv, eta, damping):
     return GFOcc
 
 def gfGSExpDampingLesser(kVec, tRel, tAv, eta, damping):
-    gsOcc = np.zeros(prms.chainLength, dtype='double')
-    gsOcc[ : prms.numberElectrons // 2 + 1] = 1.
-    gsOcc[-prms.numberElectrons // 2 + 1 : ] = 1.
-    print(gsOcc)
+    #gsOcc = np.zeros(prms.chainLength, dtype='double')
+    #gsOcc[ : prms.numberElectrons // 2 + 1] = 1.
+    #gsOcc[-prms.numberElectrons // 2 + 1 : ] = 1.
+    #print(gsOcc)
     dampExptRel = np.exp(- damping * np.abs(tRel))
     GF = gfPointTGS(kVec, tRel, tAv, eta)
     GFDamp = GF[:, :, :] * dampExptRel[None, :, None]
-    GFOcc = GFDamp[:, :, :] * gsOcc[:, None, None]
+    GFOcc = GFDamp
+    #GFOcc = GFDamp[:, :, :] * gsOcc[:, None, None]
     return GFOcc
 
 def gfGSWGreater(kVec, wRel, tAv, eta, damping):
