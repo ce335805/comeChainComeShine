@@ -34,33 +34,33 @@ def main():
     #gsIsEigenstate.runAllTests()
     #nonEqTests.runAllTests()
 
-    damping = .1
-    kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
-    wVec = np.linspace(-10., 10., 2000, endpoint=False)
+    bPlots.calculateAndPlotShakeOffs()
+
+    exit()
+
+    cohN = .3
+    eta = .3 / np.sqrt(cohN + 1.)
+
     tau = 2. * np.pi / prms.w0
-    tAv = np.linspace(0, tau, 101)
-    A0 = .1
-    gWFloquet = spectralFunction.gLesserW(kVec, wVec, tAv, A0, damping)
-    gWFloquetInt = 1. / tau * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
-
-    compPlot.compareArraysLog(wVec, np.imag(gWFloquetInt[prms.chainLength // 4, :]), np.imag(gWFloquetInt[0, :]))
-
-
-    #eta = .5 / np.sqrt(prms.chainLength)
-    #damping = .1
-    #kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
-    #wVec = np.linspace(-10., 10., 1000, endpoint=False)
-    ##tAv = np.array([0., 100., 1000.])
-    #tau = 2. * np.pi / prms.w0
-    #tAv = np.linspace(0. * tau, 100. * tau, 500, endpoint=False)
-    #gfNonEq = -nonEqGreen.gfGSWLesser(kVec, wVec, np.array([0.]), eta, damping)
-    #gfNonEqCoh = -nonEqGreen.gfCohWLesser(kVec, wVec, tAv, eta, damping, 10.)
-    #gfNonEqCohN0 = 1. / tau * (tAv[1] - tAv[0]) * np.sum(gfNonEqCoh, axis=2)
+    wVec = np.linspace(-10., 10., 500, endpoint=False)
+    tAv = np.linspace(0. * tau, 20. * tau, 100, endpoint=True)
+    kVecTotal = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
+    kVec = np.array([kVecTotal[prms.chainLength // 4]])
+    damping = .1
 
 
-    #for indTAv in range(len(tAv)):
-    #    compPlot.compareArraysLog(wVec, np.imag(gfNonEq[prms.chainLength // 4, :, indTAv]), np.imag(gfNonEqCoh[prms.chainLength // 4, :, indTAv]))
-    #compPlot.compareArraysLog(wVec, np.imag(gfNonEq[prms.chainLength // 4, :, 0]), np.imag(gfNonEqCohN0[prms.chainLength // 4, :]))
+    gWFloquet = spectralFunction.gLesserW(kVec, wVec, tAv, eta, cohN, damping)
+    gWFloquetInt = 1. / (21. * tau) * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
+    print("gWFloquetInt.shape = {}".format(gWFloquetInt.shape))
+
+
+    #gfNonEq = nonEqGreen.gfGSWLesser(kVec, wVec, np.array([0.]), eta, damping)
+    gfNonEqCoh = nonEqGreen.gfCohWLesser(kVec, wVec, tAv, eta, damping, cohN)
+    gfNonEqCohN0 = 1. / (21. * tau) * (tAv[1] - tAv[0]) * np.sum(gfNonEqCoh, axis=2)
+    print("gfNonEqCohN0.shape = {}".format(gfNonEqCohN0.shape))
+
+
+    compPlot.compareArraysLog(wVec, np.imag(gfNonEqCohN0[0, :]), np.imag(gWFloquetInt[0, :]))
 
 
     #aGreater = greenNumArb.spectralGreater(kVec, wVec, eta, damping)
@@ -70,10 +70,6 @@ def main():
     #aTotal = - aLesser + aGreater
     #compPlot.compareArrays(wVec, aLesserFloquet[prms.chainLength // 4, :], aLesserFloquet[prms.chainLength // 4, :])
     #bPlots.plotSpecLog(kVec, wVec, damping * np.transpose(np.abs(aLesserFloquet)))
-
-    #dW = wVec[1] - wVec[0]
-    #intArr = dW * np.sum(aArb, axis=1)
-    #print(intArr / np.sqrt(2. * np.pi))
 
     print("")
     print("The calculation has finished - Juhu!")

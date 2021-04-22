@@ -8,12 +8,17 @@ import scipy.linalg as sciLin
 import fourierTrafo as FT
 from arb_order import arbOrder
 from coherentState import coherentState
+import time
+from scipy.linalg import expm_frechet
+import utils
 
 
 def gfPointTCoh(kVec, tRel, tAv, eta, N):
     phState = coherentState.getCoherentStateForN(N)
     #phState = coherentState.getSqueezedStateFor(N)
     H = getH(eta)
+
+    print("kVec-Val = {}".format(kVec[0] / np.pi))
 
     gk = - 2. * prms.t * np.sin(kVec)
     eK = 2. * prms.t * np.cos(kVec)
@@ -22,11 +27,21 @@ def gfPointTCoh(kVec, tRel, tAv, eta, N):
     sinX = sciLin.sinm(x)
     cosX = sciLin.cosm(x)
 
+    timeStart = time.time()
     iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel = setUpMatricies(H, cosX, eK, gk, sinX, tAv, tRel)
+    timeStop = time.time()
+    print("setUpMatricies take: {}".format(timeStop - timeStart))
 
+    timeStart = time.time()
     expiHt, expiHtDash, exptRel = setUpExponentialMatricies(iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel, kVec, tAv, tRel)
+    timeStop = time.time()
+    print("setUpExponentialMatricies take: {}".format(timeStop - timeStart))
 
+    timeStart = time.time()
     GF = evaluateBraKet(expiHt, expiHtDash, exptRel, kVec, phState, tAv, tRel)
+    timeStop = time.time()
+    print("evaluateBraKet take: {}".format(timeStop - timeStart))
+
 
     return - 1j * GF
 
@@ -41,14 +56,15 @@ def gfCohExpDampingGreater(kVec, tRel, tAv, eta, damping, N):
     return GFOcc
 
 def gfCohExpDampingLesser(kVec, tRel, tAv, eta, damping, N):
-    gsOcc = np.zeros(prms.chainLength, dtype='double')
-    gsOcc[ : prms.numberElectrons // 2 + 1] = 1.
-    gsOcc[-prms.numberElectrons // 2 + 1 : ] = 1.
-    print(gsOcc)
+    #gsOcc = np.zeros(prms.chainLength, dtype='double')
+    #gsOcc[ : prms.numberElectrons // 2 + 1] = 1.
+    #gsOcc[-prms.numberElectrons // 2 + 1 : ] = 1.
+    #print(gsOcc)
     dampExptRel = np.exp(- damping * np.abs(tRel))
     GF = gfPointTCoh(kVec, tRel, tAv, eta, N)
     GFDamp = GF[:, :, :] * dampExptRel[None, :, None]
-    GFOcc = GFDamp[:, :, :] * gsOcc[:, None, None]
+    GFOcc = GFDamp
+    #GFOcc = GFDamp[:, :, :] * gsOcc[:, None, None]
     return GFOcc
 
 def gfCohWGreater(kVec, wRel, tAv, eta, damping, N):
@@ -179,8 +195,8 @@ def setUpMatricies(H, cosX, eK, gk, sinX, tAv, tRel):
     iHtSinCosTRel = - 1j * H[None, None, :, :] * tRel[None, :, None, None] \
                     - 1j * gk[:, None, None, None] * sinX[None, None, :, :] * tRel[None, :, None, None] \
                     - 1j * eK[:, None, None, None] * cosX[None, None, :, :] * tRel[None, :, None, None]
-    iHTRelMTAv = - .5j * H[None, None, :, :] * (tAv[None, :, None, None] - tRel[:, None, None, None])
-    iHTRelPTAv = .5j * H[None, None, :, :] * (tAv[None, :, None, None] + tRel[:, None, None, None])
+    iHTRelMTAv = - 1j * H[None, None, :, :] * (1. * tAv[None, :, None, None] - .5 * tRel[:, None, None, None])
+    iHTRelPTAv = 1j * H[None, None, :, :] * (1. * tAv[None, :, None, None] + .5 * tRel[:, None, None, None])
     return iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel
 
 

@@ -4,6 +4,8 @@ import globalSystemParams as prms
 from matplotlib import ticker
 from matplotlib.colors import LogNorm
 from coherentState import coherentState
+from floquet import spectralFunction
+from nonEqGreen import nonEqGreen
 
 def plotSpec(kVec, wVec, spec):
 
@@ -63,4 +65,44 @@ def plotPtGSWithCoh(ptGS, N, eta):
     ax.set_ylim(1e-20, 1e1)
     labelString = "g = {:.2f} \n $\omega$ = {:.2f}".format(eta, prms.w0)
     ax.text(20, 1e-4, labelString, fontsize = 20)
+    plt.show()
+
+
+def calculateAndPlotShakeOffs():
+
+    tau = 2. * np.pi / prms.w0
+    wVec = np.linspace(-10., 10., 1000, endpoint=False)
+    tAv = np.linspace(0. * tau, 19. * tau, 200, endpoint=False)
+    kVec = np.array([np.pi / 2])
+    print("kVec-Val = {}".format(kVec[0] / np.pi))
+    damping = .1
+
+    fig, ax = plt.subplots(nrows=1, ncols=1)
+    cmap = plt.cm.get_cmap('terrain')
+
+    LArr = np.array([12, 22])
+    for lInd, lVal in enumerate(LArr):
+
+        color = cmap(lVal / (LArr[-1] + 30))
+
+        prms.chainLength = lVal
+        prms.numberElectrons = lVal // 2
+        cohN = lVal / 100.
+        eta = .1 / np.sqrt(lVal)
+        prms.maxPhotonNumber = int(10 + cohN)
+
+        gfNonEqCoh = nonEqGreen.gfCohWLesser(kVec, wVec, tAv, eta, damping, cohN)
+        gfNonEqCohN0 = 1. / (20. * tau) * (tAv[1] - tAv[0]) * np.sum(gfNonEqCoh, axis=2)
+        labelStr = "L = {:.0f}".format(lVal)
+        ax.plot(wVec, np.abs(np.imag(gfNonEqCohN0[0, :])), color=color, linestyle='-', label = labelStr)
+
+        if (lInd == len(LArr) - 1):
+            gWFloquet = spectralFunction.gLesserW(kVec, wVec, tAv, eta, cohN, damping)
+            gWFloquetInt = 1. / (20. * tau) * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
+            ax.plot(wVec, np.abs(np.imag(gWFloquetInt[0, :])), color = 'gray', linestyle = '--', label = 'Floquet')
+
+    ax.set_yscale('log')
+    ax.set_yticks([1e0, 1e-1, 1e-2])
+    ax.set_yticklabels(['$10^0$', '$10^{-1}$', '$10^{-2}$'])
+    plt.legend()
     plt.show()

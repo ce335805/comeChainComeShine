@@ -5,17 +5,21 @@ from nonEqGreen import nonEqGreen
 from automatedTests import testUtils as util
 
 def GreensEqual():
-    eta = .4
+    eta = .1
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
     t = np.linspace(-50., 50., 20, endpoint = False)
     tRel = t
-    tAv = t
+    tAv = .5 * t
 
     gfEq = greenNumArb.gfNumPointTGreater(kVec, t, eta)
-    gfNonEq = nonEqGreen.gfPointTGS(kVec, tAv, tRel, eta)
+    gfNonEq = nonEqGreen.gfPointTGS(kVec, tRel, tAv, eta)
     compGfNonEq = np.zeros((len(kVec), len(t)), dtype='complex')
     for indK in range(len(kVec)):
         compGfNonEq[indK, :] = np.diag(gfNonEq[indK, :, :])
+
+    print(compGfNonEq)
+    print()
+    print(gfEq)
 
     failArr = (np.abs(gfEq - compGfNonEq) > prms.accuracy)
 

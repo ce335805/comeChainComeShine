@@ -2,6 +2,7 @@ import numpy as np
 import globalSystemParams as prms
 from scipy.linalg import sinm
 from scipy.linalg import cosm
+import math
 
 def electronNumberZero(state):
     return np.sum(state[0: prms.chainLength]) - prms.numberElectrons
@@ -18,3 +19,4 @@ def calcSinAdaggerA(eta):
 def calcCosAdaggerA(eta):
     aDaggerA = eta * calcAplusAdagger()
     return cosm(aDaggerA)[0 : prms.maxPhotonNumber, 0 : prms.maxPhotonNumber]
+
