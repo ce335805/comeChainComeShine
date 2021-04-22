@@ -7,20 +7,20 @@ from coherentState import coherentState
 from floquet import spectralFunction
 from nonEqGreen import nonEqGreen
 
-def plotSpec(kVec, wVec, spec):
 
+def plotSpec(kVec, wVec, spec):
     spec = np.roll(spec, prms.chainLength // 2 - 1, axis=1)
     kVecPosNeg = np.linspace(np.pi, -np.pi, prms.chainLength, endpoint=False)
     kVecPosNeg = np.flip(kVecPosNeg)
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    CS = ax.contourf(kVecPosNeg, -wVec, spec, 500, cmap = 'gnuplot2_r')
+    CS = ax.contourf(kVecPosNeg, -wVec, spec, 500, cmap='gnuplot2_r')
     fig.colorbar(CS, ax=ax)
     plt.show()
 
-def plotSpecLog(kVec, wVec, spec):
 
+def plotSpecLog(kVec, wVec, spec):
     spec = spec + 1e-5
 
     spec = np.roll(spec, prms.chainLength // 2 - 1, axis=1)
@@ -31,45 +31,46 @@ def plotSpecLog(kVec, wVec, spec):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     lvls = np.logspace(np.log10(spec[-1, -1]) - 0.01, 0, 200)
-    CS = ax.contourf(kVecPosNeg, -wVec, spec, cmap = 'pink', norm=LogNorm(), levels = lvls)
+    CS = ax.contourf(kVecPosNeg, -wVec, spec, cmap='pink', norm=LogNorm(), levels=lvls)
     cbar = fig.colorbar(CS, ax=ax)
     cbar.set_ticks([1e-0, 1e-1, 1e-2])
     cbar.set_ticklabels([r'$10^{0}$', r'$10^{-1}$', r'$10^{-2}$'])
-    #ax.arrow(0., 2. * prms.t, 0., - 4. * prms.t, length_includes_head = True, color = 'white', width = 0.025, head_width = 0.11, head_length = 0.015)
-    #ax.arrow(np.pi/2, 0., 0., prms.w0, length_includes_head = True, color = 'white', width = 0.025, head_width = 0.11, head_length = 0.015)
+    # ax.arrow(0., 2. * prms.t, 0., - 4. * prms.t, length_includes_head = True, color = 'white', width = 0.025, head_width = 0.11, head_length = 0.015)
+    # ax.arrow(np.pi/2, 0., 0., prms.w0, length_includes_head = True, color = 'white', width = 0.025, head_width = 0.11, head_length = 0.015)
     plt.show()
 
     print('{:.3f}'.format(spec[0, 0]))
+
 
 def plotPtGS(ptGS, eta):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     bins = np.arange(len(ptGS))
-    ax.bar(bins, np.abs(ptGS), log = True, color = 'wheat')
-    ax.hlines(1., -2., len(ptGS) + 1, linestyles = '--', colors='gray')
+    ax.bar(bins, np.abs(ptGS), log=True, color='wheat')
+    ax.hlines(1., -2., len(ptGS) + 1, linestyles='--', colors='gray')
     ax.set_xlim(-1, 31)
     ax.set_ylim(1e-12, 1e1)
     labelString = "g = {:.2f} \n $\omega$ = {:.2f}".format(eta, prms.w0)
-    ax.text(20, 1e-4, labelString, fontsize = 20)
+    ax.text(20, 1e-4, labelString, fontsize=20)
     plt.show()
+
 
 def plotPtGSWithCoh(ptGS, N, eta):
     cohState = coherentState.getCoherentStateForN(N)
     fig = plt.figure()
     ax = fig.add_subplot(111)
     bins = np.arange(len(ptGS))
-    ax.bar(bins, np.abs(ptGS), log = True, color = 'wheat')
-    ax.plot(np.abs(cohState), color = 'red')
-    ax.hlines(1., -2., len(ptGS) + 1, linestyles = '--', colors='gray')
+    ax.bar(bins, np.abs(ptGS), log=True, color='wheat')
+    ax.plot(np.abs(cohState), color='red')
+    ax.hlines(1., -2., len(ptGS) + 1, linestyles='--', colors='gray')
     ax.set_xlim(-1, 51)
     ax.set_ylim(1e-20, 1e1)
     labelString = "g = {:.2f} \n $\omega$ = {:.2f}".format(eta, prms.w0)
-    ax.text(20, 1e-4, labelString, fontsize = 20)
+    ax.text(20, 1e-4, labelString, fontsize=20)
     plt.show()
 
 
 def calculateAndPlotShakeOffs():
-
     tau = 2. * np.pi / prms.w0
     wVec = np.linspace(-10., 10., 1000, endpoint=False)
     tAv = np.linspace(0. * tau, 19. * tau, 200, endpoint=False)
@@ -94,15 +95,52 @@ def calculateAndPlotShakeOffs():
         gfNonEqCoh = nonEqGreen.gfCohWLesser(kVec, wVec, tAv, eta, damping, cohN)
         gfNonEqCohN0 = 1. / (20. * tau) * (tAv[1] - tAv[0]) * np.sum(gfNonEqCoh, axis=2)
         labelStr = "L = {:.0f}".format(lVal)
-        ax.plot(wVec, np.abs(np.imag(gfNonEqCohN0[0, :])), color=color, linestyle='-', label = labelStr)
+        ax.plot(wVec, np.abs(np.imag(gfNonEqCohN0[0, :])), color=color, linestyle='-', label=labelStr)
 
         if (lInd == len(LArr) - 1):
             gWFloquet = spectralFunction.gLesserW(kVec, wVec, tAv, eta, cohN, damping)
             gWFloquetInt = 1. / (20. * tau) * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
-            ax.plot(wVec, np.abs(np.imag(gWFloquetInt[0, :])), color = 'gray', linestyle = '--', label = 'Floquet')
+            ax.plot(wVec, np.abs(np.imag(gWFloquetInt[0, :])), color='gray', linestyle='--', label='Floquet')
 
     ax.set_yscale('log')
     ax.set_yticks([1e0, 1e-1, 1e-2])
     ax.set_yticklabels(['$10^0$', '$10^{-1}$', '$10^{-2}$'])
     plt.legend()
     plt.show()
+
+
+def greenWaterFall(kVec, wVec, gfNonEq, lArr, gfFloquet):
+    gfNonEq = np.abs(gfNonEq) + 1e-16
+    gfFloquet = np.abs(gfFloquet) + 1e-16
+    fig, ax = plt.subplots(nrows=1, ncols=1)
+    cmap = plt.cm.get_cmap('terrain')
+
+    for kInd, kVal in enumerate(kVec):
+        offSet = 1. * 10**(0.6 * kInd)
+        quantumPlot = gfNonEq * offSet
+        floquetPlot = gfFloquet * offSet
+
+        #plot quantum
+        for lInd, lVal in enumerate(lArr):
+            color = cmap(lVal / (lArr[-1] + 10))
+            if (kInd == 0):
+                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', label="Quantum, L = {:.0f}".format(lVal))
+            else:
+                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-')
+
+        #plot floquet
+        if (kInd == 0):
+            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='dimgray', linestyle='--', label="Floquet")
+        else:
+            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='dimgray', linestyle='--')
+
+    ax.set_yscale('log')
+    ax.set_yticks([])
+    ax.set_yticklabels([])
+    #    ax.hlines(0.1735, -10., 10., colors=['gray'], label = 'L = 30')
+    #labelString = "L = {:.0f} \n$\omega$ = {:.1f}".format(prms.chainLength, prms.w0)
+    #ax.text(-7.5, 2., labelString, fontsize=14)
+    plt.legend()
+    plt.show()
+    # saveString = "AwTavEQ" + str(tAv) + ".pdf"
+    # plt.savefig(saveString)

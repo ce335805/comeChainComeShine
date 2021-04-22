@@ -6,6 +6,7 @@ from automatedTests import ftTests
 from automatedTests import gsTests
 from automatedTests import gsIsEigenstate
 from automatedTests import nonEqTests
+from automatedTests import floquetTests
 from arb_order import arbOrder
 import matplotlib.pyplot as plt
 from arb_order import photonState
@@ -24,6 +25,10 @@ from thermodynamicLimit import  diagonalizeH
 from floquet import spectralFunction
 from nonEqGreen import nonEqGreen
 from exactGS import exactGS
+from multiProcGreen import greenKArr
+from multiProcGreen import floquetKArr
+from fileHandling import writeGreenToFile
+from fileHandling import readGreenFromFile
 
 def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))
@@ -32,44 +37,53 @@ def main():
     #ftTests.runAllTests()
     #gsTests.runAllTests()
     #gsIsEigenstate.runAllTests()
-    nonEqTests.runAllTests()
+    #nonEqTests.runAllTests()
+    #floquetTests.runAllTests()
 
     #bPlots.calculateAndPlotShakeOffs()
 
-    exit()
+    #exit()
 
-    cohN = .3
-    eta = .3 / np.sqrt(cohN + 1.)
+    cohN = .1
+    eta = 2. / np.sqrt(prms.chainLength + 1)
 
     tau = 2. * np.pi / prms.w0
     wVec = np.linspace(-10., 10., 500, endpoint=False)
-    tAv = np.linspace(0. * tau, 20. * tau, 100, endpoint=True)
-    kVecTotal = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
-    kVec = np.array([kVecTotal[prms.chainLength // 4]])
+    tAv = np.linspace(0. * tau, 20. * tau, 100, endpoint=False)
+    kVec = np.linspace(-np.pi, np.pi, 17, endpoint=True)
     damping = .1
 
+    LArr = np.array([12, 52, 102])
 
-    gWFloquet = spectralFunction.gLesserW(kVec, wVec, tAv, eta, cohN, damping)
-    gWFloquetInt = 1. / (21. * tau) * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
-    print("gWFloquetInt.shape = {}".format(gWFloquetInt.shape))
+    gfFloq = readGreenFromFile.readGreen("data/floquetGreen", "gfFloquet")
+    gfArr = readGreenFromFile.readGreen("data/nonEqGreen", "gfNonEq")
+    bPlots.greenWaterFall(kVec, wVec, gfArr, LArr, gfFloq)
+    exit()
+
+    gfArr = np.zeros((len(LArr), len(kVec), len(wVec)),dtype=complex)
+    gfFloq = np.zeros((len(kVec), len(wVec)),dtype=complex)
+    for lInd, lVal in enumerate(LArr):
+        prms.chainLength = lVal
+        prms.numberElectrons = lVal // 2
+        cohN = lVal / 100.
+        eta = 1. / np.sqrt(lVal)
+        prms.maxPhotonNumber = int(20 + cohN)
+
+        gfNonEq = greenKArr.nonEqGreenMultiProc(kVec, wVec, tAv, eta, damping, cohN)
+        gfNonEqN0 = 1. / (21. * tau) * (tAv[1] - tAv[0]) * np.sum(gfNonEq, axis=2)
+
+        gfArr[lInd, :, :] = gfNonEqN0
+
+        if(lInd == len(LArr) - 1):
+            gWFloquet = floquetKArr.floquetGreenMultiProc(kVec, wVec, tAv, eta, damping, cohN)
+            gWFloquetInt = 1. / (21. * tau) * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
+            gfFloq = gWFloquetInt
 
 
-    #gfNonEq = nonEqGreen.gfGSWLesser(kVec, wVec, np.array([0.]), eta, damping)
-    gfNonEqCoh = nonEqGreen.gfCohWLesser(kVec, wVec, tAv, eta, damping, cohN)
-    gfNonEqCohN0 = 1. / (21. * tau) * (tAv[1] - tAv[0]) * np.sum(gfNonEqCoh, axis=2)
-    print("gfNonEqCohN0.shape = {}".format(gfNonEqCohN0.shape))
+    writeGreenToFile.writeGreen("data/floquetGreen", "gfFloquet", gfFloq)
+    writeGreenToFile.writeGreen("data/nonEqGreen", "gfNonEq", gfArr)
 
 
-    compPlot.compareArraysLog(wVec, np.imag(gfNonEqCohN0[0, :]), np.imag(gWFloquetInt[0, :]))
-
-
-    #aGreater = greenNumArb.spectralGreater(kVec, wVec, eta, damping)
-    #aLesser = - greenNumArb.spectralLesser(kVec, wVec, eta, damping)
-    #aLesser1st = - greenNum1st.spectralLesser(kVec, wVec, eta, damping)
-    #aLesserFloquet = -spectralFunction.spectralLesser(kVec, wVec, A0, damping)
-    #aTotal = - aLesser + aGreater
-    #compPlot.compareArrays(wVec, aLesserFloquet[prms.chainLength // 4, :], aLesserFloquet[prms.chainLength // 4, :])
-    #bPlots.plotSpecLog(kVec, wVec, damping * np.transpose(np.abs(aLesserFloquet)))
 
     print("")
     print("The calculation has finished - Juhu!")
