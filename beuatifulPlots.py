@@ -7,6 +7,7 @@ from coherentState import coherentState
 from floquet import spectralFunction
 from nonEqGreen import nonEqGreen
 
+fontsize = 14
 
 def plotSpec(kVec, wVec, spec):
     spec = np.roll(spec, prms.chainLength // 2 - 1, axis=1)
@@ -55,18 +56,21 @@ def plotPtGS(ptGS, eta):
     plt.show()
 
 
-def plotPtGSWithCoh(ptGS, N, eta):
-    cohState = coherentState.getCoherentStateForN(N)
+def plotPtGSWithCoh(ptGS, N, eta, T):
+    #cohState = coherentState.getCoherentStateForN(N)
+    ptGS = ptGS + 1e-16
+    cohState = coherentState.getSqueezedState(eta, T)
     fig = plt.figure()
     ax = fig.add_subplot(111)
     bins = np.arange(len(ptGS))
-    ax.bar(bins, np.abs(ptGS), log=True, color='wheat')
-    ax.plot(np.abs(cohState), color='red')
-    ax.hlines(1., -2., len(ptGS) + 1, linestyles='--', colors='gray')
+    ax.bar(bins, np.abs(ptGS), log=True, color='wheat', label = "GS")
+    ax.plot(np.abs(cohState), color='red', linestyle = '', marker = 'x', label = "Squeezed state")
+    #ax.hlines(1., -2., 30, linestyles='--', colors='gray')
     ax.set_xlim(-1, 51)
-    ax.set_ylim(1e-20, 1e1)
-    labelString = "g = {:.2f} \n $\omega$ = {:.2f}".format(eta, prms.w0)
-    ax.text(20, 1e-4, labelString, fontsize=20)
+    ax.set_ylim(1e-10, 9 * 1e1)
+    labelString = "L = {:.0f} \n $\omega$ = {:.1f}".format(prms.chainLength, prms.w0)
+    #ax.text(20, 1e-4, labelString, fontsize=20)
+    plt.legend(loc = 'upper left')
     plt.show()
 
 
@@ -109,7 +113,7 @@ def calculateAndPlotShakeOffs():
     plt.show()
 
 
-def greenWaterFall(kVec, wVec, gfNonEq, lArr, gfFloquet):
+def greenWaterFall(kVec, wVec, gfNonEq, lArr, gfFloquet, eta):
     gfNonEq = np.abs(gfNonEq) + 1e-16
     gfFloquet = np.abs(gfFloquet) + 1e-16
     fig, ax = plt.subplots(nrows=1, ncols=1)
@@ -122,17 +126,22 @@ def greenWaterFall(kVec, wVec, gfNonEq, lArr, gfFloquet):
 
         #plot quantum
         for lInd, lVal in enumerate(lArr):
-            color = cmap(lVal / (lArr[-1] + 10))
-            if (kInd == 0):
-                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', label="Quantum, L = {:.0f}".format(lVal))
+            color = cmap(eta / (lArr[-1] + 0.01))
+            if (lInd == 0):
+                color = "green"
             else:
-                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-')
+                color = "blue"
+
+            if (kInd == 0):
+                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 2., label="Quantum, g = {:.0f}".format(eta))
+            else:
+                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 2.)
 
         #plot floquet
         if (kInd == 0):
-            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='dimgray', linestyle='--', label="Floquet")
+            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='red', linestyle='-', linewidth = 0.4, label="Floquet")
         else:
-            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='dimgray', linestyle='--')
+            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='red', linestyle='-', linewidth = 0.4)
 
     ax.set_yscale('log')
     ax.set_yticks([])

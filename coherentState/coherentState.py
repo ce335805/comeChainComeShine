@@ -25,16 +25,17 @@ def getCoherentStateForN(N):
 
     return cohState
 
-def getSqueezedStateFor(N):
+def getSqueezedState(eta, T):
     aDag = aDagOp()
     a = aOp()
 
     aDagSq = np.matmul(aDag, aDag)
     aSq = np.matmul(a, a)
 
-    fac = .5 * np.arcsinh(N)
+    zeta = .25 * np.log(1. - 2. * eta**2 / prms.w0 * T)
+    #zeta = .5 * eta**2 / prms.w0
 
-    operator = sciLin.expm(fac * (aDagSq - aSq))
+    operator = sciLin.expm(.5 * zeta * (aDagSq - aSq))
 
     ptState = np.zeros(prms.maxPhotonNumber, dtype=complex)
     ptState[0] = 1.

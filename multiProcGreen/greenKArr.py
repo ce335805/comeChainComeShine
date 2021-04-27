@@ -1,5 +1,6 @@
 from multiprocessing import Pool
 from functools import partial
+import numpy as np
 
 from nonEqGreen import nonEqGreenPoint
 
@@ -14,6 +15,8 @@ def nonEqGreenMultiProc(kVec, wVec, tAv, eta, damping, cohN):
     pool = Pool()
 
     gf = pool.map(gfNonEqCohOnlyKArg, kVec)
+    #gf = np.array([nonEqGreenPoint.gfCohWLesser(k, wRel = wVec, tAv = tAv, eta = eta, damping = damping, N = cohN) for k in kVec])
+    #print("gf.shape = {}".format(gf.shape))
 
     pool.close()
     pool.join()
