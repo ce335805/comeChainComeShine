@@ -41,20 +41,18 @@ def main():
     #floquetTests.runAllTests()
 
     #exit()
-
-    #eta = 3. / np.sqrt(prms.chainLength)
-    #gsJ = 0.
-    #gs = np.zeros((prms.chainLength))
-    #gs[0: prms.numberElectrons // 2 + 1] = 1.
-    #gs[- prms.numberElectrons // 2 + 1:] = 1.
-    #kVec = np.linspace(-np.pi, np.pi, prms.chainLength, endpoint=False)
-    #gsT = np.sum(-2. * prms.t * np.cos(kVec) * gs)
-    #phGS = phState.findPhotonGS([gsT, gsJ], eta, 3)
-    #nAv = photonState.averagePhotonNumber([gsJ, gsT], eta, 3)
-    #print("nAv = {}".format(nAv))
-    #bPlots.plotPtGSWithCoh(phGS, nAv, eta, gsT)
-
-    #exit()
+    eta = 1. / np.sqrt(prms.chainLength)
+    gsJ = 0.
+    gs = np.zeros((prms.chainLength))
+    gs[0: prms.numberElectrons // 2 + 1] = 1.
+    gs[- prms.numberElectrons // 2 + 1:] = 1.
+    kVec = np.linspace(-np.pi, np.pi, prms.chainLength, endpoint=False)
+    gsT = np.sum(-2. * prms.t * np.cos(kVec) * gs)
+    phGS = phState.findPhotonGS([gsT, gsJ], eta, 3)
+    nAv = photonState.averagePhotonNumber([gsJ, gsT], eta, 3)
+    print("nAv = {}".format(nAv))
+    bPlots.plotPtGSWithCoh(phGS, nAv, eta, gsT)
+    exit()
 
 
     tau = 2. * np.pi / prms.w0
@@ -63,12 +61,16 @@ def main():
     kVec = np.linspace(-np.pi, np.pi, 17, endpoint=True)
     damping = .01
 
+    gWFloquet = floquetKArr.floquetGreenMultiProc(kVec, wVec, tAv, eta, damping, 10)
+    bPlots.greenWaterFall(kVec, wVec, gfArr, LArr, gfFloq, eta)
+
+
     LArr = np.array([102, 102])
 
-    #gfFloq = readGreenFromFile.readGreen("data/floquetGreen", "gfFloquet")
-    #gfArr = readGreenFromFile.readGreen("data/nonEqGreen", "gfNonEq")
-    #bPlots.greenWaterFall(kVec, wVec, gfArr, LArr, gfFloq)
-    #exit()
+    gfFloq = readGreenFromFile.readGreen("data/floquetGreenJ8.h5", "gfFloquet")
+    gfArr = readGreenFromFile.readGreen("data/nonEqGreenJ8.h5", "gfNonEq")
+    bPlots.greenWaterFall(kVec, wVec, gfArr, LArr, gfFloq, .1)
+    exit()
 
     gfArr = np.zeros((len(LArr), len(kVec), len(wVec)),dtype=complex)
     gfFloq = np.zeros((len(kVec), len(wVec)),dtype=complex)

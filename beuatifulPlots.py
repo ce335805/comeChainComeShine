@@ -6,6 +6,7 @@ from matplotlib.colors import LogNorm
 from coherentState import coherentState
 from floquet import spectralFunction
 from nonEqGreen import nonEqGreen
+import matplotlib.patches as patches
 
 fontsize = 14
 
@@ -116,40 +117,206 @@ def calculateAndPlotShakeOffs():
 def greenWaterFall(kVec, wVec, gfNonEq, lArr, gfFloquet, eta):
     gfNonEq = np.abs(gfNonEq) + 1e-16
     gfFloquet = np.abs(gfFloquet) + 1e-16
-    fig, ax = plt.subplots(nrows=1, ncols=1)
-    cmap = plt.cm.get_cmap('terrain')
+    fig, ax = plt.subplots(nrows=1, ncols=2, gridspec_kw={'width_ratios': [1, 20]})
+    fig.set_size_inches(16./2., 9./2.)
+    ax[0].tick_params(left=False, labelleft=False, bottom=False, labelbottom = False)
+    ax[0].axis('off')
+    ax = ax[1]
+
+    left, bottom, width, height = [0.125, 0.625, 0.3, 0.3]
+    axIn1 = fig.add_axes([left, bottom, width, height])
+
+    for axis in ['top', 'bottom', 'left', 'right']:
+        axIn1.spines[axis].set_linewidth(1.5)
+
+    left, bottom, width, height = [0.74, 0.625, 0.3, 0.3]
+    axIn2 = fig.add_axes([left, bottom, width, height])
+
+    for axis in ['top', 'bottom', 'left', 'right']:
+        axIn2.spines[axis].set_linewidth(1.5)
+
+
 
     for kInd, kVal in enumerate(kVec):
-        offSet = 1. * 10**(0.6 * kInd)
-        quantumPlot = gfNonEq * offSet
-        floquetPlot = gfFloquet * offSet
+        kInd = len(kVec) - kInd - 1
+        offSet = 1. * 10**(0.4 * kInd)
+        quantumPlot = np.flip(gfNonEq, axis = 2) * offSet
+        floquetPlot = np.flip(gfFloquet, axis = 1) * offSet
 
         #plot quantum
         for lInd, lVal in enumerate(lArr):
-            color = cmap(eta / (lArr[-1] + 0.01))
             if (lInd == 0):
-                color = "green"
+                color = "peru"
+                labelString = "g = {:.1f} \n$\langle N_{{ph}} \\rangle$ = {:.0f}".format(0.1, 20)
             else:
-                color = "blue"
+                color = "lightskyblue"
+                labelString = "g = {:.1f} \n$\langle N_{{ph}} \\rangle$ = {:.1f}".format(1.0, 0.2)
+
 
             if (kInd == 0):
-                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 2., label="Quantum, g = {:.0f}".format(eta))
+                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3., label=labelString)
+                axIn1.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
+                axIn2.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
             else:
-                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 2.)
+                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
+                axIn1.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
+                axIn2.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
 
         #plot floquet
         if (kInd == 0):
-            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='red', linestyle='-', linewidth = 0.4, label="Floquet")
+            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5, label="Floquet")
+            axIn1.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
+            axIn2.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
         else:
-            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='red', linestyle='-', linewidth = 0.4)
+            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
+            axIn1.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
+            axIn2.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
 
     ax.set_yscale('log')
     ax.set_yticks([])
     ax.set_yticklabels([])
-    #    ax.hlines(0.1735, -10., 10., colors=['gray'], label = 'L = 30')
-    #labelString = "L = {:.0f} \n$\omega$ = {:.1f}".format(prms.chainLength, prms.w0)
-    #ax.text(-7.5, 2., labelString, fontsize=14)
-    plt.legend()
+    ax.set_xticks([-4, -2, 0, 2, 4])
+    ax.set_xticklabels(['-4', '-2', '0', '2', '4'])
+    ax.set_xlabel('$\omega / t_h$', fontsize = fontsize + 4)
+    ax.set_ylabel('$A(k, \omega)$', fontsize = fontsize + 4)
+    ax.tick_params(axis='both', which='major', labelsize=fontsize)
+    legend = ax.legend(fontsize = fontsize, loc = 'lower right', bbox_to_anchor=(1.225, 0.), edgecolor = 'black')
+    legend.get_frame().set_alpha(None)
+    legend.get_frame().set_boxstyle('Square', pad=0.2)
+    legend.get_frame().set_linewidth(1.5)
+
+    #arrow = patches.Arrow(-2, 1000, 2, 0, zorder = 100, width = 2)
+    arrow = patches.FancyArrowPatch((-2.8, 35), (-0.8, 35), arrowstyle='<->', mutation_scale=20, zorder = 100, linewidth=2., color = 'black')
+    ax.add_patch(arrow)
+    ax.text(-1.95, 45, "$\Omega$", fontsize = fontsize + 4)
+
+    rect = patches.Rectangle((-2.6, 2.), 1.5, 12.5, linewidth=1.5, edgecolor='black', facecolor='none', zorder = 100)
+    ax.add_patch(rect)
+
+    axIn1.set_ylim(2., 2. + 12.5)
+    axIn1.set_yscale('log', subsy = [0])
+    axIn1.set_yticks([])
+    axIn1.set_xlim(-2.65, -2.65 + 1.5)
+    axIn1.set_xticks([])
+    axIn1.set_xticklabels([])
+    axIn1.tick_params(axis='x', which='major', labelsize=14, width = 1.)
+
+    rect = patches.Rectangle((.5, 1500), 1.5, 8000, linewidth=1.5, edgecolor='black', facecolor='none', zorder = 100)
+    ax.add_patch(rect)
+
+    axIn2.set_ylim(1500., 1500. + 8000)
+    axIn2.set_yscale('log', subsy = [0])
+    axIn2.set_yticks([])
+    axIn2.set_xlim(.5, .5 + 1.5)
+    axIn2.set_xticks([])
+    axIn2.set_xticklabels([])
+    axIn2.tick_params(axis='x', which='major', labelsize=14, width = 1.)
+
+
+    #plt.savefig('waterfallWithInsets.pdf', format='pdf', bbox_inches='tight')
+    plt.savefig('waterfallWithInsets.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.show()
+
+
+def greenWaterFall(kVec, wVec, gfNonEq, lArr, gfFloquet, eta):
+    gfNonEq = np.abs(gfNonEq) + 1e-16
+    gfFloquet = np.abs(gfFloquet) + 1e-16
+    fig, ax = plt.subplots(nrows=1, ncols=2, gridspec_kw={'width_ratios': [1, 20]})
+    fig.set_size_inches(16./2., 9./2.)
+    ax[0].tick_params(left=False, labelleft=False, bottom=False, labelbottom = False)
+    ax[0].axis('off')
+    ax = ax[1]
+
+    left, bottom, width, height = [0.125, 0.625, 0.3, 0.3]
+    axIn1 = fig.add_axes([left, bottom, width, height])
+
+    for axis in ['top', 'bottom', 'left', 'right']:
+        axIn1.spines[axis].set_linewidth(1.5)
+
+    left, bottom, width, height = [0.74, 0.625, 0.3, 0.3]
+    axIn2 = fig.add_axes([left, bottom, width, height])
+
+    for axis in ['top', 'bottom', 'left', 'right']:
+        axIn2.spines[axis].set_linewidth(1.5)
+
+
+
+    for kInd, kVal in enumerate(kVec):
+        kInd = len(kVec) - kInd - 1
+        offSet = 1. * 10**(0.4 * kInd)
+        quantumPlot = np.flip(gfNonEq, axis = 2) * offSet
+        floquetPlot = np.flip(gfFloquet, axis = 1) * offSet
+
+        #plot quantum
+        for lInd, lVal in enumerate(lArr):
+            if (lInd == 0):
+                color = "peru"
+                labelString = "g = {:.1f} \n$\langle N_{{ph}} \\rangle$ = {:.0f}".format(0.1, 20)
+            else:
+                color = "lightskyblue"
+                labelString = "g = {:.1f} \n$\langle N_{{ph}} \\rangle$ = {:.1f}".format(1.0, 0.2)
+
+
+            if (kInd == 0):
+                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3., label=labelString)
+                axIn1.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
+                axIn2.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
+            else:
+                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
+                axIn1.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
+                axIn2.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
+
+        #plot floquet
+        if (kInd == 0):
+            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5, label="Floquet")
+            axIn1.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
+            axIn2.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
+        else:
+            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
+            axIn1.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
+            axIn2.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
+
+    ax.set_yscale('log')
+    ax.set_yticks([])
+    ax.set_yticklabels([])
+    ax.set_xticks([-4, -2, 0, 2, 4])
+    ax.set_xticklabels(['-4', '-2', '0', '2', '4'])
+    ax.set_xlabel('$\omega / t_h$', fontsize = fontsize + 4)
+    ax.set_ylabel('$A(k, \omega)$', fontsize = fontsize + 4)
+    ax.tick_params(axis='both', which='major', labelsize=fontsize)
+    legend = ax.legend(fontsize = fontsize, loc = 'lower right', bbox_to_anchor=(1.225, 0.), edgecolor = 'black')
+    legend.get_frame().set_alpha(None)
+    legend.get_frame().set_boxstyle('Square', pad=0.2)
+    legend.get_frame().set_linewidth(1.5)
+
+    #arrow = patches.Arrow(-2, 1000, 2, 0, zorder = 100, width = 2)
+    arrow = patches.FancyArrowPatch((-2.8, 35), (-0.8, 35), arrowstyle='<->', mutation_scale=20, zorder = 100, linewidth=2., color = 'black')
+    ax.add_patch(arrow)
+    ax.text(-1.95, 45, "$\Omega$", fontsize = fontsize + 4)
+
+    rect = patches.Rectangle((-2.6, 2.), 1.5, 12.5, linewidth=1.5, edgecolor='black', facecolor='none', zorder = 100)
+    ax.add_patch(rect)
+
+    axIn1.set_ylim(2., 2. + 12.5)
+    axIn1.set_yscale('log', subsy = [0])
+    axIn1.set_yticks([])
+    axIn1.set_xlim(-2.65, -2.65 + 1.5)
+    axIn1.set_xticks([])
+    axIn1.set_xticklabels([])
+    axIn1.tick_params(axis='x', which='major', labelsize=14, width = 1.)
+
+    rect = patches.Rectangle((.5, 1500), 1.5, 8000, linewidth=1.5, edgecolor='black', facecolor='none', zorder = 100)
+    ax.add_patch(rect)
+
+    axIn2.set_ylim(1500., 1500. + 8000)
+    axIn2.set_yscale('log', subsy = [0])
+    axIn2.set_yticks([])
+    axIn2.set_xlim(.5, .5 + 1.5)
+    axIn2.set_xticks([])
+    axIn2.set_xticklabels([])
+    axIn2.tick_params(axis='x', which='major', labelsize=14, width = 1.)
+
+
+    #plt.savefig('waterfallWithInsets.pdf', format='pdf', bbox_inches='tight')
+    #plt.savefig('waterfallWithInsets.png', format='png', bbox_inches='tight', dpi = 600)
     plt.show()
-    # saveString = "AwTavEQ" + str(tAv) + ".pdf"
-    # plt.savefig(saveString)
