@@ -39,10 +39,10 @@ def gfNumPointTGreater(kVec, tVec, eta):
 
 
 def gfNumVecTGreater(kVec, tVec, eta, damping):
-    gs = arbOrder.findGS(eta, 1)
-    _, occupations = np.meshgrid(np.ones(tVec.shape), gs[:])
+    #gs = arbOrder.findGS(eta, 1)
+    #_, occupations = np.meshgrid(np.ones(tVec.shape), gs[:])
     GF = gfNumPointTGreater(kVec, tVec, eta)
-    GF = np.multiply(1 - occupations, GF)
+    #GF = np.multiply(1 - occupations, GF)
     dampingArr, _ = np.meshgrid(np.exp(- damping * np.abs(tVec)), np.ones(kVec.shape))
     GF = np.multiply(dampingArr, GF)
 
@@ -50,10 +50,8 @@ def gfNumVecTGreater(kVec, tVec, eta, damping):
 
 def gfNumPointTLesser(kVec, tVec, eta):
 
-    #phGS = getPhGS(eta)
+    phGS = getPhGS(eta)
     #phGS = coherentState.getCoherentStateForN(3.)
-    phGS = np.zeros(prms.maxPhotonNumber, dtype='complex')
-    phGS[10] = 1.
     H = getH(eta)
 
     gk = - 2. * prms.t * np.sin(kVec)
@@ -120,14 +118,14 @@ def spectralLesser(kVec, wVec, eta, damping):
 
 
 def getPhGS(eta):
-    gs = arbOrder.findGS(eta, 3)
+    gs = arbOrder.findGS(eta, 2)
     gsJ = eF.J(gs)
     gsT = eF.T(gs)
-    return phState.findPhotonGS([gsT, gsJ], eta, 3)
+    return phState.findPhotonGS([gsT, gsJ], eta, 2)
 
 
 def getH(eta):
-    gs = arbOrder.findGS(eta, 3)
+    gs = arbOrder.findGS(eta, 2)
     gsJ = eF.J(gs)
     gsT = eF.T(gs)
     return numH.setupPhotonHamiltonianInf(gsT, gsJ, eta)

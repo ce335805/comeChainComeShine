@@ -21,7 +21,7 @@ def getCoherentStateForN(N):
     cohState = np.zeros((prms.maxPhotonNumber), dtype=complex)
     index = np.arange(prms.maxPhotonNumber)
     for i in index:
-        cohState[i] = (1)**i * np.sqrt(np.exp(-N) * N**i / factorial(i))
+        cohState[i] = np.sqrt(np.exp(-N) * N**i / factorial(i))
 
     return cohState
 

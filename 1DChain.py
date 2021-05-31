@@ -11,6 +11,7 @@ from arb_order import arbOrder
 import matplotlib.pyplot as plt
 from arb_order import photonState
 from greensFunction import greenAna1st
+from greensFunction import greenAna2nd
 from greensFunction import greenNum1st
 from greensFunction import greenNumArb
 import fourierTrafo as FT
@@ -30,6 +31,7 @@ from multiProcGreen import floquetKArr
 from fileHandling import writeGreenToFile
 from fileHandling import readGreenFromFile
 
+
 def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))
 
@@ -41,28 +43,61 @@ def main():
     #floquetTests.runAllTests()
 
     #exit()
+    #eta = 1. / np.sqrt(prms.chainLength)
+    #gsJ = 0.
+    #gs = np.zeros((prms.chainLength))
+    #gs[0: prms.numberElectrons // 2 + 1] = 1.
+    #gs[- prms.numberElectrons // 2 + 1:] = 1.
+    #kVec = np.linspace(-np.pi, np.pi, prms.chainLength, endpoint=False)
+    #gsT = np.sum(-2. * prms.t * np.cos(kVec) * gs)
+    #phGS = phState.findPhotonGS([gsT, gsJ], eta, 3)
+    #nAv = photonState.averagePhotonNumber([gsJ, gsT], eta, 3)
+    #print("nAv = {}".format(nAv))
+    #bPlots.plotPtGSWithCoh(phGS, nAv, eta, gsT)
+    #exit()
+
+    #eta = 2. / np.sqrt(prms.chainLength)
+    #bPlots.plotAnalyticalConductivity(eta)
+    #exit()
+
+    #calculate Green's function
+
+    damping = 0.0025
+    damping = 0.025
     eta = 1. / np.sqrt(prms.chainLength)
-    gsJ = 0.
-    gs = np.zeros((prms.chainLength))
-    gs[0: prms.numberElectrons // 2 + 1] = 1.
-    gs[- prms.numberElectrons // 2 + 1:] = 1.
-    kVec = np.linspace(-np.pi, np.pi, prms.chainLength, endpoint=False)
-    gsT = np.sum(-2. * prms.t * np.cos(kVec) * gs)
-    phGS = phState.findPhotonGS([gsT, gsJ], eta, 3)
-    nAv = photonState.averagePhotonNumber([gsJ, gsT], eta, 3)
-    print("nAv = {}".format(nAv))
-    bPlots.plotPtGSWithCoh(phGS, nAv, eta, gsT)
+
+    print("eta = {}".format(eta))
+
+    kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
+    wVec = np.linspace(-8, 8, 12000, endpoint=False)
+    tVec = FT.tVecFromWVec(wVec)
+
+    gAna2W = greenAna2nd.anaGreenVecW(kVec, wVec, eta, damping)
+    #gAna1W = greenAna1st.anaGreenVecWGreater(kVec, wVec, eta, damping)
+
+    #compPlot.compareArrays(wVec, np.imag(gAna2W[prms.chainLength // 4, :]), np.imag(gNum2W[prms.chainLength // 4, :]), np.imag(gAna1W[prms.chainLength // 4, :]))
+    bPlots.plotSpecLog(wVec, 1. / np.sqrt(2. * np.pi) * np.imag(np.transpose(gAna2W)), eta)
+
+
     exit()
 
 
-    tau = 2. * np.pi / prms.w0
-    wVec = np.linspace(-4., 4., 2000, endpoint=False)
-    tAv = np.linspace(0. * tau, 5. * tau, 100, endpoint=False)
-    kVec = np.linspace(-np.pi, np.pi, 17, endpoint=True)
-    damping = .01
 
-    gWFloquet = floquetKArr.floquetGreenMultiProc(kVec, wVec, tAv, eta, damping, 10)
-    bPlots.greenWaterFall(kVec, wVec, gfArr, LArr, gfFloq, eta)
+
+
+    eta = 2. / np.sqrt(prms.chainLength)
+
+    tau = 2. * np.pi / prms.w0
+    wVec = np.linspace(-7., 7., 2000, endpoint=False)
+    tAv = np.linspace(0. * tau, 1. * tau, 100, endpoint=False)
+    kVec = np.linspace(-np.pi, np.pi, 9, endpoint=True)
+    damping = .05
+
+    gWFloquet = floquetKArr.floquetGreenMultiProc(kVec, wVec, tAv, eta, damping, 2)
+    gWFloquetInt = 1. / (5 * tau) * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
+    bPlots.greenWaterFallOnlyFloquet(kVec, wVec, gWFloquetInt)
+
+    exit()
 
 
     LArr = np.array([102, 102])

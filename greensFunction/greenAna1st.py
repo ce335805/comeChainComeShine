@@ -13,6 +13,9 @@ def anaGreenPointTGreater(kPoint, tPoint, gsJ, eta):
     coupling = - eta ** 2 / prms.w0 * \
                (2. * ( gsJ * (-2.) * prms.t * np.sin(kPoint[:, None])) + (-2. * prms.t * np.sin(kPoint[:, None]))**2)
 
+    coupling = - eta ** 2 / prms.w0 * (-2. * prms.t * np.sin(kPoint[:, None])**2)
+
+
     eTime = -1j * epsK * tPoint[None, :] - 1j * coupling * tPoint[None, :]
     ptTime = - (- 2. * eta * prms.t * np.sin(kPoint[:, None]))**2 / prms.w0**2 * (1. - np.exp(-1j * prms.w0 * tPoint[None, :]))
     return -1j * np.exp(eTime + ptTime)
@@ -31,9 +34,9 @@ def anaGreenVecTGreater(kVec, tVec, eta, damping):
 
     gs = anaGS.findGS1st(eta)
     gsJ = eF.J(gs[0: -1])
-    _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
+    #_, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
     GF = anaGreenPointTGreater(kVec, tVec, gsJ, eta)
-    GF = np.multiply(1 - occupations, GF)
+    #GF = np.multiply(1 - occupations, GF)
 
     dampingArr, _ = np.meshgrid(np.exp(- damping * np.abs(tVec)), np.ones(kVec.shape))
     GF = np.multiply(dampingArr, GF)
@@ -56,9 +59,9 @@ def anaGreenVecTLesser(kVec, tVec, eta, damping):
 
 def anaGreenVecWGreater(kVec, wVec, eta, damping):
     tVec = FT.tVecFromWVec(wVec)
-    tVecPos = tVec[len(tVec) // 2 + 1: ]
+    tVecPos = tVec[len(tVec) // 2 : ]
     GFT = anaGreenVecTGreater(kVec, tVecPos, eta, damping)
-    GFZero = np.zeros((len(kVec), len(tVec)//2 + 1), dtype='complex')
+    GFZero = np.zeros((len(kVec), len(tVec)//2), dtype='complex')
     GFT = np.concatenate((GFZero, GFT), axis=1)
 
     wVecCheck, GFW = FT.FT(tVec, GFT)
