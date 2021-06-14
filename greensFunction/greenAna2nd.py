@@ -17,13 +17,13 @@ def anaGreenPointT(kPoint, tPoint, gsJ, eta):
 
 
 
-    epsK = 2. * prms.t * np.cos(kPoint[:, None]) * (1. - 0.5 * eta**2)
+    epsK = - 2. * prms.t * np.cos(kPoint[:, None]) * (1. - 0.5 * eta**2 * wTilde / prms.w0)
     fac = .5 * (2. - z) / (1. - z)
-    selfE = - fac * eta ** 2 / wDash * (- 2. * prms.t * np.sin(kPoint[:, None])**2)
+    selfE = - eta**2 / (wTilde) * np.sqrt(np.sqrt(1 - z)) * (- 2. * prms.t * np.sin(kPoint[:, None]))**2
 
     eTime = -1j * epsK * tPoint[None, :] - 1j * selfE * tPoint[None, :]
 
-    ptTime = - (- 2. * eta * prms.t * np.sin(kPoint[:, None]))**2 / wDash**2 * (1. - np.exp(-1j * wTilde * tPoint[None, :]))
+    ptTime = - (- 2. * eta * prms.t * np.sin(kPoint[:, None]))**2 / (wTilde * prms.w0) * (1. - np.exp(-1j * wTilde * tPoint[None, :]))
     return -1j * np.exp(eTime + ptTime)
 
 

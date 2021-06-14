@@ -50,3 +50,22 @@ def aDagOp():
 
 def aOp():
     return np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1)
+
+def gsEffectiveKineticEnergy(eta):
+    gsT = - 2. / np.pi * prms.chainLength
+    ptState = getSqueezedState(eta, gsT)
+    cosOp = sciLin.cosm(eta * (aDagOp() + aOp()))
+    kineticE = gsT * np.dot(np.conj(ptState), np.dot(cosOp, ptState))
+    return kineticE / prms.chainLength
+
+def gsEffectiveKineticEnergyAnalytical(eta):
+    gsT = - 2. / np.pi * prms.chainLength
+    fac = np.sqrt(1 - 2. * eta**2 / prms.w0 * gsT)
+    return gsT / prms.chainLength * (1 - eta**2 / 2. * fac)
+
+def gsEffectiveKineticEnergyArray(etaArr):
+    gsKinetics = np.zeros(len(etaArr))
+    for etaInd, eta in enumerate(etaArr):
+        gsKinetics[etaInd] = np.real(gsEffectiveKineticEnergy(eta))
+        #gsKinetics[etaInd] = np.real(gsEffectiveKineticEnergyAnalytical(eta))
+    return gsKinetics

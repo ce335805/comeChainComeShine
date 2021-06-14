@@ -56,54 +56,47 @@ def main():
     #bPlots.plotPtGSWithCoh(phGS, nAv, eta, gsT)
     #exit()
 
-    #eta = 2. / np.sqrt(prms.chainLength)
-    #bPlots.plotAnalyticalConductivity(eta)
-    #exit()
+    eta1 = 1. / np.sqrt(prms.chainLength)
+    eta2 = 0.1 / np.sqrt(prms.chainLength)
+#    bPlots.plotAnalyticalConductivity(eta1, eta2, 0.)
+    bPlots.plotAnalyticalConductivityImaginary(eta1, eta2, 0.)
+    exit()
 
     #calculate Green's function
 
-    damping = 0.0025
     damping = 0.025
     eta = 1. / np.sqrt(prms.chainLength)
-
-    print("eta = {}".format(eta))
-
-    kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
-    wVec = np.linspace(-8, 8, 12000, endpoint=False)
-    tVec = FT.tVecFromWVec(wVec)
-
+    kVec = np.linspace(-np.pi, np.pi, prms.chainLength, endpoint=False)
+    wVec = np.linspace(-8, 8, 8000, endpoint=False)
     gAna2W = greenAna2nd.anaGreenVecW(kVec, wVec, eta, damping)
-    #gAna1W = greenAna1st.anaGreenVecWGreater(kVec, wVec, eta, damping)
-
-    #compPlot.compareArrays(wVec, np.imag(gAna2W[prms.chainLength // 4, :]), np.imag(gNum2W[prms.chainLength // 4, :]), np.imag(gAna1W[prms.chainLength // 4, :]))
-    bPlots.plotSpecLog(wVec, 1. / np.sqrt(2. * np.pi) * np.imag(np.transpose(gAna2W)), eta)
+    writeGreenToFile.writeGreen("data/eqGreen.h5", "gfEq", gAna2W)
+    #gAna2W = readGreenFromFile.readGreen("data/eqGreen.h5", "gfEq")
+    #bPlots.plotSpecLog(wVec, 1. / np.sqrt(2. * np.pi) * np.imag(np.transpose(gAna2W)), eta)
 
 
     exit()
-
-
-
 
 
     eta = 2. / np.sqrt(prms.chainLength)
-
     tau = 2. * np.pi / prms.w0
-    wVec = np.linspace(-7., 7., 2000, endpoint=False)
+    wVec = np.linspace(-4., 4., 2000, endpoint=False)
     tAv = np.linspace(0. * tau, 1. * tau, 100, endpoint=False)
-    kVec = np.linspace(-np.pi, np.pi, 9, endpoint=True)
+    kVec = np.linspace(-np.pi, np.pi, 17, endpoint=True)
     damping = .05
-
-    gWFloquet = floquetKArr.floquetGreenMultiProc(kVec, wVec, tAv, eta, damping, 2)
-    gWFloquetInt = 1. / (5 * tau) * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
-    bPlots.greenWaterFallOnlyFloquet(kVec, wVec, gWFloquetInt)
-
-    exit()
+#
+#    gWFloquet = floquetKArr.floquetGreenMultiProc(kVec, wVec, tAv, eta, damping, 2)
+#    gWFloquetInt = 1. / (5 * tau) * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
+#    bPlots.greenWaterFallOnlyFloquet(kVec, wVec, gWFloquetInt)
+#
+#    exit()
 
 
     LArr = np.array([102, 102])
 
     gfFloq = readGreenFromFile.readGreen("data/floquetGreenJ8.h5", "gfFloquet")
     gfArr = readGreenFromFile.readGreen("data/nonEqGreenJ8.h5", "gfNonEq")
+    print("gfFloquet.shape = {}".format(gfFloq.shape))
+    print("gfArr.shape = {}".format(gfArr.shape))
     bPlots.greenWaterFall(kVec, wVec, gfArr, LArr, gfFloq, .1)
     exit()
 
