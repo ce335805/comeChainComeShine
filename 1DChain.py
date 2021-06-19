@@ -1,3 +1,4 @@
+import beuatifulPlots
 import globalSystemParams as prms
 import numpy as np
 import comparisonPlots as compPlot
@@ -55,6 +56,17 @@ def main():
     #print("nAv = {}".format(nAv))
     #bPlots.plotPtGSWithCoh(phGS, nAv, eta, gsT)
     #exit()
+
+
+    #etasNonNorm = np.linspace(0., 1.5, 7, endpoint = True)
+    #beuatifulPlots.plotOccsLs(etasNonNorm, 2)
+    #exit()
+
+    etas = np.linspace(0., 2., 7, endpoint=True) / np.sqrt(prms.chainLength)
+    beuatifulPlots.plotLandscapesAllOrders(etas, 3)
+    #beuatifulPlots.plotLandscapes1Order(etas, 1)
+    exit()
+
 
     eta1 = 1. / np.sqrt(prms.chainLength)
     eta2 = 0.1 / np.sqrt(prms.chainLength)

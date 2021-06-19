@@ -8,21 +8,24 @@ from floquet import spectralFunction
 from nonEqGreen import nonEqGreen
 import matplotlib.patches as patches
 import matplotlib as mpl
+import fsShift.gsFromFSShift as fsShift
+
+import h5py
 
 mpl.rcParams['font.family'] = 'sans-serif'
-mpl.rcParams['lines.linewidth'] = 3
+mpl.rcParams['lines.linewidth'] = 2
 mpl.rcParams['lines.markersize'] = 10
-mpl.rcParams['font.size'] = 20  # <-- change fonsize globally
-mpl.rcParams['legend.fontsize'] = 14
-mpl.rcParams['axes.titlesize'] = 20
-mpl.rcParams['axes.labelsize'] = 20
+mpl.rcParams['font.size'] = 10  # <-- change fonsize globally
+mpl.rcParams['legend.fontsize'] = 10
+mpl.rcParams['axes.titlesize'] = 10
+mpl.rcParams['axes.labelsize'] = 10
 mpl.rcParams['xtick.major.size'] = 3
 mpl.rcParams['ytick.major.size'] = 3
 mpl.rcParams['xtick.major.width'] = .7
 mpl.rcParams['ytick.major.width'] = .7
 mpl.rcParams['xtick.direction'] = 'out'
 mpl.rcParams['ytick.direction'] = 'out'
-mpl.rcParams['figure.titlesize'] = 20
+mpl.rcParams['figure.titlesize'] = 10
 #mpl.rcParams['figure.figsize'] = [7.,5]
 mpl.rcParams['text.usetex'] = True
 
@@ -588,3 +591,250 @@ def integratedConductivityArr(omegaVec, delta, etas):
         condInt =  (omegaVec[1] - omegaVec[0]) * np.sum(condTemp[0 : -1]) / prms.chainLength
         intConductivity[indEta] = condInt
     return intConductivity
+
+def plotLandscapesAllOrders(etas, orderH):
+    orderH = 3
+    bins = 500
+
+    #landscapes = fsShift.getManyEnergyLandscapes(etas, orderH, bins)
+    #file = h5py.File("data/landscapes" + str(orderH) + ".h5", 'w')
+    #file.create_dataset("landscapes", data=landscapes)
+    #file.create_dataset("etas", data=etas)
+    #file.close()
+
+    file = h5py.File("data/landscapes" + str(orderH) + ".h5", 'r')
+    landscapes = file["landscapes"][()]
+    etas = file["etas"][()]
+    file.close()
+
+    Ls = np.logspace(1., 4., 31, endpoint = True)
+    etasNonNorm = etas * np.sqrt(prms.chainLength)
+
+    #photonOccs2 = fsShift.occupationsForLengthsZeroShift(Ls, etasNonNorm, 2)
+    #photonOccsArb = fsShift.occupationsForLengthsZeroShift(Ls, etasNonNorm, 3)
+    #file = h5py.File("data/occsAll.h5", 'w')
+    #file.create_dataset("occs2", data=photonOccs2)
+    #file.create_dataset("occs3", data=photonOccsArb)
+    #file.close()
+
+    file = h5py.File("data/occsAll.h5", 'r')
+    photonOccs2 = file["occs2"][()]
+    photonOccsArb = file["occs3"][()]
+    file.close()
+
+    fig = plt.figure()
+    fig.set_size_inches(0.6 * 16. / 4., 0.6 * 12 / 4.)
+    ax = fig.add_subplot(111)
+
+    left, bottom, width, height = [0.725, 0.55, 0.4, 0.4]
+    axIn1 = fig.add_axes([left, bottom, width, height])
+
+    for axis in ['top', 'bottom', 'left', 'right']:
+        ax.spines[axis].set_linewidth(0.5)
+        axIn1.spines[axis].set_linewidth(0.5)
+
+    cmap = plt.cm.get_cmap('gist_earth')
+    xArr = np.linspace(0., 2. * np.pi, bins)
+    for indEta in range(len(etas)):
+        eta = etas[indEta]
+        etaLabel = eta * np.sqrt(prms.chainLength)
+        color = cmap(etaLabel / (etas[-1] * np.sqrt(prms.chainLength) + 0.1))
+        ax.plot(xArr, landscapes[indEta, :] / prms.chainLength, color = color, label = r'g = {:.2f}'.format(etaLabel), linewidth = 1.5)
+
+        axIn1.plot(Ls, photonOccsArb[:, indEta], color = color, linewidth = 1.)
+        axIn1.plot(Ls, photonOccs2[:, indEta], color = 'black', linestyle = 'dotted', linewidth = 1.)
+
+    #labelString = "$\omega$ = {:.2f}".format(prms.w0)
+    #ax.text(0., .5, labelString, fontsize = 14)
+    ax.set_ylim(-.7, 1.2)
+    ax.set_ylabel("$e[t]$", fontsize = 10, labelpad = -2)
+    ax.set_xlabel("$\mathrm{FS}$ $\mathrm{center}$", fontsize = 10)
+
+    ax.set_xticks([0., np.pi / 2., np.pi, 1.5 * np.pi, 2. * np.pi])
+    ax.set_xticklabels(['0', r'$\frac{\pi}{2}$', '$\pi$', r'$\frac{3\pi}{2}$', '$2 \pi$'], fontsize = fontsize)
+
+    yLimBot = -0.02
+    yLimTop = 0.23
+    axIn1.set_ylim(yLimBot, yLimTop)
+    axIn1.vlines(1010, yLimBot, yLimTop, color = 'red', linestyle = '-', linewidth = .4)
+
+    axIn1.set_xscale('log')
+    axIn1.set_xlabel('$\log(L)$', fontsize = 8)
+    axIn1.set_ylabel('$N_{\mathrm{pt}}$', fontsize = 8)
+
+    axIn1.set_xticks([1e2, 1e4])
+    axIn1.set_xticklabels(['$10^2$', '$10^4$'], fontsize = 8)
+    axIn1.set_yticks([0.0, 0.2])
+    axIn1.set_yticklabels(['$0.0$', '$0.2$'], fontsize = 8)
+
+    legend = ax.legend(fontsize = fontsize - 4, loc = 'upper left', bbox_to_anchor=(0., 1.12), edgecolor = 'black', ncol = 1)
+    legend.get_frame().set_alpha(0.95)
+    legend.get_frame().set_boxstyle('Square', pad=0.1)
+    legend.get_frame().set_linewidth(0.5)
+
+    plt.savefig('fsShiftsAllOrders.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.tight_layout()
+    #plt.show()
+
+def plotLandscapes1Order(etas, orderH):
+    orderH = 1
+    bins = 100
+
+    #landscapes = fsShift.getManyEnergyLandscapes(etas, orderH, bins)
+    #file = h5py.File("data/landscapes" + str(orderH) + ".h5", 'w')
+    #file.create_dataset("landscapes", data=landscapes)
+    #file.create_dataset("etas", data=etas)
+    #file.close()
+
+    file = h5py.File("data/landscapes" + str(orderH) + ".h5", 'r')
+    landscapes = file["landscapes"][()]
+    etas = file["etas"][()]
+    file.close()
+
+    Ls = np.logspace(1., 4., 11, endpoint = True)
+    etasNonNorm = etas * np.sqrt(prms.chainLength)
+
+    #photonOccs1 = fsShift.occupationsForLengths(Ls, etasNonNorm, 1, 500)
+    #file = h5py.File("data/occsOne.h5", 'w')
+    #file.create_dataset("occs", data=photonOccs1)
+    #file.close()
+
+    file = h5py.File("data/occsOne.h5", 'r')
+    photonOccs1 = file["occs"][()]
+    file.close()
+
+    fig = plt.figure()
+    fig.set_size_inches(0.6 * 16. / 4., 0.6 * 12 / 4.)
+    ax = fig.add_subplot(111)
+
+    left, bottom, width, height = [0.8, 0.65, 0.4, 0.3]
+    axInTop = fig.add_axes([left, bottom, width, height])
+
+    left, bottom, width, height = [0.8, 0.5, 0.4, 0.1]
+    axInBot = fig.add_axes([left, bottom, width, height])
+
+    left, bottom, width, height = [0.8, 0.6, 0.4, 0.05]
+    axInMid = fig.add_axes([left, bottom, width, height])
+
+    for axis in ['top', 'bottom', 'left', 'right']:
+        ax.spines[axis].set_linewidth(0.5)
+        axInTop.spines[axis].set_linewidth(0.5)
+        axInBot.spines[axis].set_linewidth(0.5)
+
+
+    cmap = plt.cm.get_cmap('gist_earth')
+    xArr = np.linspace(0., 2. * np.pi, bins)
+    for indEta in range(len(etas)):
+        eta = etas[indEta]
+        etaLabel = eta * np.sqrt(prms.chainLength)
+        color = cmap(etaLabel / (etas[-1] * np.sqrt(prms.chainLength) + 0.1))
+        ax.plot(xArr, landscapes[indEta, :] / prms.chainLength, color = color, label = r'$g = {:.2f}$'.format(etaLabel), linewidth = 1.5)
+
+        if(etaLabel > 0.8):
+            axInTop.loglog(Ls, photonOccs1[:, indEta], color = color, linewidth = 1.)
+        else:
+            if(indEta == 2):
+                axInBot.plot(Ls, photonOccs1[:, indEta], color = color, linewidth = 1., linestyle = '--')
+            else:
+                axInBot.plot(Ls, photonOccs1[:, indEta], color = color, linewidth = 1., linestyle = '-')
+
+    axInTop.loglog(Ls, Ls, color = 'black', linewidth = 1.2, linestyle = '--', label = "$L$")
+
+
+
+    #labelString = "$\omega$ = {:.2f}".format(prms.w0)
+    #ax.text(0., .5, labelString, fontsize = 14)
+    ax.set_ylim(-1.8, 1.2)
+    ax.set_ylabel("$e[t]$", fontsize = 10, labelpad = -2)
+    ax.set_xlabel("$\mathrm{FS}$ $\mathrm{center}$", fontsize = 10)
+
+    ax.set_xticks([0., np.pi / 2., np.pi, 1.5 * np.pi, 2. * np.pi])
+    ax.set_xticklabels(['0', r'$\frac{\pi}{2}$', '$\pi$', r'$\frac{3\pi}{2}$', '$2 \pi$'], fontsize = fontsize)
+
+    axInBot.set_xscale('log')
+    axInMid.set_xscale('log')
+    axInBot.set_xlabel('$\log(L)$', fontsize = 7)
+    axInTop.set_ylabel('$\log (N_{\mathrm{pt}})$', fontsize = 7, rotation = 0)
+    axInTop.yaxis.set_label_coords(-0.24, .8)
+
+    axInTop.set_xticks([])
+    axInBot.set_yticks([0])
+    axInMid.set_xticks([])
+    axInMid.set_yticks(())
+    #axInBot.set_yticklabels(['$N_{\mathrm{pt}} = 0$'], fontsize = 8)
+    axInBot.set_yticklabels(['$0$'], fontsize = 8)
+
+    axInBot.set_xticks([1e2, 1e4])
+    axInBot.set_xticklabels(['$10^2$', '$10^4$'], fontsize = 8)
+
+    axInTop.set_yticks([1e0, 1e2])
+    axInTop.set_yticklabels(['$10^0$', '$10^2$'], fontsize = 8)
+
+    yLimBot = 5. * 1e-2
+    yLimTop = 3. * 1e4
+    axInTop.set_ylim(yLimBot, yLimTop)
+    axInTop.vlines(1010, yLimBot, yLimTop, color = 'red', linestyle = '-', linewidth = .4)
+
+    yLimBot2 = -0.1
+    yLimTop2 = 0.1
+    axInBot.set_ylim(yLimBot2, yLimTop2)
+    axInBot.vlines(1010, yLimBot2, yLimTop2, color = 'red', linestyle = '-', linewidth = .4)
+
+    yLimBot3 = 0
+    yLimTop3 = 1
+    axInMid.set_ylim(yLimBot3, yLimTop3)
+    axInMid.vlines(1010, yLimBot3, yLimTop3, color = 'red', linestyle = '-', linewidth = .4)
+
+    axInTop.set_xlim(8 * 1e0, 1.5 * 1e4)
+    axInBot.set_xlim(8 * 1e0, 1.5 * 1e4)
+    axInMid.set_xlim(8 * 1e0, 1.5 * 1e4)
+
+    axInTop.spines['bottom'].set_visible(False)
+    axInBot.spines['top'].set_visible(False)
+    for axis in ['top', 'bottom', 'left', 'right']:
+        axInMid.spines[axis].set_visible(False)
+
+    #ax.spines['right'].set_visible(False)
+
+    legend = ax.legend(fontsize = fontsize - 4, loc = 'upper left', bbox_to_anchor=(0., 1.12), edgecolor = 'black', ncol = 1)
+    legend.get_frame().set_alpha(0.95)
+    legend.get_frame().set_boxstyle('Square', pad=0.1)
+    legend.get_frame().set_linewidth(0.5)
+
+    legend = axInTop.legend(fontsize = fontsize - 4, loc = 'upper left', bbox_to_anchor=(0., 1.0), edgecolor = 'black', ncol = 1)
+    legend.get_frame().set_alpha(1.0)
+    legend.get_frame().set_boxstyle('Square', pad=0.1)
+    legend.get_frame().set_linewidth(0.0)
+
+    plt.savefig('fsShifts1.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.tight_layout()
+    #plt.show()
+
+def plotOccsLs(etasNonNorm, orderH):
+    bins = 1000
+
+    Ls = np.logspace(1., 7., 11, endpoint = True)
+    occs = fsShift.occupationsForLengths(Ls, etasNonNorm, orderH, bins) + 1e-7
+    file = h5py.File("data/sclaing_order" + str(orderH) + "h5", 'w')
+    file.create_dataset("occs", data=occs)
+    file.create_dataset("etasNonNorm", data=etasNonNorm)
+    file.create_dataset("Ls", data=Ls)
+    file.close()
+
+    #file = h5py.File("data/sclaing_order" + str(orderH) + ".h5", 'r')
+    #occs = file["occs"][()]
+    #etasNonNorm = file["etasNonNorm"][()]
+    #Ls = file["Ls"][()]
+
+
+    fig, ax = plt.subplots(nrows=1, ncols=1)
+    cmap = plt.cm.get_cmap('gist_earth')
+    #ax.plot(etasNonNorm, occs[0, :])
+    #ax.plot(etasNonNorm, occs[1, :])
+    for indEta, eta in enumerate(etasNonNorm):
+        color = cmap(eta / (etasNonNorm[-1] + 0.1))
+        ax.loglog(Ls, occs[:, indEta], color=color, label=r'g = {:.2f}'.format(eta))
+    plt.legend()
+    plt.show()
+
+
