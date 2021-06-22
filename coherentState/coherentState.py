@@ -35,7 +35,7 @@ def getSqueezedState(eta, T):
     zeta = .25 * np.log(1. - 2. * eta**2 / prms.w0 * T)
     #zeta = .5 * eta**2 / prms.w0
 
-    operator = sciLin.expm(.5 * zeta * (aDagSq - aSq))
+    operator = sciLin.expm(-.5 * zeta * (aDagSq - aSq))
 
     ptState = np.zeros(prms.maxPhotonNumber, dtype=complex)
     ptState[0] = 1.

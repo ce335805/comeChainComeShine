@@ -3,6 +3,8 @@ from greensFunction import green0, greenAna1st as greenAna, greenNum1st as green
 import globalSystemParams as prms
 from automatedTests import testUtils as util
 
+import matplotlib.pyplot as plt
+
 def g1stEQg0():
 
     eta = 0.0
@@ -21,12 +23,18 @@ def g1stEQg0():
         return True
 
 def g1NumEQg1AnaGreater():
-    eta = .2
+    eta = 1. / np.sqrt(prms.chainLength)
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
-    tVec = np.linspace(0., 10. , 10)
+    tVec = np.linspace(0., 20. , 10)
 
     gfAna = greenAna.anaGreenVecTGreater(kVec, tVec, eta, 0.)
     gfNum = green.gfNumVecTGreater(kVec, tVec, eta, 0.)
+
+    #fig = plt.figure()
+    #ax = fig.add_subplot(111)
+    #ax.plot(tVec, np.imag(gfAna[8, :]), color = 'red')
+    #ax.plot(tVec, np.imag(gfNum[8, :]), color = 'blue')
+    #plt.show()
 
     failArr = (np.abs(gfAna - gfNum) > 1e-5)
     print("Max difference of G-Greater = {}".format(np.amax(np.abs(gfAna - gfNum))))
@@ -39,7 +47,7 @@ def g1NumEQg1AnaGreater():
         return True
 
 def g1NumEQg1AnaLesser():
-    eta = .2
+    eta = 1. / np.sqrt(prms.chainLength)
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
     tVec = np.linspace(0., 10. , 10)
 

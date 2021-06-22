@@ -27,7 +27,7 @@ def occupationForLZeroShift(etas, orderH):
         T = prms.t / (np.pi) * (np.sin(np.pi / 2.) - np.sin(-np.pi / 2.)) * prms.chainLength
         J = 0.
         if(orderH == 1):
-            nPt = eta**2 / prms.w0 * J**2
+            nPt = eta**2 / prms.w0**2 * J**2
         elif (orderH == 2):
             nPt = photonNumber.avPhotonNumber2ndTJ(T, J, eta)
         else:

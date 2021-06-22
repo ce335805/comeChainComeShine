@@ -13,7 +13,7 @@ def anaGreenPointTGreater(kPoint, tPoint, gsJ, eta):
     coupling = - eta ** 2 / prms.w0 * \
                (2. * ( gsJ * (-2.) * prms.t * np.sin(kPoint[:, None])) + (-2. * prms.t * np.sin(kPoint[:, None]))**2)
 
-    coupling = - eta ** 2 / prms.w0 * (-2. * prms.t * np.sin(kPoint[:, None])**2)
+    #coupling = - eta ** 2 / prms.w0 * (-2. * prms.t * np.sin(kPoint[:, None])**2)
 
 
     eTime = -1j * epsK * tPoint[None, :] - 1j * coupling * tPoint[None, :]
@@ -34,9 +34,9 @@ def anaGreenVecTGreater(kVec, tVec, eta, damping):
 
     gs = anaGS.findGS1st(eta)
     gsJ = eF.J(gs[0: -1])
-    #_, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
+    _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
     GF = anaGreenPointTGreater(kVec, tVec, gsJ, eta)
-    #GF = np.multiply(1 - occupations, GF)
+    GF = np.multiply(1 - occupations, GF)
 
     dampingArr, _ = np.meshgrid(np.exp(- damping * np.abs(tVec)), np.ones(kVec.shape))
     GF = np.multiply(dampingArr, GF)
@@ -80,3 +80,6 @@ def anaGreenVecWLesser(kVec, wVec, eta, damping):
 
     assert((np.abs(wVec - wVecCheck) < 1e-10).all)
     return GFW
+
+def spectralGreater(kVec, wVec, eta, damping):
+    return -2. * np.imag(anaGreenVecWGreater(kVec, wVec, eta, damping))

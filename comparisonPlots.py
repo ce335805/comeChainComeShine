@@ -17,8 +17,8 @@ def compareArraysLog(x, y1, y2):
     y1 = np.abs(y1) + 1e-16
     y2 = np.abs(y2) + 1e-16
     fig, ax = plt.subplots(nrows=1, ncols=1)
-    ax.plot(x, y1, marker = '', color = 'skyblue', linestyle = '-')
-    ax.plot(x, y2, marker = '', color = 'wheat', linestyle = '--')
+    ax.plot(x, y1, marker = '', color = 'lightsteelblue', linestyle = '-')
+    ax.plot(x, y2, marker = '', color = 'tan', linestyle = '--')
     ax.set_yscale('log')
     ax.set_yticks([1e0, 1e-1, 1e-2, 1e-3])
     ax.set_yticklabels(['$10^0$','$10^{-1}$','$10^{-2}$','$10^{-3}$'])

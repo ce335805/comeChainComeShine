@@ -14,9 +14,13 @@ def avPhotonNumber2nd(state, eta):
     #gam = eF.gamma(state[0: -1], eta)
 
     gsT = param.t / (np.pi) * (
-                np.sin(np.pi / 2. + minima[indEta]) - np.sin(-np.pi / 2. + minima[indEta])) * prms.chainLength
+                np.sin(np.pi / 2.) - np.sin(-np.pi / 2.)) * param.chainLength
     gsJ = param.t / (np.pi) * (
-                np.cos(np.pi / 2. + minima[indEta]) - np.cos(-np.pi / 2. + minima[indEta])) * prms.chainLength
+                np.cos(np.pi / 2.) - np.cos(-np.pi / 2.)) * param.chainLength
+
+    gsT = eF.T(state[:-1])
+    gsJ = eF.J(state[:-1])
+
     gam = eta**2 * gsT / (eta**2 * gsT - param.w0)
 
     epsilon = np.sqrt(1. - gam**2)

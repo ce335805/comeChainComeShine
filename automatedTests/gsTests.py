@@ -6,7 +6,7 @@ from automatedTests import testUtils as util
 
 
 def electronicGSMatches1st():
-    eta = .2
+    eta = 1. / np.sqrt(prms.chainLength)
 
     gsAna = analytical.findGS1st(eta)
     gsAna = gsAna[:-1]
@@ -14,6 +14,9 @@ def electronicGSMatches1st():
     gsNum = numerical.findGS(eta, 1)
 
     failArr = (np.abs(gsAna - gsNum) > 1e-8)
+
+    #print("gsAna = {}".format(gsAna))
+    #print("gsNum = {}".format(gsNum))
 
     if (np.any(failArr)):
         print(" Numerical and Analytical result differ for GS 1st!!! ------ CHECK FAILED!!!")
@@ -23,12 +26,15 @@ def electronicGSMatches1st():
         return True
 
 def electronicGSMatches2nd():
-    eta = .2
+    eta = .5 / np.sqrt(prms.chainLength)
 
     gsAna = analytical.findGSExactSec(eta)
     gsAna = gsAna[:-1]
 
     gsNum = numerical.findGS(eta, 2)
+
+    print("gsAna = {}".format(gsAna))
+    print("gsNum = {}".format(gsNum))
 
     failArr = (np.abs(gsAna - gsNum) > 1e-8)
 
@@ -95,7 +101,7 @@ def gsPhotonNumberMatches1st():
 
 
 def gsPhotonNumberMatches2nd():
-    etas = [.0, .05, .1, .2]
+    etas = np.array([.0, .1, .2, .5]) / np.sqrt(prms.chainLength)
 
     phAna = analytical.findPhotonNumberExactSec(etas)
 

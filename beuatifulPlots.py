@@ -52,18 +52,24 @@ def plotSpecLog(wVec, spec, eta):
     kVecPosNeg = np.flip(kVecPosNeg)
 
     fig = plt.figure()
-    fig.set_size_inches(16. / 2., 9. / 2.)
+    fig.set_size_inches(0.5 * 16. / 2., 0.5 * 9. / 2.)
 
     ax = fig.add_subplot(111)
 
-    left, bottom, width, height = [0.1275, 0.115, 0.615, 0.25]
+#turn shake-off
+#    left, bottom, width, height = [0.1275, 0.115, 0.615, 0.25]
+    left, bottom, width, height = [0.1275, 0.625, 0.615, 0.25]
     axIn1 = fig.add_axes([left, bottom, width, height])
     #axIn1.set_yscale('log')
 
-    left, bottom, width, height = [0.25, 0.205, 0.15, 0.15]
+#turn shake-off
+#    left, bottom, width, height = [0.25, 0.205, 0.15, 0.15]
+    left, bottom, width, height = [0.2, 0.715, 0.15, 0.15]
     axIn2 = fig.add_axes([left, bottom, width, height])
 
-    left, bottom, width, height = [0.425, 0.205, 0.15, 0.15]
+#turn shake-off
+#    left, bottom, width, height = [0.425, 0.205, 0.15, 0.15]
+    left, bottom, width, height = [0.45, 0.715, 0.15, 0.15]
     axIn3 = fig.add_axes([left, bottom, width, height])
 
     lvls = np.logspace(np.log10(spec[-1, -1]) - 0.01, 0, 200)
@@ -88,47 +94,50 @@ def plotSpecLog(wVec, spec, eta):
 
     dynLoc = 1 - eta**2 / 2. * wTilde / prms.w0
 
-    print("selfE = {}".format(selfE))
+    ax.arrow(-np.pi/2, selfE, 0., -prms.w0, length_includes_head = True, color = 'darkseagreen', width = 0.025, head_width = 0.11, head_length = 0.15)
 
-    ax.arrow(-np.pi/2, selfE, 0., prms.w0, length_includes_head = True, color = 'darkseagreen', width = 0.025, head_width = 0.11, head_length = 0.15)
-
-    ax.set_ylim(-6, 4.5)
+    #turn shake-off
+    #ax.set_ylim(-6, 4.5)
+    ax.set_ylim(-4.1, 7.5)
 
     ax.set_xticks([-np.pi / 2., 0., np.pi / 2., np.pi])
     ax.set_xticklabels([r'$-\frac{\pi}{2}$', r'0', r'$\frac{\pi}{2}$', r'$\pi$'])
     ax.tick_params(axis='both', which='major', labelsize=fontsize)
 
-    ax.set_xlabel('$k$', fontsize=fontsize + 4)
-    ax.set_ylabel('$\omega$', fontsize=fontsize + 4)
+    ax.set_xlabel('$k$', fontsize=fontsize)
+    ax.set_ylabel('$\omega$', fontsize=fontsize, labelpad = -1)
 
 
-    axIn1.plot(-wVec, spec[:, -1], color = 'lightsteelblue', linewidth = 3)
-    axIn1.plot(-wVec, spec[:, prms.chainLength//4], color = 'tan', linewidth = 3)
+    axIn1.plot(-wVec, spec[:, -1], color = 'lightsteelblue', linewidth = 1.5)
+    axIn1.plot(-wVec, spec[:, prms.chainLength//4], color = 'tan', linewidth = 1.5)
 
-    xLimBot = -.4
+    #turn shake-off
+    #xLimBot = -.4
+    xLimBot = -2.
     xLimTop = 2.5
+
     yLimBot = spec[-1, prms.chainLength //2] - 0.0001
     yLimTop = spec[-1, prms.chainLength //2] + .4 # + 0.01 for second shakeoff
     axIn1.set_xlim(xLimBot, xLimTop)
     axIn1.set_ylim(yLimBot, yLimTop)
     axIn1.set_yticks([])
     axIn1.set_xticks([])
-    axIn1.vlines(2. * np.cos(np.pi / 2. + np.pi / prms.chainLength), yLimBot, yLimTop, color = 'black', linestyle = '--')
-    axIn1.vlines(2. * np.cos(np.pi / 2. + np.pi / prms.chainLength) + selfE, yLimBot, yLimTop, color = 'tan', linestyle = '--')
-    axIn1.vlines(2., yLimBot, yLimTop, color = 'black', linestyle = '--')
-    axIn1.vlines(2. * dynLoc, yLimBot, yLimTop, color = 'lightsteelblue', linestyle = '--')
+    axIn1.vlines(2. * np.cos(np.pi / 2. + np.pi / prms.chainLength), yLimBot, yLimTop, color = 'black', linestyle = '--', linewidth = 1.)
+    axIn1.vlines(2. * np.cos(np.pi / 2. + np.pi / prms.chainLength) + selfE, yLimBot, yLimTop, color = 'tan', linestyle = '--', linewidth = 1.)
+    axIn1.vlines(2., yLimBot, yLimTop, color = 'black', linestyle = '--', linewidth = 1.)
+    axIn1.vlines(2. * dynLoc, yLimBot, yLimTop, color = 'lightsteelblue', linestyle = '--', linewidth = 1.)
 
 #    ax.vlines(np.pi - 0.05, xLimBot, xLimTop, color = 'lightsteelblue', linestyles='dotted', linewidth = 4)
 
-    rect = patches.Rectangle((np.pi - .11, xLimBot), .1, xLimTop - xLimBot, linewidth=1.5, edgecolor='lightsteelblue', facecolor='none', zorder=100)
+    rect = patches.Rectangle((np.pi - .11, xLimBot), .1, xLimTop - xLimBot, linewidth=1., edgecolor='lightsteelblue', facecolor='none', zorder=100)
     ax.add_patch(rect)
 
 #    ax.vlines(np.pi / 2., xLimBot, xLimTop, color = 'tan', linestyles='dotted', linewidth = 4)
 
-    rect = patches.Rectangle((np.pi/2. - .05, xLimBot), .1, xLimTop - xLimBot, linewidth=1.5, edgecolor='tan', facecolor='none', zorder=100)
+    rect = patches.Rectangle((np.pi/2. - .05, xLimBot), .1, xLimTop - xLimBot, linewidth=1.1, edgecolor='tan', facecolor='none', zorder=100)
     ax.add_patch(rect)
 
-    axIn2.plot(-wVec, spec[:, prms.chainLength//4], color = 'tan', linewidth = 1.5)
+    axIn2.plot(-wVec, spec[:, prms.chainLength//4], color = 'tan', linewidth = 1.0)
     xLimBot = -.08
     xLimTop = .02
     yLimBot = spec[-1, prms.chainLength //2] - 0.0001
@@ -138,9 +147,11 @@ def plotSpecLog(wVec, spec, eta):
     axIn2.vlines(2. * np.cos(np.pi / 2. + np.pi / prms.chainLength), yLimBot, yLimTop, color = 'black', linestyle = 'dotted', linewidth = 1.)
     axIn2.vlines(2. * np.cos(np.pi / 2. + np.pi / prms.chainLength) + selfE, yLimBot, yLimTop, color = 'tan', linestyle = 'dotted', linewidth = 1.)
 
+    axIn2.set_xticks([-0.05, 0.])
+    axIn2.set_xticklabels([r'$-0.05$', r'$0.0$'], fontsize = fontsize - 3)
     axIn2.set_yticks([])
 
-    axIn3.plot(-wVec, spec[:, -1], color = 'lightsteelblue', linewidth = 1.5)
+    axIn3.plot(-wVec, spec[:, -1], color = 'lightsteelblue', linewidth = 1.)
     xLimBot = 1.95
     xLimTop = 2.05
     yLimBot = spec[-1, prms.chainLength //2] - 0.0001
@@ -152,9 +163,9 @@ def plotSpecLog(wVec, spec, eta):
 
     axIn3.set_yticks([])
     axIn3.set_xticks([1.97, 2., 2.03])
-    axIn3.set_xticklabels([r'$1.97$', r'$2$', r'$2.03$'])
+    axIn3.set_xticklabels([r'$1.97$', r'$2$', r'$2.03$'], fontsize = fontsize - 3)
 
-    cbar.ax.set_ylabel(r'log$(A(k, \omega))}$', rotation=270, fontsize=fontsize, labelpad=20)
+    cbar.ax.set_ylabel(r'$\log(A(k, \omega))$', rotation=270, fontsize=fontsize, labelpad=15)
     #cbar.ax.tick_params(labelsize=fontsize)
 
     plt.savefig('spectralGS.png', format='png', bbox_inches='tight', dpi = 600)
@@ -182,11 +193,11 @@ def plotPtGSWithCoh(ptGS, N, eta, T):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     bins = np.arange(len(ptGS))
-    ax.bar(bins, np.abs(ptGS), log=True, color='wheat', label = "GS")
-    ax.plot(np.abs(cohState), color='red', linestyle = '', marker = 'x', label = "Squeezed state")
+    ax.bar(bins, ptGS, log=False, color='wheat', label = "GS")
+    ax.plot(cohState, color='red', linestyle = '', marker = 'x', label = "Squeezed state")
     #ax.hlines(1., -2., 30, linestyles='--', colors='gray')
-    ax.set_xlim(-1, 51)
-    ax.set_ylim(1e-10, 9 * 1e1)
+    ax.set_xlim(-1, 11)
+    #ax.set_ylim(1e-10, 9 * 1e1)
     labelString = "L = {:.0f} \n $\omega$ = {:.1f}".format(prms.chainLength, prms.w0)
     #ax.text(20, 1e-4, labelString, fontsize=20)
     plt.legend(loc = 'upper left')
@@ -421,22 +432,22 @@ def plotAnalyticalConductivity(eta1, eta2, eta3):
     left, bottom, width, height = [0.675, 0.85, 0.4, 0.3]
     axIn2 = fig.add_axes([left, bottom, width, height])
 
-    ax.plot(omegaVec, np.real(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
     ax.plot(omegaVec, np.real(cond2), color = 'lightsteelblue', linewidth = 1.5, linestyle = '-', label = "g = {}".format(0.1))
+    ax.plot(omegaVec, np.real(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
     ax.plot(omegaVec, np.real(cond3), color = 'black', linewidth = .5, linestyle = '-', label = "g = {}".format(0))
 
 
-    ax.set_ylim(1e-6, 1e4)
-    ax.set_yscale('log')
+    #ax.set_ylim(1e-6, 1e4)
+    #ax.set_yscale('log')
     ax.set_xlim(- 1.5 * prms.w0 * fac , 1.5 * prms.w0 * fac)
 
-    ax.set_yticks([1e2, 1e0, 1e-2, 1e-4, 1e-6])
+    #ax.set_yticks([1e2, 1e0, 1e-2, 1e-4, 1e-6])
     ax.set_xticks([-2., -1., 0., 1., 2.])
     ax.set_xticklabels([r'$-2$', r'$-1$', r'$0$', r'$1$', r'$2$', ])
     ax.tick_params(axis='both', which='major', labelsize=fontsize)
 
     ax.set_xlabel('$\omega$', fontsize=fontsize)
-    ax.set_ylabel('log$($Re$(\sigma))$', fontsize=fontsize)
+    ax.set_ylabel('Re$(\sigma)$', fontsize=fontsize)
 
     axIn1.plot(omegaVec, np.real(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
     axIn1.plot(omegaVec, np.real(cond2), color = 'lightsteelblue', linewidth = 1.5, linestyle = '-', label = "g = {}".format(0.1))
@@ -501,10 +512,10 @@ def plotAnalyticalConductivityImaginary(eta1, eta2, eta3):
 
     ax = fig.add_subplot(111)
 
-    left, bottom, width, height = [0.16, 0.6, 0.3, 0.25]
+    left, bottom, width, height = [0.16, 0.65, 0.3, 0.2]
     axIn1 = fig.add_axes([left, bottom, width, height])
 
-    left, bottom, width, height = [0.675, 0.15, 0.2, 0.3]
+    left, bottom, width, height = [0.675, 0.14, 0.2, 0.2]
     axIn2 = fig.add_axes([left, bottom, width, height])
 
     ax.plot(omegaVec, np.imag(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
@@ -528,9 +539,9 @@ def plotAnalyticalConductivityImaginary(eta1, eta2, eta3):
     axIn1.plot(omegaVec, np.imag(cond2), color = 'lightsteelblue', linewidth = 1.5, linestyle = '-', label = "g = {}".format(0.1))
     axIn1.plot(omegaVec, np.imag(cond3), color = 'black', linewidth = .5, linestyle = '-', label = "g = {}".format(0))
 
-    xlimBot = -1.75
-    xlimTop = -1.
-    ylimBot = -0.011
+    xlimBot = -1.15
+    xlimTop = -0.85
+    ylimBot = -0.018
     ylimTop = -0.002
     axIn1.set_xlim(xlimBot, xlimTop)
     axIn1.set_ylim(ylimBot, ylimTop)
@@ -539,8 +550,8 @@ def plotAnalyticalConductivityImaginary(eta1, eta2, eta3):
 
     rect = patches.Rectangle((xlimBot, -0.04), xlimTop - xlimBot, 0.07, linewidth=.4, edgecolor='black', facecolor='none', zorder = 100)
     ax.add_patch(rect)
-    ax.plot([xlimBot, -2.055], [0.03, 0.3], linewidth = .5, color = 'black')
-    ax.plot([xlimTop, -0.3], [0.03, 0.3], linewidth = .5, color = 'black')
+    ax.plot([xlimBot, -2.055], [0.03, 0.425], linewidth = .5, color = 'black')
+    ax.plot([xlimTop, -0.3], [0.03, 0.425], linewidth = .5, color = 'black')
 
     axIn2.plot(omegaVec, np.imag(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
     axIn2.plot(omegaVec, np.imag(cond2), color = 'lightsteelblue', linewidth = 1.5, linestyle = '-', label = "g = {}".format(0.1))
@@ -561,7 +572,7 @@ def plotAnalyticalConductivityImaginary(eta1, eta2, eta3):
     rect = patches.Rectangle((-0.06, -1.025), 0.1, 0.1, linewidth=.4, edgecolor='black', facecolor='none', zorder = 100)
     ax.add_patch(rect)
 
-    legend = ax.legend(fontsize = fontsize, loc = 'upper center', bbox_to_anchor=(.9, 1.2), edgecolor = 'black', ncol = 1)
+    legend = ax.legend(fontsize = fontsize, loc = 'upper center', bbox_to_anchor=(.9, 1.3), edgecolor = 'black', ncol = 1)
     legend.get_frame().set_alpha(1.0)
     legend.get_frame().set_boxstyle('Square', pad=0.1)
     #legend.get_frame().set_linewidth(0)
@@ -576,10 +587,11 @@ def calcConductivity(omegaVec, delta, eta):
 
     fac = np.sqrt(1 - 2. * eta * eta / (prms.w0) * gsT)
 
-    drudePart = -1j / (omegaVec + 1j * delta) * gsT * (1 - eta ** 2 / (2.) * fac)
+
+    drudePart = -1j / (omegaVec + 1j * delta) * gsT / prms.chainLength * (1 - eta ** 2 / (2.) * fac )
 
     cavityFreqPart = 1j / (omegaVec - fac * prms.w0 + 1j * delta) - 1j / (omegaVec + fac * prms.w0 + 1j * delta)
-    cavityPart = eta ** 2 * gsT ** 2 / prms.chainLength * fac * 1. / (omegaVec + 1j * delta) * cavityFreqPart
+    cavityPart = eta ** 2 * gsT ** 2 / prms.chainLength * 1. / fac * 1. / (omegaVec + 1j * delta) * cavityFreqPart
 
     cond = drudePart + cavityPart
     return cond
@@ -590,7 +602,7 @@ def integratedConductivityArr(omegaVec, delta, etas):
         condTemp = np.real(calcConductivity(omegaVec, delta, eta))
         condInt =  (omegaVec[1] - omegaVec[0]) * np.sum(condTemp[0 : -1]) / prms.chainLength
         intConductivity[indEta] = condInt
-    return intConductivity
+    return intConductivity * prms.chainLength
 
 def plotLandscapesAllOrders(etas, orderH):
     orderH = 3
@@ -809,6 +821,62 @@ def plotLandscapes1Order(etas, orderH):
     plt.savefig('fsShifts1.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
+
+
+def plotLandscapes2Order(etas, orderH):
+    orderH = 2
+    bins = 100
+
+    #landscapes = fsShift.getManyEnergyLandscapes(etas, orderH, bins)
+    #file = h5py.File("data/landscapes" + str(orderH) + ".h5", 'w')
+    #file.create_dataset("landscapes", data=landscapes)
+    #file.create_dataset("etas", data=etas)
+    #file.close()
+
+    file = h5py.File("data/landscapes" + str(orderH) + ".h5", 'r')
+    landscapes = file["landscapes"][()]
+    etas = file["etas"][()]
+    file.close()
+
+    Ls = np.logspace(1., 4., 11, endpoint = True)
+    etasNonNorm = etas * np.sqrt(prms.chainLength)
+
+    fig = plt.figure()
+    fig.set_size_inches(0.6 * 16. / 4., 0.6 * 12 / 4.)
+    ax = fig.add_subplot(111)
+
+    for axis in ['top', 'bottom', 'left', 'right']:
+        ax.spines[axis].set_linewidth(0.5)
+
+    cmap = plt.cm.get_cmap('gist_earth')
+    xArr = np.linspace(0., 2. * np.pi, bins)
+    for indEta in range(len(etas)):
+        eta = etas[indEta]
+        etaLabel = eta * np.sqrt(prms.chainLength)
+        color = cmap(etaLabel / (etas[-1] * np.sqrt(prms.chainLength) + 0.1))
+        ax.plot(xArr, landscapes[indEta, :] / prms.chainLength, color = color, label = r'$g = {:.2f}$'.format(etaLabel), linewidth = 1.5)
+
+
+    #labelString = "$\omega$ = {:.2f}".format(prms.w0)
+    #ax.text(0., .5, labelString, fontsize = 14)
+    ax.set_ylim(-1.8, 1.2)
+    ax.set_ylabel("$e[t]$", fontsize = 10, labelpad = -2)
+    ax.set_xlabel("$\mathrm{FS}$ $\mathrm{center}$", fontsize = 10)
+
+    ax.set_xticks([0., np.pi / 2., np.pi, 1.5 * np.pi, 2. * np.pi])
+    ax.set_xticklabels(['0', r'$\frac{\pi}{2}$', '$\pi$', r'$\frac{3\pi}{2}$', '$2 \pi$'], fontsize = fontsize)
+
+    #ax.spines['right'].set_visible(False)
+
+    legend = ax.legend(fontsize = fontsize - 4, loc = 'upper left', bbox_to_anchor=(0., 1.3), edgecolor = 'black', ncol = 1)
+    legend.get_frame().set_alpha(0.95)
+    legend.get_frame().set_boxstyle('Square', pad=0.1)
+    legend.get_frame().set_linewidth(0.5)
+
+    plt.savefig('fsShifts2.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.tight_layout()
+    #plt.show()
+
 
 def plotOccsLs(etasNonNorm, orderH):
     bins = 1000

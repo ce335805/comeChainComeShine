@@ -1,3 +1,4 @@
+import arb_order.arbOrder
 import beuatifulPlots
 import globalSystemParams as prms
 import numpy as np
@@ -36,14 +37,14 @@ from fileHandling import readGreenFromFile
 def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))
 
-    #gfTests.runAllTests()
-    #ftTests.runAllTests()
-    #gsTests.runAllTests()
-    #gsIsEigenstate.runAllTests()
+    gfTests.runAllTests()
+    ftTests.runAllTests()
+    gsTests.runAllTests()
+    gsIsEigenstate.runAllTests()
     #nonEqTests.runAllTests()
     #floquetTests.runAllTests()
+    exit()
 
-    #exit()
     #eta = 1. / np.sqrt(prms.chainLength)
     #gsJ = 0.
     #gs = np.zeros((prms.chainLength))
@@ -62,29 +63,35 @@ def main():
     #beuatifulPlots.plotOccsLs(etasNonNorm, 2)
     #exit()
 
-    etas = np.linspace(0., 2., 7, endpoint=True) / np.sqrt(prms.chainLength)
-    beuatifulPlots.plotLandscapesAllOrders(etas, 3)
+    #etas = np.linspace(0., 2., 7, endpoint=True) / np.sqrt(prms.chainLength)
+    #beuatifulPlots.plotLandscapesAllOrders(etas, 3)
     #beuatifulPlots.plotLandscapes1Order(etas, 1)
-    exit()
+    #beuatifulPlots.plotLandscapes2Order(etas, 1)
+    #exit()
 
 
     eta1 = 1. / np.sqrt(prms.chainLength)
     eta2 = 0.1 / np.sqrt(prms.chainLength)
-#    bPlots.plotAnalyticalConductivity(eta1, eta2, 0.)
-    bPlots.plotAnalyticalConductivityImaginary(eta1, eta2, 0.)
+    bPlots.plotAnalyticalConductivity(eta1, eta2, 0.)
+    #bPlots.plotAnalyticalConductivityImaginary(eta1, eta2, 0.)
     exit()
 
     #calculate Green's function
 
+
     damping = 0.025
     eta = 1. / np.sqrt(prms.chainLength)
     kVec = np.linspace(-np.pi, np.pi, prms.chainLength, endpoint=False)
+#    wVec = np.linspace(-8, 8, 8000, endpoint=False)
     wVec = np.linspace(-8, 8, 8000, endpoint=False)
     gAna2W = greenAna2nd.anaGreenVecW(kVec, wVec, eta, damping)
-    writeGreenToFile.writeGreen("data/eqGreen.h5", "gfEq", gAna2W)
-    #gAna2W = readGreenFromFile.readGreen("data/eqGreen.h5", "gfEq")
-    #bPlots.plotSpecLog(wVec, 1. / np.sqrt(2. * np.pi) * np.imag(np.transpose(gAna2W)), eta)
+    #writeGreenToFile.writeGreen("data/eqGreen.h5", "gfEq", gAna2W)
+    gAna2W = readGreenFromFile.readGreen("data/eqGreen.h5", "gfEq")
+    bPlots.plotSpecLog(wVec, 1. / np.sqrt(2. * np.pi) * np.imag(np.transpose(gAna2W)), eta)
 
+    #greenNum1 = greenNum1st.spectralGreater(kVec, wVec, eta, damping)
+    #greenAna1 = greenAna1st.spectralGreater(kVec, wVec, eta, damping)
+    #compPlot.compareArraysLog(wVec, greenNum1[0, :], greenAna1[0, :])
 
     exit()
 
@@ -143,6 +150,14 @@ def main():
 
     bPlots.greenWaterFall(kVec, wVec, gfArr, LArr, gfFloq, eta)
 
+
+    #just a check for the sign of the squeezing transformation
+    #N = 1
+    #T = prms.t / (np.pi) * (np.sin(np.pi / 2.) - np.sin(-np.pi / 2.)) * prms.chainLength
+    #J = prms.t / (np.pi) * (np.cos(np.pi / 2.) - np.cos(-np.pi / 2.)) * prms.chainLength
+    #eta = 1. / np.sqrt(prms.chainLength)
+    #ptGS = photonState.findPhotonGS([T, J], eta, 2)
+    #beuatifulPlots.plotPtGSWithCoh(ptGS, N, eta, T)
 
     print("")
     print("The calculation has finished - Juhu!")
