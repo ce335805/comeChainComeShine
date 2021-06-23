@@ -34,12 +34,12 @@ fontsize = 10
 def plotSpec(kVec, wVec, spec):
     spec = np.roll(spec, prms.chainLength // 2 - 1, axis=1)
     kVecPosNeg = np.linspace(np.pi, -np.pi, prms.chainLength, endpoint=False)
-    kVecPosNeg = np.flip(kVecPosNeg)
+    kVec = np.flip(kVecPosNeg)
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    CS = ax.contourf(kVecPosNeg, -wVec, spec, 500, cmap='gnuplot2_r')
-    fig.colorbar(CS, ax=ax)
+    CS = ax.pcolormesh(kVec, -wVec, spec, cmap='pink', shading = 'gouraud', vmin=0.,vmax=0.1)
+    cbar = fig.colorbar(CS, ax=ax)
     plt.show()
 
 

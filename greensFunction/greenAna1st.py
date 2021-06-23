@@ -6,15 +6,13 @@ from arb_order import photonState as phState
 from arb_order import numHamiltonians as numH
 import scipy.linalg as sciLin
 import fourierTrafo as FT
-
+from arb_order import arbOrder
 
 def anaGreenPointTGreater(kPoint, tPoint, gsJ, eta):
+    print("gsJ = {}".format(gsJ))
     epsK = 2. * prms.t * np.cos(kPoint[:, None])
     coupling = - eta ** 2 / prms.w0 * \
                (2. * ( gsJ * (-2.) * prms.t * np.sin(kPoint[:, None])) + (-2. * prms.t * np.sin(kPoint[:, None]))**2)
-
-    #coupling = - eta ** 2 / prms.w0 * (-2. * prms.t * np.sin(kPoint[:, None])**2)
-
 
     eTime = -1j * epsK * tPoint[None, :] - 1j * coupling * tPoint[None, :]
     ptTime = - (- 2. * eta * prms.t * np.sin(kPoint[:, None]))**2 / prms.w0**2 * (1. - np.exp(-1j * prms.w0 * tPoint[None, :]))
@@ -23,18 +21,23 @@ def anaGreenPointTGreater(kPoint, tPoint, gsJ, eta):
 def anaGreenPointTLesser(kPoint, tPoint, gsJ, eta):
     epsK = 2. * prms.t * np.cos(kPoint[:, None])
     coupling = - eta ** 2 / prms.w0 * \
-               (2. * ( gsJ * (-2.) * prms.t * np.sin(kPoint[:, None])) + (-2. * prms.t * np.sin(kPoint[:, None]))**2)
+               (2. * ( gsJ * (-2.) * prms.t * np.sin(kPoint[:, None])) - (-2. * prms.t * np.sin(kPoint[:, None]))**2)
 
     eTime = -1j * epsK * tPoint[None, :] - 1j * coupling * tPoint[None, :]
-    ptTime = - (- 2. * eta * prms.t * np.sin(kPoint[:, None]))**2 / prms.w0**2 * (1. - np.exp(-1j * prms.w0 * tPoint[None, :]))
-    return 1j * np.exp(eTime + ptTime)
+    ptTime = - (- 2. * eta * prms.t * np.sin(kPoint[:, None]))**2 / prms.w0**2 * (1. - np.exp(1j * prms.w0 * tPoint[None, :]))
+    return - 1j * np.exp(eTime + ptTime)
 
 
 def anaGreenVecTGreater(kVec, tVec, eta, damping):
 
-    gs = anaGS.findGS1st(eta)
-    gsJ = eF.J(gs[0: -1])
-    _, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
+    #gs = anaGS.findGS1st(eta)
+    #gsJ = eF.J(gs[0: -1])
+    gs = arbOrder.findGS(eta, 3)
+    gsJ = eF.J(gs)
+    gsT = eF.T(gs)
+
+    #_, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
+    _, occupations = np.meshgrid(np.ones(tVec.shape), gs)
     GF = anaGreenPointTGreater(kVec, tVec, gsJ, eta)
     GF = np.multiply(1 - occupations, GF)
 

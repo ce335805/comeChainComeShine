@@ -2,11 +2,13 @@ import arb_order.arbOrder
 import beuatifulPlots
 import globalSystemParams as prms
 import numpy as np
+import h5py
 import comparisonPlots as compPlot
 from automatedTests import gfTests
 from automatedTests import ftTests
 from automatedTests import gsTests
 from automatedTests import gsIsEigenstate
+from automatedTests import matrixDiagonalization
 from automatedTests import nonEqTests
 from automatedTests import floquetTests
 from arb_order import arbOrder
@@ -23,6 +25,7 @@ import energyFunctions as eF
 from arb_order import photonState as phState
 from coherentState import coherentState
 from fsShift import gsFromFSShift
+from greensFunction.greenNum1st import gfNumVecTLesser, numGreenVecWLesser, numGreenVecWGreater
 from thermodynamicLimit import photonOccupancies
 from thermodynamicLimit import  diagonalizeH
 from floquet import spectralFunction
@@ -32,18 +35,20 @@ from multiProcGreen import greenKArr
 from multiProcGreen import floquetKArr
 from fileHandling import writeGreenToFile
 from fileHandling import readGreenFromFile
+from finiteSizeScale import gfError
 
 
 def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))
 
-    gfTests.runAllTests()
-    ftTests.runAllTests()
-    gsTests.runAllTests()
-    gsIsEigenstate.runAllTests()
+    #matrixDiagonalization.runAllTests()
+    #gfTests.runAllTests()
+    #ftTests.runAllTests()
+    #gsTests.runAllTests()
+    #gsIsEigenstate.runAllTests()
     #nonEqTests.runAllTests()
     #floquetTests.runAllTests()
-    exit()
+    #exit()
 
     #eta = 1. / np.sqrt(prms.chainLength)
     #gsJ = 0.
@@ -68,6 +73,26 @@ def main():
     #beuatifulPlots.plotLandscapes1Order(etas, 1)
     #beuatifulPlots.plotLandscapes2Order(etas, 1)
     #exit()
+
+    etaNonNorm = 1.
+    Ls = np.array([210, 310, 410, 510, 610, 710, 810, 910, 1010, 1210, 1410, 1610, 2010])
+
+    gfError.gfErrorForLs(etaNonNorm, Ls)
+    meanErr = gfError.getMeanErrors(etaNonNorm, Ls)
+    maxErr = gfError.getMaxErrors(etaNonNorm, Ls)
+
+    errA1Mean = meanErr[0]
+    errA2Mean = meanErr[1]
+    errA1Max = maxErr[0]
+    errA2Max = maxErr[1]
+
+    print(errA1Mean)
+    print(errA1Max)
+    print(errA2Mean)
+    print(errA2Max)
+    compPlot.finiteSizeErrors(Ls, errA1Mean, errA1Max, errA2Mean, errA2Max)
+
+    exit()
 
 
     eta1 = 1. / np.sqrt(prms.chainLength)

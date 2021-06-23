@@ -36,7 +36,7 @@ def g1NumEQg1AnaGreater():
     #ax.plot(tVec, np.imag(gfNum[8, :]), color = 'blue')
     #plt.show()
 
-    failArr = (np.abs(gfAna - gfNum) > 1e-5)
+    failArr = (np.abs(gfAna - gfNum) > 1e-10)
     print("Max difference of G-Greater = {}".format(np.amax(np.abs(gfAna - gfNum))))
 
     if(np.any(failArr)):
@@ -49,13 +49,19 @@ def g1NumEQg1AnaGreater():
 def g1NumEQg1AnaLesser():
     eta = 1. / np.sqrt(prms.chainLength)
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
-    tVec = np.linspace(0., 10. , 10)
+    tVec = np.linspace(0., 20. , 200)
 
     gfAna = greenAna.anaGreenVecTLesser(kVec, tVec, eta, 0.)
     gfNum = green.gfNumVecTLesser(kVec, tVec, eta, 0.)
 
-    failArr = (np.abs(gfAna - gfNum) > 1e-5)
-    print("Max difference of G-Greater = {}".format(np.amax(np.abs(gfAna - gfNum))))
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(tVec, np.imag(gfAna[3, :]), color = 'red')
+    ax.plot(tVec, np.imag(gfNum[3, :]), color = 'blue')
+    plt.show()
+
+    failArr = (np.abs(gfAna - gfNum) > 1e-10)
+    print("Max difference of G-Lesser = {}".format(np.amax(np.abs(gfAna - gfNum))))
 
     if(np.any(failArr)):
         print("Numerical GF1 Lesser not consistent with analytical GF1!!! ------ CHECK FAILED!!!")

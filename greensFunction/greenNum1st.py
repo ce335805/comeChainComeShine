@@ -19,17 +19,20 @@ def gfNumPointTGreater(kVec, tVec, eta):
     gk = - 2. * prms.t * np.sin(kVec) * eta
     eK = 2. * prms.t * np.cos(kVec)
     photonOne = np.diag(np.ones(prms.maxPhotonNumber))
-    iHt = 1j * H[None, :, :] * tVec[:, None, None]
-    iHtSinCos = - 1j * H[None, None, :, :] * tVec[None, :, None, None] \
-                - 1j * gk[:, None, None, None] * x[None, None, :, :] * tVec[None, :, None, None] \
-                - 1j * eK[:, None, None, None] * photonOne[None, None, :, :] * tVec[None, :, None, None]
 
+    hEvals, hEvecs = np.linalg.eigh(H)
+    HtSinCosK = H[None, :, :] \
+                + gk[:, None, None] * x[None, :, :] \
+                + eK[:, None, None] * photonOne[None, :, :]
+    eValsK, eVecsK = np.linalg.eigh(HtSinCosK)
 
     GF = np.zeros((len(kVec), len(tVec)), dtype='complex')
-    for tInd in range(len(tVec)):
-        for kInd in range(len(kVec)):
-            prod1 = np.dot( sciLin.expm(iHtSinCos[kInd, tInd, :, :]), phGS)
-            prod2 = np.dot( sciLin.expm(iHt[tInd, :, :]), prod1)
+    for tInd, t in enumerate(tVec):
+        expiHt = np.dot(hEvecs, np.dot(np.diag(np.exp(1j * hEvals * t)), np.transpose(np.conj(hEvecs))))
+        for kInd, k in enumerate(kVec):
+            expiHSinCost = np.dot(eVecsK[kInd, :, :], np.dot(np.diag(np.exp(-1j * eValsK[kInd, :,] * t)) , np.transpose(np.conj(eVecsK[kInd, :, :]))))
+            prod1 = np.dot( expiHSinCost, phGS)
+            prod2 = np.dot( expiHt, prod1)
             res = np.dot(np.conj(phGS), prod2)
             GF[kInd, tInd] = res
 
@@ -49,8 +52,6 @@ def gfNumVecTGreater(kVec, tVec, eta, damping):
 def gfNumPointTLesser(kVec, tVec, eta):
 
     phGS = getPhGSH1(eta)
-    #phGS = coherentState.getCoherentStateForN(5.616105733404439)
-
     H = getH1(eta)
 
     x = np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) + np.diag(
@@ -58,21 +59,24 @@ def gfNumPointTLesser(kVec, tVec, eta):
     gk = - 2. * prms.t * np.sin(kVec) * eta
     eK = 2. * prms.t * np.cos(kVec)
     photonOne = np.diag(np.ones(prms.maxPhotonNumber))
-    iHt = 1j * H[None, :, :] * tVec[:, None, None]
-    iHtSinCos = - 1j * H[None, None, :, :] * tVec[None, :, None, None] \
-                - 1j * gk[:, None, None, None] * x[None, None, :, :] * tVec[None, :, None, None] \
-                - 1j * eK[:, None, None, None] * photonOne[None, None, :, :] * tVec[None, :, None, None]
 
+    hEvals, hEvecs = np.linalg.eigh(H)
+    HtSinCosK = H[None, :, :] - \
+                gk[:, None, None] * x[None, :, :] - \
+                eK[:, None, None] * photonOne[None, :, :]
+    eValsK, eVecsK = np.linalg.eigh(HtSinCosK)
 
     GF = np.zeros((len(kVec), len(tVec)), dtype='complex')
-    for tInd in range(len(tVec)):
-        for kInd in range(len(kVec)):
-            prod1 = np.dot( sciLin.expm(iHtSinCos[kInd, tInd, :, :]), phGS)
-            prod2 = np.dot( sciLin.expm(iHt[tInd, :, :]), prod1)
+    for tInd, t in enumerate(tVec):
+        expiHt = np.dot(hEvecs, np.dot(np.diag(np.exp(-1j * hEvals * t)), np.transpose(np.conj(hEvecs))))
+        for kInd, k in enumerate(kVec):
+            expiHSinCost = np.dot(eVecsK[kInd, :, :], np.dot(np.diag(np.exp(1j * eValsK[kInd, :,] * t)) , np.transpose(np.conj(eVecsK[kInd, :, :]))))
+            prod1 = np.dot( expiHt, phGS)
+            prod2 = np.dot( expiHSinCost, prod1)
             res = np.dot(np.conj(phGS), prod2)
             GF[kInd, tInd] = res
 
-    return 1j * GF
+    return - 1j * GF
 
 def gfNumVecTLesser(kVec, tVec, eta, damping):
     gs = arbOrder.findGS(eta, 1)
@@ -99,12 +103,13 @@ def numGreenVecWGreater(kVec, wVec, eta, damping):
 
 def numGreenVecWLesser(kVec, wVec, eta, damping):
     tVec = FT.tVecFromWVec(wVec)
-    tVecNeg = tVec[: len(tVec) // 2 + 1]
-    GFT = gfNumVecTLesser(kVec, tVecNeg, eta, damping)
-    GFZero = np.zeros((len(kVec), len(tVec) // 2 - 1), dtype='complex')
-    GFT = np.concatenate((GFT, GFZero), axis=1)
+    tVecPos = tVec[len(tVec) // 2: ]
+    GFT = gfNumVecTLesser(kVec, tVecPos, eta, damping)
+    GFZero = np.zeros((len(kVec), len(tVec)//2), dtype='complex')
+    GFT = np.concatenate((GFZero, GFT), axis=1)
+
     wVecCheck, GFW = FT.FT(tVec, GFT)
-    assert ((np.abs(wVec - wVecCheck) < 1e-10).all)
+
     return GFW
 
 

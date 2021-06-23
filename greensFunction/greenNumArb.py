@@ -21,17 +21,26 @@ def gfNumPointTGreater(kVec, tVec, eta):
         np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1))
     sinX = sciLin.sinm(x)
     cosX = sciLin.cosm(x)
-    iHt = 1j * H[None, :, :] * tVec[:, None, None]
-    iHtSinCos = - 1j * H[None, None, :, :] * tVec[None, :, None, None] \
-                - 1j * gk[:, None, None, None] * sinX[None, None, :, :] * tVec[None, :, None, None] \
-                - 1j * eK[:, None, None, None] * cosX[None, None, :, :] * tVec[None, :, None, None]
+    #iHt = 1j * H[None, :, :] * tVec[:, None, None]
+    #iHtSinCos = - 1j * H[None, None, :, :] * tVec[None, :, None, None] \
+    #            - 1j * gk[:, None, None, None] * sinX[None, None, :, :] * tVec[None, :, None, None] \
+    #            - 1j * eK[:, None, None, None] * cosX[None, None, :, :] * tVec[None, :, None, None]
 
+    hEvals, hEvecs = np.linalg.eigh(H)
+    HtSinCosK = H[None, :, :] \
+                + gk[:, None, None] * sinX[None, :, :] \
+                + eK[:, None, None] * cosX[None, :, :]
+    eValsK, eVecsK = np.linalg.eigh(HtSinCosK)
 
     GF = np.zeros((len(kVec), len(tVec)), dtype='complex')
-    for tInd in range(len(tVec)):
-        for kInd in range(len(kVec)):
-            prod1 = np.dot( sciLin.expm(iHtSinCos[kInd, tInd, :, :]), phGS)
-            prod2 = np.dot( sciLin.expm(iHt[tInd, :, :]), prod1)
+    for tInd, t in enumerate(tVec):
+        expiHt = np.dot(hEvecs, np.dot(np.diag(np.exp(1j * hEvals * t)), np.transpose(np.conj(hEvecs))))
+        for kInd, k in enumerate(kVec):
+            expiHSinCost = np.dot(eVecsK[kInd, :, :], np.dot(np.diag(np.exp(-1j * eValsK[kInd, :,] * t)) , np.transpose(np.conj(eVecsK[kInd, :, :]))))
+            prod1 = np.dot( expiHSinCost, phGS)
+            prod2 = np.dot( expiHt, prod1)
+            #prod1 = np.dot( sciLin.expm(iHtSinCos[kInd, tInd, :, :]), phGS)
+            #prod2 = np.dot( sciLin.expm(iHt[tInd, :, :]), prod1)
             res = np.dot(np.conj(phGS), prod2)
             GF[kInd, tInd] = res
 
@@ -39,10 +48,10 @@ def gfNumPointTGreater(kVec, tVec, eta):
 
 
 def gfNumVecTGreater(kVec, tVec, eta, damping):
-    #gs = arbOrder.findGS(eta, 1)
-    #_, occupations = np.meshgrid(np.ones(tVec.shape), gs[:])
+    gs = arbOrder.findGS(eta, 3)
+    _, occupations = np.meshgrid(np.ones(tVec.shape), gs[:])
     GF = gfNumPointTGreater(kVec, tVec, eta)
-    #GF = np.multiply(1 - occupations, GF)
+    GF = np.multiply(1 - occupations, GF)
     dampingArr, _ = np.meshgrid(np.exp(- damping * np.abs(tVec)), np.ones(kVec.shape))
     GF = np.multiply(dampingArr, GF)
 
@@ -118,14 +127,14 @@ def spectralLesser(kVec, wVec, eta, damping):
 
 
 def getPhGS(eta):
-    gs = arbOrder.findGS(eta, 2)
+    gs = arbOrder.findGS(eta, 3)
     gsJ = eF.J(gs)
     gsT = eF.T(gs)
     return phState.findPhotonGS([gsT, gsJ], eta, 2)
 
 
 def getH(eta):
-    gs = arbOrder.findGS(eta, 2)
+    gs = arbOrder.findGS(eta, 3)
     gsJ = eF.J(gs)
     gsT = eF.T(gs)
     return numH.setupPhotonHamiltonianInf(gsT, gsJ, eta)

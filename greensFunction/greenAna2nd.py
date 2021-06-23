@@ -6,39 +6,46 @@ from arb_order import photonState as phState
 from arb_order import numHamiltonians as numH
 import scipy.linalg as sciLin
 import fourierTrafo as FT
+from arb_order import arbOrder
 
 
 def anaGreenPointT(kPoint, tPoint, gsJ, eta):
 
-    gsT = - 2. / np.pi * prms.chainLength
+    gs = arbOrder.findGS(eta, 3)
+    gsJ = eF.J(gs)
+    gsT = eF.T(gs)
+
+    #gsT = - 2. / np.pi * prms.chainLength
     z = 2. * eta**2 / prms.w0 * gsT
     wTilde = prms.w0 * np.sqrt(1. - z)
-    wDash = prms.w0 * (1. - z)
 
-
-
-    epsK = - 2. * prms.t * np.cos(kPoint[:, None]) * (1. - 0.5 * eta**2 * wTilde / prms.w0)
-    fac = .5 * (2. - z) / (1. - z)
-    selfE = - eta**2 / (wTilde) * np.sqrt(np.sqrt(1 - z)) * (- 2. * prms.t * np.sin(kPoint[:, None]))**2
+    #epsK = 2. * prms.t * np.cos(kPoint[:, None]) * (1. - 0.5 * eta**2 * wTilde / prms.w0)
+    epsK = 2. * prms.t * np.cos(kPoint[:, None]) * (1. - 0.5 * eta**2 * prms.w0 / wTilde)
+    selfE = - eta**2 * prms.w0 / (wTilde**2) * (- 2. * prms.t * np.sin(kPoint[:, None]))**2
+    #selfE = - eta ** 2 / prms.w0 * \
+    #           (2. * ( gsJ * (-2.) * prms.t * np.sin(kPoint[:, None])) + (-2. * prms.t * np.sin(kPoint[:, None]))**2)
 
     eTime = -1j * epsK * tPoint[None, :] - 1j * selfE * tPoint[None, :]
+    ptTime = - (- 2. * eta * prms.t * np.sin(kPoint[:, None]))**2 * prms.w0 / (wTilde**3) * (1. - np.exp(-1j * wTilde * tPoint[None, :]))
 
-    ptTime = np.zeros((len(kPoint), len(tPoint)), dtype=complex)
-    for indK, k in enumerate(kPoint):
-        if(k > -np.pi / 2. and k <= np.pi / 2):
-            ptTimeTemp = - (- 2. * eta * prms.t * np.sin(k))**2 / (wTilde * prms.w0) * (1. - np.exp(- 1j * wTilde * tPoint[:]))
-            ptTime[indK, :] = ptTimeTemp
-        else:
-            ptTimeTemp = - (- 2. * eta * prms.t * np.sin(k)) ** 2 / (wTilde * prms.w0) * (1. - np.exp( 1j * wTilde * tPoint[:]))
-            ptTime[indK, :] = ptTimeTemp
+    #ptTime = np.zeros((len(kPoint), len(tPoint)), dtype=complex)
+    #for indK, k in enumerate(kPoint):
+    #    if(k > -np.pi / 2. and k <= np.pi / 2):
+    #        ptTimeTemp = - (- 2. * eta * prms.t * np.sin(k))**2 / (wTilde * prms.w0) * (1. - np.exp(- 1j * wTilde * tPoint[:]))
+    #        ptTime[indK, :] = ptTimeTemp
+    #    else:
+    #        ptTimeTemp = - (- 2. * eta * prms.t * np.sin(k)) ** 2 / (wTilde * prms.w0) * (1. - np.exp( 1j * wTilde * tPoint[:]))
+    #        ptTime[indK, :] = ptTimeTemp
 
     return -1j * np.exp(eTime + ptTime)
 
 
 def anaGreenVecT(kVec, tVec, eta, damping):
-
+    gs = arbOrder.findGS(eta, 3)
+    _, occupations = np.meshgrid(np.ones(tVec.shape), gs[:])
     gsJ = 0.
     GF = anaGreenPointT(kVec, tVec, gsJ, eta)
+    GF = np.multiply(1 - occupations, GF)
     dampingArr, _ = np.meshgrid(np.exp(- damping * np.abs(tVec)), np.ones(kVec.shape))
     GF = np.multiply(dampingArr, GF)
 

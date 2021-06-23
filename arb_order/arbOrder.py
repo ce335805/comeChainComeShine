@@ -11,11 +11,12 @@ import initialState as ini
 
 def findGS(eta, orderH):
     state = ini.getG0InitialStateNum()
+    return state
     #print("initial state = {}".format(state))
     pauliBounds = np.zeros((len(state), 2), dtype='double')
     pauliBounds[0: param.chainLength, 1] = 1.0
     maxiter = param.maxiter
-    optionsDict = {"maxiter": maxiter, "disp": False}
+    optionsDict = {"maxiter": maxiter, "disp": True}
     constraintsDict = {"type": 'eq', "fun": utils.electronNumberZero}
     result = minimize(ptState.energyFromState, state, args=(eta, orderH), bounds=pauliBounds, tol=param.accuracy, options=optionsDict, constraints=constraintsDict)
 
