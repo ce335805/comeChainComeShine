@@ -9,6 +9,9 @@ from nonEqGreen import nonEqGreen
 import matplotlib.patches as patches
 import matplotlib as mpl
 import fsShift.gsFromFSShift as fsShift
+from conductivity import calcConductivity
+import matplotlib.cm as cm
+import matplotlib.colors
 
 import h5py
 
@@ -72,6 +75,13 @@ def plotSpecLog(wVec, spec, eta):
     left, bottom, width, height = [0.45, 0.715, 0.15, 0.15]
     axIn3 = fig.add_axes([left, bottom, width, height])
 
+    for axis in ['top', 'bottom', 'left', 'right']:
+        ax.spines[axis].set_linewidth(0.5)
+        axIn1.spines[axis].set_linewidth(0.5)
+        axIn2.spines[axis].set_linewidth(0.5)
+        axIn3.spines[axis].set_linewidth(0.5)
+
+
     lvls = np.logspace(np.log10(spec[-1, -1]) - 0.01, 0, 200)
     #CS = ax.contourf(kVecPosNeg, -wVec, spec, cmap='pink', norm=LogNorm(), levels=lvls)
     CS = ax.pcolormesh(kVecPosNeg, -wVec, spec, cmap='pink', norm=LogNorm(), shading = 'gouraud')
@@ -79,6 +89,7 @@ def plotSpecLog(wVec, spec, eta):
     cbar = fig.colorbar(CS, ax=ax)
     cbar.set_ticks([])
     cbar.ax.minorticks_off()
+    cbar.outline.set_linewidth(.5)
     #cbar.set_ticks([1e-0, 1e-1, 1e-2])
     #cbar.set_ticklabels([r'$10^{0}$', r'$10^{-1}$', r'$10^{-2}$'])
 
@@ -89,10 +100,10 @@ def plotSpecLog(wVec, spec, eta):
     wDash = prms.w0 * (1. - z)
     fac = .5 * (2. - z) / (1. - z)
     #selfE = - fac * eta ** 2 / wDash * (- 2. * prms.t * np.sin(kPoint) ** 2)
-    selfE = - eta**2 / (wTilde) * np.sqrt(np.sqrt(1 - z)) * (- 2. * prms.t * np.sin(kPoint))**2
+    selfE = eta**2 * prms.w0 / (wTilde**2) * (- 2. * prms.t * np.sin(kPoint))**2
 
 
-    dynLoc = 1 - eta**2 / 2. * wTilde / prms.w0
+    dynLoc = (1. - 0.5 * eta**2 * prms.w0 / wTilde)
 
     ax.arrow(-np.pi/2, selfE, 0., -prms.w0, length_includes_head = True, color = 'darkseagreen', width = 0.025, head_width = 0.11, head_length = 0.15)
 
@@ -168,9 +179,71 @@ def plotSpecLog(wVec, spec, eta):
     cbar.ax.set_ylabel(r'$\log(A(k, \omega))$', rotation=270, fontsize=fontsize, labelpad=15)
     #cbar.ax.tick_params(labelsize=fontsize)
 
-    plt.savefig('spectralGS.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('spectralGSNum.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
+
+
+def plotSpecLogDashed(wVec, spec, eta):
+    spec = spec + 1e-12
+
+    spec = np.roll(spec, prms.chainLength // 2 - 1, axis=1)
+    spec = np.abs(spec)
+    kVecPosNeg = np.linspace(np.pi, -np.pi, prms.chainLength, endpoint=False)
+    kVecPosNeg = np.flip(kVecPosNeg)
+
+    fig = plt.figure()
+    fig.set_size_inches(0.5 * 16. / 2., 0.5 * 9. / 2.)
+
+    ax = fig.add_subplot(111)
+
+    for axis in ['top', 'bottom', 'left', 'right']:
+        ax.spines[axis].set_linewidth(0.5)
+
+    terrainCmap = cm.get_cmap('terrain', 1500)
+    newcolors = np.vstack((terrainCmap(np.linspace(0, 0.3, 128)),
+                           terrainCmap(np.linspace(0.3, 0.9, 1024))
+                           ))
+    newcmp = matplotlib.colors.ListedColormap(newcolors)
+
+
+
+    lvls = np.logspace(np.log10(spec[-1, -1]) - 0.01, 0, 200)
+    #CS = ax.pcolormesh(kVecPosNeg, -wVec, spec, cmap='pink', norm=LogNorm(), shading = 'gouraud')
+    CS = ax.pcolormesh(kVecPosNeg, -wVec, spec, cmap=newcmp, norm=LogNorm(), shading = 'gouraud')
+    cbar = fig.colorbar(CS, ax=ax)
+    #cbar.set_ticks([])
+    #cbar.ax.minorticks_off()
+    cbar.outline.set_linewidth(.5)
+
+    kVec = np.linspace(np.pi, -np.pi, endpoint=False)
+    kVec = np.flip(kVec)
+    origBand = 2. * prms.t * np.cos(kVec)
+    shakeP1 = 2. * prms.t * np.cos(kVec) + prms.w0
+    shakeM1 = 2. * prms.t * np.cos(kVec) - prms.w0
+    ax.plot(kVec, origBand, color = 'white', linestyle = '--', linewidth = 1.)
+    ax.plot(kVec, shakeP1, color = 'white', linestyle = '--', linewidth = 1.)
+    ax.plot(kVec, shakeM1, color = 'white', linestyle = '--', linewidth = 1.)
+
+    ax.set_ylim(-4.1, 4.1)
+
+    ax.set_xticks([-np.pi / 2., 0., np.pi / 2., np.pi])
+    ax.set_xticklabels([r'$-\frac{\pi}{2}$', r'0', r'$\frac{\pi}{2}$', r'$\pi$'])
+    ax.tick_params(axis='both', which='major', labelsize=fontsize)
+
+    ax.set_xlabel('$k$', fontsize=fontsize)
+    ax.set_ylabel('$\omega$', fontsize=fontsize, labelpad = -1)
+
+    yLimBot = spec[-1, prms.chainLength //2] - 0.0001
+    yLimTop = spec[-1, prms.chainLength //2] + .4 # + 0.01 for second shakeoff
+
+    cbar.ax.set_ylabel(r'$\log(A(k, \omega))$', rotation=270, fontsize=fontsize, labelpad=15)
+    #cbar.ax.tick_params(labelsize=fontsize)
+
+    plt.savefig('spectralGSNumDashed2.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.tight_layout()
+    #plt.show()
+
 
 
 def plotPtGS(ptGS, eta):
@@ -399,12 +472,16 @@ def plotAnalyticalConductivity(eta1, eta2, eta3):
 
     fac = np.sqrt(1 - 2. * eta1 * eta1 / (prms.w0) * gsT)
 
-    omegaVec = np.linspace(-60 , 60, 4000000 , endpoint=True)
-    delta = 0.005
+    omegaVec = np.linspace(-50, 50, 20000 , endpoint=True)
+    delta = 0.01
 
-    cond1 = calcConductivity(omegaVec, delta, eta1)
-    cond2 = calcConductivity(omegaVec, delta, eta2)
-    cond3 = calcConductivity(omegaVec, delta, eta3)
+#    cond1 = calcConductivity.calcConductivityNum(omegaVec, delta, eta1)
+#    cond2 = calcConductivity.calcConductivityNum(omegaVec, delta, eta2)
+#    cond3 = calcConductivity.calcConductivityNum(omegaVec, delta, eta3)
+
+    cond1 = calcConductivity.calcConductivityAna(omegaVec, delta, eta1)
+    cond2 = calcConductivity.calcConductivityAna(omegaVec, delta, eta2)
+    cond3 = calcConductivity.calcConductivityAna(omegaVec, delta, eta3)
 
     cond1 = cond1 / np.amax(np.real(cond3))
     cond2 = cond2 / np.amax(np.real(cond3))
@@ -415,11 +492,12 @@ def plotAnalyticalConductivity(eta1, eta2, eta3):
     print("sum1 = {}".format(sum1))
     print("sum2 = {}".format(sum2))
 
-    etas = np.linspace(0., 2., 20) * 1. / np.sqrt(prms.chainLength)
-    etasLabels = np.linspace(0., 2., 20)
+    etas = np.linspace(0., 2., 10) * 1. / np.sqrt(prms.chainLength)
+    etasLabels = np.linspace(0., 2., 10)
     gsKinetics = -coherentState.gsEffectiveKineticEnergyArray(etas)
 
     intConductivities = integratedConductivityArr(omegaVec, delta, etas)
+    #intConductivities = np.zeros(etas.shape)
 
     fig = plt.figure()
     fig.set_size_inches(0.75 * 16. / 4., 0.75 * 12 / 4.)
@@ -439,7 +517,7 @@ def plotAnalyticalConductivity(eta1, eta2, eta3):
 
     #ax.set_ylim(1e-6, 1e4)
     #ax.set_yscale('log')
-    ax.set_xlim(- 1.5 * prms.w0 * fac , 1.5 * prms.w0 * fac)
+    ax.set_xlim(- 1.2 * prms.w0 * fac , 1.2 * prms.w0 * fac)
 
     #ax.set_yticks([1e2, 1e0, 1e-2, 1e-4, 1e-6])
     ax.set_xticks([-2., -1., 0., 1., 2.])
@@ -466,7 +544,7 @@ def plotAnalyticalConductivity(eta1, eta2, eta3):
     yLimBot = np.amin(gsKinetics) - 0.001
     yLimTop = np.amax(gsKinetics) + 0.001
     axIn2.set_ylim(yLimBot, yLimTop)
-    axIn2.set_yticks([0.625, 0.635])
+    #axIn2.set_yticks([0.625, 0.635])
     axIn2.set_xticks([0, 2])
     axIn2.set_xticklabels(['$g = 0$', '$g = 2$'])
     axIn2.vlines(0., yLimBot, yLimTop, color = 'black', linestyle = 'dotted', linewidth = 1.)
@@ -497,9 +575,13 @@ def plotAnalyticalConductivityImaginary(eta1, eta2, eta3):
     omegaVec = np.linspace(-60 , 60, 4000000 , endpoint=True)
     delta = 0.005
 
-    cond1 = calcConductivity(omegaVec, delta, eta1)
-    cond2 = calcConductivity(omegaVec, delta, eta2)
-    cond3 = calcConductivity(omegaVec, delta, eta3)
+    #cond1 = calcConductivity(omegaVec, delta, eta1)
+    #cond2 = calcConductivity(omegaVec, delta, eta2)
+    #cond3 = calcConductivity(omegaVec, delta, eta3)
+
+    cond1 = calcConductivity.calcConductivityNum(omegaVec, delta, eta1)
+    cond2 = calcConductivity.calcConductivityNum(omegaVec, delta, eta2)
+    cond3 = calcConductivity.calcConductivityNum(omegaVec, delta, eta3)
 
     cond1 = cond1 / np.amax(np.imag(cond3))
     cond2 = cond2 / np.amax(np.imag(cond3))
@@ -582,24 +664,11 @@ def plotAnalyticalConductivityImaginary(eta1, eta2, eta3):
     #plt.show()
 
 
-def calcConductivity(omegaVec, delta, eta):
-    gsT = - 2. / np.pi * prms.chainLength
-
-    fac = np.sqrt(1 - 2. * eta * eta / (prms.w0) * gsT)
-
-
-    drudePart = -1j / (omegaVec + 1j * delta) * gsT / prms.chainLength * (1 - eta ** 2 / (2.) * fac )
-
-    cavityFreqPart = 1j / (omegaVec - fac * prms.w0 + 1j * delta) - 1j / (omegaVec + fac * prms.w0 + 1j * delta)
-    cavityPart = eta ** 2 * gsT ** 2 / prms.chainLength * 1. / fac * 1. / (omegaVec + 1j * delta) * cavityFreqPart
-
-    cond = drudePart + cavityPart
-    return cond
 
 def integratedConductivityArr(omegaVec, delta, etas):
     intConductivity = np.zeros(len(etas))
     for indEta, eta in enumerate(etas):
-        condTemp = np.real(calcConductivity(omegaVec, delta, eta))
+        condTemp = np.real(calcConductivity.calcConductivityNum(omegaVec, delta, eta))
         condInt =  (omegaVec[1] - omegaVec[0]) * np.sum(condTemp[0 : -1]) / prms.chainLength
         intConductivity[indEta] = condInt
     return intConductivity * prms.chainLength

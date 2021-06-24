@@ -28,12 +28,16 @@ def gfPointTCoh(kVec, tRel, tAv, eta, N):
     cosX = sciLin.cosm(x)
 
     timeStart = time.time()
-    iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel = setUpMatricies(H, cosX, eK, gk, sinX, tAv, tRel)
+#    iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel = setUpMatricies(H, cosX, eK, gk, sinX, tAv, tRel)
+
+    HSinCos = H[None, :, :] + gk[:, None, None] * sinX[None, :, :] + eK[:, None, None] * cosX[None, :, :]
+
     timeStop = time.time()
     print("setUpMatricies take: {}".format(timeStop - timeStart))
 
     timeStart = time.time()
-    expiHt, expiHtDash, exptRel = setUpExponentialMatricies(iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel, kVec, tAv, tRel)
+#    expiHt, expiHtDash, exptRel = setUpExponentialMatricies(iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel, kVec, tAv, tRel)
+    expiHt, expiHtDash, exptRel = setUpExponentialMatricies(H, HSinCos, kVec, tRel, tAv)
     timeStop = time.time()
     print("setUpExponentialMatricies take: {}".format(timeStop - timeStart))
 
@@ -101,9 +105,12 @@ def gfPointTGS(kVec, tRel, tAv, eta):
     sinX = sciLin.sinm(x)
     cosX = sciLin.cosm(x)
 
-    iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel = setUpMatricies(H, cosX, eK, gk, sinX, tAv, tRel)
+    #iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel = setUpMatricies(H, cosX, eK, gk, sinX, tAv, tRel)
+    HSinCos = H[None, :, :] + gk[:, None, None] * sinX[None, :, :] + eK[:, None, None] * cosX[None, :, :]
 
-    expiHt, expiHtDash, exptRel = setUpExponentialMatricies(iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel, kVec, tAv, tRel)
+
+#    expiHt, expiHtDash, exptRel = setUpExponentialMatricies(iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel, kVec, tAv, tRel)
+    expiHt, expiHtDash, exptRel = setUpExponentialMatricies(H, HSinCos, kVec, tRel, tAv)
 
     GF = evaluateBraKet(expiHt, expiHtDash, exptRel, kVec, phState, tAv, tRel)
 
@@ -178,17 +185,42 @@ def evaluateBraKet(expiHt, expiHtDash, exptRel, kVec, phState, tAv, tRel):
     return GF
 
 
-def setUpExponentialMatricies(iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel, kVec, tAv, tRel):
+#def setUpExponentialMatricies(iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel, kVec, tAv, tRel):
+#    exptRel = np.zeros((len(kVec), len(tRel), prms.maxPhotonNumber, prms.maxPhotonNumber), dtype=complex)
+#    for tRelInd in range(len(tRel)):
+#        for kInd in range(len(kVec)):
+#            exptRel[kInd, tRelInd] = sciLin.expm(iHtSinCosTRel[kInd, tRelInd, :, :])
+#    expiHt = np.zeros((len(tRel), len(tAv), prms.maxPhotonNumber, prms.maxPhotonNumber), dtype=complex)
+#    expiHtDash = np.zeros((len(tRel), len(tAv), prms.maxPhotonNumber, prms.maxPhotonNumber), dtype=complex)
+#    for tAvInd in range(len(tAv)):
+#        for tRelInd in range(len(tRel)):
+#            expiHt[tRelInd, tAvInd, :, :] = sciLin.expm(iHTRelPTAv[tRelInd, tAvInd, :, :])
+#            expiHtDash[tRelInd, tAvInd, :, :] = sciLin.expm(iHTRelMTAv[tRelInd, tAvInd, :, :])
+#    return expiHt, expiHtDash, exptRel
+
+def setUpExponentialMatricies(H, HSinCos, kVec, tRel, tAv):
+
+
+    eValsHSinCosK, eVecsHSinCosK = np.linalg.eigh(HSinCos)
+    eValsH, eVecsH = np.linalg.eigh(H)
+
+
     exptRel = np.zeros((len(kVec), len(tRel), prms.maxPhotonNumber, prms.maxPhotonNumber), dtype=complex)
-    for tRelInd in range(len(tRel)):
-        for kInd in range(len(kVec)):
-            exptRel[kInd, tRelInd] = sciLin.expm(iHtSinCosTRel[kInd, tRelInd, :, :])
+    for kInd, k in enumerate(kVec):
+        for tInd, t in enumerate(tRel):
+            exptRel[kInd, tInd, :, :] = np.dot(eVecsHSinCosK[kInd, :, :], np.dot(np.diag(np.exp(-1j * eValsHSinCosK[kInd, :] * t)), np.transpose(np.conj(eVecsHSinCosK[kInd, :, :]))))
+
     expiHt = np.zeros((len(tRel), len(tAv), prms.maxPhotonNumber, prms.maxPhotonNumber), dtype=complex)
     expiHtDash = np.zeros((len(tRel), len(tAv), prms.maxPhotonNumber, prms.maxPhotonNumber), dtype=complex)
-    for tAvInd in range(len(tAv)):
-        for tRelInd in range(len(tRel)):
-            expiHt[tRelInd, tAvInd, :, :] = sciLin.expm(iHTRelPTAv[tRelInd, tAvInd, :, :])
-            expiHtDash[tRelInd, tAvInd, :, :] = sciLin.expm(iHTRelMTAv[tRelInd, tAvInd, :, :])
+    for tAvInd, tAvVal in enumerate(tAv):
+        for tRelInd, tRelVal in enumerate(tRel):
+            expiHt[tRelInd, tAvInd, :, :] = np.dot(eVecsH, np.dot(np.diag(np.exp(1j * eValsH * (1. * tAvVal + .5 * tRelVal))), np.transpose(np.conj(eVecsH))))
+            expiHtDash[tRelInd, tAvInd, :, :] = np.dot(eVecsH, np.dot(np.diag(np.exp(-1j * eValsH * (1. * tAvVal - .5 * tRelVal))), np.transpose(np.conj(eVecsH))))
+
+    print("exptRel.shape = {}".format(exptRel.shape))
+    print("expiHt.shape = {}".format(expiHt.shape))
+    print("expiHtDash.shape = {}".format(expiHtDash.shape))
+
     return expiHt, expiHtDash, exptRel
 
 

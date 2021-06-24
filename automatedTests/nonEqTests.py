@@ -4,11 +4,13 @@ from greensFunction import greenNumArb
 from nonEqGreen import nonEqGreen
 from automatedTests import testUtils as util
 from nonEqGreen import nonEqGreenPoint
+import matplotlib.pyplot as plt
+
 
 def GreensEqual():
-    eta = .1
+    eta = 0.3 / np.sqrt(prms.chainLength)
     kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
-    t = np.linspace(-50., 50., 20, endpoint = False)
+    t = np.linspace(-50., 50., 10, endpoint = False)
     tRel = t
     tAv = .5 * t
 
@@ -18,11 +20,18 @@ def GreensEqual():
     for indK in range(len(kVec)):
         compGfNonEq[indK, :] = np.diag(gfNonEq[indK, :, :])
 
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(t, np.imag(gfEq[8, :]), color = 'red')
+    ax.plot(t, np.imag(compGfNonEq[8, :]), color = 'blue', linestyle = '--')
+    plt.show()
+
     #print(compGfNonEq)
     #print()
     #print(gfEq)
 
-    failArr = (np.abs(gfEq - compGfNonEq) > prms.accuracy)
+    failArr = (np.abs(gfEq - compGfNonEq) > 1e-5)
+    print("maxErr NonEq GF vs Eq GF = {}".format(np.amax(np.abs(gfEq - compGfNonEq))))
 
     if(np.any(failArr)):
         print("G-Eq not consistent with G-Non-Eq!!! ------ CHECK FAILED!!!")
@@ -53,7 +62,7 @@ def gsWNonEqRightIntegral():
     return True
 
 def vecAndPointVersionsMatchCoh():
-    eta = .1
+    eta = 1. / np.sqrt(prms.chainLength)
     kVec = np.array([1.1234])
     wVec = np.linspace(-10, 10, 10, endpoint=False)
     tAv  = np.linspace(0., 10., 10, endpoint=False)
@@ -91,13 +100,13 @@ def vecAndPointVersionsMatchGS():
 
 def runAllTests():
     check1 = GreensEqual()
-    #check2 = gsWNonEqRightIntegral()
+    check2 = gsWNonEqRightIntegral()
     check3 = vecAndPointVersionsMatchCoh()
     check4 = vecAndPointVersionsMatchGS()
 
     print("---------------------------")
     print("--- Equilibrium vs non-Equilibrium tests finished! ---")
     print("---------------------------")
-    #success = check1 and check2 and check3
-    success = check1 and check3 and check4
+    #success = check1 and check3 and check4
+    success = check1 and check3 and check4 and check2
     util.printSuccessMessage(success)

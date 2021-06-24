@@ -36,19 +36,35 @@ from multiProcGreen import floquetKArr
 from fileHandling import writeGreenToFile
 from fileHandling import readGreenFromFile
 from finiteSizeScale import gfError
-
+from conductivity import calcConductivity
 
 def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))
+
+
+    #eta  = 1. / np.sqrt(prms.chainLength)
+    #numCos = calcConductivity.expectationCos(eta)
+    #gsT = - 2. / np.pi * prms.chainLength
+    #wTilde = np.sqrt(1 - 2. * eta**2 / prms.w0 * gsT)
+    #anaCos = 1. - eta**2 * prms.w0 / (2. * wTilde)
+    #print("numCos = {}".format(numCos))
+    #print("anacos = {}".format(anaCos))
+    #wVec = np.linspace(-250., 250., 2000, endpoint=False)
+    #tVec = FT.tVecFromWVec(wVec)
+    #damping = 0.025
+    #expSinSinT = calcConductivity.expectationSinSin(tVec, eta)
+    #expSinSinAna = eta**2 * prms.w0 / wTilde * np.exp(-1j * wTilde * tVec)
+    #compPlot.compareArrays(tVec, expSinSinT - expSinSinAna, expSinSinAna - expSinSinAna)
+    #exit()
 
     #matrixDiagonalization.runAllTests()
     #gfTests.runAllTests()
     #ftTests.runAllTests()
     #gsTests.runAllTests()
     #gsIsEigenstate.runAllTests()
-    #nonEqTests.runAllTests()
+    nonEqTests.runAllTests()
     #floquetTests.runAllTests()
-    #exit()
+    exit()
 
     #eta = 1. / np.sqrt(prms.chainLength)
     #gsJ = 0.
@@ -74,31 +90,55 @@ def main():
     #beuatifulPlots.plotLandscapes2Order(etas, 1)
     #exit()
 
-    etaNonNorm = 1.
-    Ls = np.array([210, 310, 410, 510, 610, 710, 810, 910, 1010, 1210, 1410, 1610, 2010])
+    #etaNonNorm = 1.
+    #Ls = np.array([90, 110, 210, 310, 410, 610, 810, 1010, 1410, 1810, 2210, 3010, 4010, 5010, 7010, 10010])
+    #Ls = np.array([90, 110, 210, 310, 410, 610, 810, 1010, 1410, 1810, 2210, 3010, 4010, 5010, 7010, 10010])
+    #gfError.gfErrorForLs(etaNonNorm, Ls)
+    #meanErr = gfError.getMeanErrors(etaNonNorm, Ls)
+    #maxErr = gfError.getMaxErrors(etaNonNorm, Ls)
+    #errA1Mean = meanErr[0]
+    #errA2Mean = meanErr[1]
+    #errA1Max = maxErr[0]
+    #errA2Max = maxErr[1]
+    #print(errA1Mean)
+    #print(errA1Max)
+    #print(errA2Mean)
+    #print(errA2Max)
+    #compPlot.finiteSizeErrors(Ls, errA1Mean, errA1Max, errA2Mean, errA2Max)
+    #exit()
 
-    gfError.gfErrorForLs(etaNonNorm, Ls)
-    meanErr = gfError.getMeanErrors(etaNonNorm, Ls)
-    maxErr = gfError.getMaxErrors(etaNonNorm, Ls)
+    #gs = arbOrder.findGS(eta, 3)
+    #gsJ = eF.J(gs)
+    #gsT = eF.T(gs)
+    #gsJ = 0.
+    #gsT = - 2. / np.pi * prms.chainLength
+    #eta = 1. / np.sqrt(prms.chainLength)
+    #phGS = phState.findPhotonGS([gsT, gsJ], eta, 3)
+    #phGSAna = coherentState.getSqueezedState(eta, gsT)
+    #print(phGS)
+    #print("")
+    #print(phGSAna)
+    #exit()
 
-    errA1Mean = meanErr[0]
-    errA2Mean = meanErr[1]
-    errA1Max = maxErr[0]
-    errA2Max = maxErr[1]
-
-    print(errA1Mean)
-    print(errA1Max)
-    print(errA2Mean)
-    print(errA2Max)
-    compPlot.finiteSizeErrors(Ls, errA1Mean, errA1Max, errA2Mean, errA2Max)
-
-    exit()
-
+    #eta = 1. / np.sqrt(prms.chainLength)
+    #gsT = - 2. / np.pi * prms.chainLength
+    #gsKineticAna = coherentState.gsEffectiveKineticEnergy(eta)
+    #gsKintic = calcConductivity.expectationCos(eta) * gsT / prms.chainLength
+    #print(gsKineticAna)
+    #print("")
+    #print(gsKintic)
+    #exit()
 
     eta1 = 1. / np.sqrt(prms.chainLength)
     eta2 = 0.1 / np.sqrt(prms.chainLength)
-    bPlots.plotAnalyticalConductivity(eta1, eta2, 0.)
+    #bPlots.plotAnalyticalConductivity(eta1, eta2, 0.)
     #bPlots.plotAnalyticalConductivityImaginary(eta1, eta2, 0.)
+    delta = 0.01
+    wVec = np.linspace(-2., 2., 2000)
+    condAna = calcConductivity.calcConductivityAna(wVec, delta, eta1)
+    condNum = calcConductivity.calcConductivityNum(wVec, delta, eta1)
+    compPlot.compareArrays(wVec, np.real(condNum), np.real(condAna))
+
     exit()
 
     #calculate Green's function
@@ -106,20 +146,21 @@ def main():
 
     damping = 0.025
     eta = 1. / np.sqrt(prms.chainLength)
-    kVec = np.linspace(-np.pi, np.pi, prms.chainLength, endpoint=False)
-#    wVec = np.linspace(-8, 8, 8000, endpoint=False)
+    kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
     wVec = np.linspace(-8, 8, 8000, endpoint=False)
-    gAna2W = greenAna2nd.anaGreenVecW(kVec, wVec, eta, damping)
-    #writeGreenToFile.writeGreen("data/eqGreen.h5", "gfEq", gAna2W)
-    gAna2W = readGreenFromFile.readGreen("data/eqGreen.h5", "gfEq")
-    bPlots.plotSpecLog(wVec, 1. / np.sqrt(2. * np.pi) * np.imag(np.transpose(gAna2W)), eta)
+    #gAna2W = greenAna2nd.anaGreenVecW(kVec, wVec, eta, damping)
+    #gfNumInf = greenNumArb.numGreenVecWGreater(kVec, wVec, eta, damping) + greenNumArb.numGreenVecWLesser(kVec, wVec, eta, damping)
+    #GF = gfNumInf
+    #writeGreenToFile.writeGreen("data/eqGreenNum.h5", "gfEq", GF)
+    GF = readGreenFromFile.readGreen("data/eqGreenNum.h5", "gfEq")
+    bPlots.plotSpecLogDashed(wVec, 1. / np.sqrt(2. * np.pi) * np.imag(np.transpose(GF)), eta)
+
 
     #greenNum1 = greenNum1st.spectralGreater(kVec, wVec, eta, damping)
     #greenAna1 = greenAna1st.spectralGreater(kVec, wVec, eta, damping)
     #compPlot.compareArraysLog(wVec, greenNum1[0, :], greenAna1[0, :])
 
     exit()
-
 
     eta = 2. / np.sqrt(prms.chainLength)
     tau = 2. * np.pi / prms.w0
@@ -188,4 +229,3 @@ def main():
     print("The calculation has finished - Juhu!")
 
 main()
-

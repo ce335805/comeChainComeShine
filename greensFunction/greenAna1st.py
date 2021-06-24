@@ -74,10 +74,10 @@ def anaGreenVecWGreater(kVec, wVec, eta, damping):
 
 def anaGreenVecWLesser(kVec, wVec, eta, damping):
     tVec = FT.tVecFromWVec(wVec)
-    tVecNeg = tVec[: len(tVec) // 2 + 1]
-    GFT = anaGreenVecTLesser(kVec, tVecNeg, eta, damping)
+    tVecPos = tVec[len(tVec) // 2 : ]
+    GFT = anaGreenVecTLesser(kVec, tVecPos, eta, damping)
     GFZero = np.zeros((len(kVec), len(tVec)//2), dtype='complex')
-    GFT = np.concatenate((GFT, GFZero), axis=1)
+    GFT = np.concatenate((GFZero, GFT), axis=1)
 
     wVecCheck, GFW = FT.FT(tVec, GFT)
 

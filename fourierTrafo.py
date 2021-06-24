@@ -13,7 +13,6 @@ def FT(tVec, f):
     g = np.fft.fft(fTilde)  # per default performs fft on last dimension
     return wVec, phaseFac * g
 
-
 def FTOneOfTwoTimes(tVec, f):
     t0 = tVec[0]
     dt = tVec[1] - tVec[0]
