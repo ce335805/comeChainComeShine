@@ -40,6 +40,38 @@ def GreensEqual():
         print("G-Eq is consistent with G-Non-Eq! ------ CHECK PASSED :)")
         return True
 
+def compareEqAndNonEq():
+    eta = .3 / np.sqrt(prms.chainLength)
+    kVec = np.array([1.1234])
+    kPoint = 1.1234
+    wVec = np.linspace(-4, 4, 2000, endpoint=False)
+    tAv = np.array([10.])
+    damping = 0.1
+
+    gfEq = greenNumArb.numGreenVecWGreater(kVec, wVec, eta, damping)
+    gfNonEq = nonEqGreenPoint.gfGSWGreater(kPoint, wVec, tAv, eta, damping)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(wVec, np.imag(gfEq[0, :]), color = 'red')
+    ax.plot(wVec, np.imag(gfNonEq[:, 0]), color = 'blue', linestyle = '--')
+    #ax.plot(wVec, np.imag(gfNonEq[:, 0] - gfEq[0, :]), color = 'blue', linestyle = '--')
+    plt.show()
+
+    #print(compGfNonEq)
+    #print()
+    #print(gfEq)
+
+    failArr = (np.abs(gfEq[0, :] - gfNonEq[:, 0]) > 1e-5)
+    print("maxErr NonEq GF vs Eq GF = {}".format(np.amax(np.abs(gfEq[0, :] - gfNonEq[:, 0]))))
+
+    if(np.any(failArr)):
+        print("G-Eq not consistent with G-Non-Eq!!! ------ CHECK FAILED!!!")
+        return False
+    else:
+        print("G-Eq is consistent with G-Non-Eq! ------ CHECK PASSED :)")
+        return True
+
 def gsWNonEqRightIntegral():
     eta = .5 / np.sqrt(prms.chainLength)
 
@@ -97,16 +129,51 @@ def vecAndPointVersionsMatchGS():
         print("G-Non-Eq-Vec is consistent with G-Non-Eq-Point - GS! ------ CHECK Passed!!!")
         return True
 
+def gfCohPHSymm():
+
+    eta = 1. / np.sqrt(prms.chainLength)
+    damping = 0.01
+    N = 0.1
+    kPoint1 = np.pi / 2. + 0.5
+    kPoint2 = np.pi / 2. - 0.5
+    wVec = np.linspace(-6, 6, 2000, endpoint=False)
+    tAv  = np.linspace(100., 200., 200, endpoint=False)
+
+    gf = nonEqGreenPoint.gfCohW(kPoint1, wVec, tAv, eta, damping, N)
+    gfTurned = nonEqGreenPoint.gfCohWTurned(kPoint2, wVec, tAv, eta, damping, N)
+
+    print("gf.shape = {}".format(gf.shape))
+
+    gf = np.sum(gf, axis = 1) * (tAv[1] - tAv[0])
+    gfTurned = np.sum(gfTurned, axis = 1) * (tAv[1] - tAv[0])
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(wVec, - np.imag(gf), color = 'red')
+    ax.plot(-wVec, np.imag(gfTurned), color = 'blue', linestyle = '--')
+    plt.show()
+
+    failArr = (np.abs(gf - gfTurned) > 1.)
+
+    if(np.any(failArr)):
+        print("PH symmetry broken for Non-Eq GF!!! ------ CHECK FAILED!!!")
+        return False
+    else:
+        print("PH symmetry works for Non-Eq GF! ------ CHECK Passed!!!")
+        return True
 
 def runAllTests():
     check1 = GreensEqual()
     check2 = gsWNonEqRightIntegral()
     check3 = vecAndPointVersionsMatchCoh()
     check4 = vecAndPointVersionsMatchGS()
+    check5 = gfCohPHSymm()
+    check6 = compareEqAndNonEq()
 
     print("---------------------------")
     print("--- Equilibrium vs non-Equilibrium tests finished! ---")
     print("---------------------------")
     #success = check1 and check3 and check4
-    success = check1 and check3 and check4 and check2
+    success = check1 and check3 and check4 and check2 and check5 and check6
+    #success = check5
     util.printSuccessMessage(success)

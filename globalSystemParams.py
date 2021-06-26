@@ -1,6 +1,6 @@
 import numpy as np
 
-chainLength = 30
+chainLength = 170
 t = - 1.
 w0 = 1.
 numberElectrons = chainLength//2

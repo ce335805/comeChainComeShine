@@ -237,7 +237,7 @@ def plotSpecLogDashed(wVec, spec, eta):
     yLimBot = spec[-1, prms.chainLength //2] - 0.0001
     yLimTop = spec[-1, prms.chainLength //2] + .4 # + 0.01 for second shakeoff
 
-    cbar.ax.set_ylabel(r'$\log(A(k, \omega))$', rotation=270, fontsize=fontsize, labelpad=15)
+    cbar.ax.set_ylabel(r'$A(k, \omega)$', rotation=270, fontsize=fontsize, labelpad=15)
     #cbar.ax.tick_params(labelsize=fontsize)
 
     plt.savefig('spectralGSNumDashed2.png', format='png', bbox_inches='tight', dpi = 600)
@@ -318,8 +318,8 @@ def calculateAndPlotShakeOffs():
 
 def greenWaterFall(kVec, wVec, gfNonEq, lArr, gfFloquet, eta):
 
-    wVec = np.linspace(-4., 4., 2000, endpoint=False)
-    kVec = np.linspace(-np.pi, np.pi, 17, endpoint=True)
+    #wVec = np.linspace(-4., 4., 2000, endpoint=False)
+    #kVec = np.linspace(-np.pi, np.pi, 17, endpoint=True)
 
 
     gfNonEq = np.abs(gfNonEq) + 1e-16
@@ -330,17 +330,17 @@ def greenWaterFall(kVec, wVec, gfNonEq, lArr, gfFloquet, eta):
     ax[0].axis('off')
     ax = ax[1]
 
-    left, bottom, width, height = [0.125, 0.625, 0.3, 0.3]
-    axIn1 = fig.add_axes([left, bottom, width, height])
-
-    for axis in ['top', 'bottom', 'left', 'right']:
-        axIn1.spines[axis].set_linewidth(1.5)
-
-    left, bottom, width, height = [0.74, 0.625, 0.3, 0.3]
-    axIn2 = fig.add_axes([left, bottom, width, height])
-
-    for axis in ['top', 'bottom', 'left', 'right']:
-        axIn2.spines[axis].set_linewidth(1.5)
+    #left, bottom, width, height = [0.125, 0.625, 0.3, 0.3]
+    #axIn1 = fig.add_axes([left, bottom, width, height])
+#
+    #for axis in ['top', 'bottom', 'left', 'right']:
+    #    axIn1.spines[axis].set_linewidth(1.5)
+#
+    #left, bottom, width, height = [0.74, 0.625, 0.3, 0.3]
+    #axIn2 = fig.add_axes([left, bottom, width, height])
+#
+    #for axis in ['top', 'bottom', 'left', 'right']:
+    #    axIn2.spines[axis].set_linewidth(1.5)
 
 
 
@@ -362,22 +362,22 @@ def greenWaterFall(kVec, wVec, gfNonEq, lArr, gfFloquet, eta):
 
             if (kInd == 0):
                 ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3., label=labelString)
-                axIn1.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
-                axIn2.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
+#                axIn1.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
+#                axIn2.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
             else:
                 ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
-                axIn1.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
-                axIn2.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
+#                axIn1.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
+#                axIn2.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
 
         #plot floquet
-        if (kInd == 0):
-            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5, label="Floquet")
-            axIn1.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
-            axIn2.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
-        else:
-            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
-            axIn1.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
-            axIn2.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
+#        if (kInd == 0):
+#            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5, label="Floquet")
+#            axIn1.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
+#            axIn2.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
+#        else:
+#            ax.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
+#            axIn1.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
+#            axIn2.plot(wVec, floquetPlot[kInd, :], marker='', color='black', linestyle='-', linewidth = 0.5)
 
     ax.set_yscale('log')
     ax.set_yticks([])
@@ -393,31 +393,31 @@ def greenWaterFall(kVec, wVec, gfNonEq, lArr, gfFloquet, eta):
     legend.get_frame().set_linewidth(1.5)
 
     #arrow = patches.Arrow(-2, 1000, 2, 0, zorder = 100, width = 2)
-    arrow = patches.FancyArrowPatch((-2.8, 35), (-0.8, 35), arrowstyle='<->', mutation_scale=20, zorder = 100, linewidth=2., color = 'black')
-    ax.add_patch(arrow)
-    ax.text(-1.95, 45, "$\Omega$", fontsize = fontsize + 4)
+    #arrow = patches.FancyArrowPatch((-2.8, 35), (-0.8, 35), arrowstyle='<->', mutation_scale=20, zorder = 100, linewidth=2., color = 'black')
+    #ax.add_patch(arrow)
+    #ax.text(-1.95, 45, "$\Omega$", fontsize = fontsize + 4)
 
-    rect = patches.Rectangle((-2.6, 2.), 1.5, 12.5, linewidth=1.5, edgecolor='black', facecolor='none', zorder = 100)
+    #rect = patches.Rectangle((-2.6, 2.), 1.5, 12.5, linewidth=1.5, edgecolor='black', facecolor='none', zorder = 100)
     ax.add_patch(rect)
 
-    axIn1.set_ylim(2., 2. + 12.5)
-    axIn1.set_yscale('log', subsy = [0])
-    axIn1.set_yticks([])
-    axIn1.set_xlim(-2.65, -2.65 + 1.5)
-    axIn1.set_xticks([])
-    axIn1.set_xticklabels([])
-    axIn1.tick_params(axis='x', which='major', labelsize=14, width = 1.)
+#    axIn1.set_ylim(2., 2. + 12.5)
+#    axIn1.set_yscale('log', subsy = [0])
+#    axIn1.set_yticks([])
+#    axIn1.set_xlim(-2.65, -2.65 + 1.5)
+#    axIn1.set_xticks([])
+#    axIn1.set_xticklabels([])
+#    axIn1.tick_params(axis='x', which='major', labelsize=14, width = 1.)
 
-    rect = patches.Rectangle((.5, 1500), 1.5, 8000, linewidth=1.5, edgecolor='black', facecolor='none', zorder = 100)
-    ax.add_patch(rect)
+    #rect = patches.Rectangle((.5, 1500), 1.5, 8000, linewidth=1.5, edgecolor='black', facecolor='none', zorder = 100)
+    #ax.add_patch(rect)
 
-    axIn2.set_ylim(1500., 1500. + 8000)
-    axIn2.set_yscale('log', subsy = [0])
-    axIn2.set_yticks([])
-    axIn2.set_xlim(.5, .5 + 1.5)
-    axIn2.set_xticks([])
-    axIn2.set_xticklabels([])
-    axIn2.tick_params(axis='x', which='major', labelsize=14, width = 1.)
+#    axIn2.set_ylim(1500., 1500. + 8000)
+#    axIn2.set_yscale('log', subsy = [0])
+#    axIn2.set_yticks([])
+#    axIn2.set_xlim(.5, .5 + 1.5)
+#    axIn2.set_xticks([])
+#    axIn2.set_xticklabels([])
+#    axIn2.tick_params(axis='x', which='major', labelsize=14, width = 1.)
 
 
     #plt.savefig('waterfallWithInsets.pdf', format='pdf', bbox_inches='tight')
@@ -449,7 +449,7 @@ def greenWaterFallOnlyFloquet(kVec, wVec, gfFloquet):
     ax.set_xticks([-6, -4, -2, 0, 2, 4, 6])
     ax.set_xticklabels(['-6', '-4', '-2', '0', '2', '4', '6'])
     ax.set_xlabel('$\omega / t_h$', fontsize = fontsize + 4)
-    ax.set_ylabel('$A(k, \omega)$', fontsize = fontsize + 4)
+    ax.set_ylabel('$\log(A(k, \omega))$', fontsize = fontsize + 4)
     ax.tick_params(axis='both', which='major', labelsize=fontsize)
     #legend = ax.legend(fontsize = fontsize, loc = 'lower right', bbox_to_anchor=(1.225, 0.), edgecolor = 'black')
     #legend.get_frame().set_alpha(None)
@@ -472,43 +472,49 @@ def plotAnalyticalConductivity(eta1, eta2, eta3):
 
     fac = np.sqrt(1 - 2. * eta1 * eta1 / (prms.w0) * gsT)
 
-    omegaVec = np.linspace(-50, 50, 20000 , endpoint=True)
-    delta = 0.01
-
-#    cond1 = calcConductivity.calcConductivityNum(omegaVec, delta, eta1)
-#    cond2 = calcConductivity.calcConductivityNum(omegaVec, delta, eta2)
-#    cond3 = calcConductivity.calcConductivityNum(omegaVec, delta, eta3)
-
-    cond1 = calcConductivity.calcConductivityAna(omegaVec, delta, eta1)
-    cond2 = calcConductivity.calcConductivityAna(omegaVec, delta, eta2)
-    cond3 = calcConductivity.calcConductivityAna(omegaVec, delta, eta3)
-
-    cond1 = cond1 / np.amax(np.real(cond3))
-    cond2 = cond2 / np.amax(np.real(cond3))
-    cond3 = cond3 / np.amax(np.real(cond3))
-
-    sum1 = np.sum(np.real(cond1))
-    sum2 = np.sum(np.real(cond2))
-    print("sum1 = {}".format(sum1))
-    print("sum2 = {}".format(sum2))
+    omegaVec = np.linspace(-500, 500, 150000 , endpoint=True)
+    #omegaVec = np.linspace(-50, 50, 15000 , endpoint=True)
+    delta = 0.02
 
     etas = np.linspace(0., 2., 10) * 1. / np.sqrt(prms.chainLength)
     etasLabels = np.linspace(0., 2., 10)
-    gsKinetics = -coherentState.gsEffectiveKineticEnergyArray(etas)
+    #gsKinetics = -coherentState.gsEffectiveKineticEnergyArray(etas)
+    gsKinetics = - calcConductivity.gsEffectiveKineticEnergyArrayNum(etas)
 
-    intConductivities = integratedConductivityArr(omegaVec, delta, etas)
-    #intConductivities = np.zeros(etas.shape)
+    #cond1 = calcConductivity.calcConductivityNum(omegaVec, delta, eta1)
+    #cond2 = calcConductivity.calcConductivityNum(omegaVec, delta, eta2)
+    #cond3 = calcConductivity.calcConductivityNum(omegaVec, delta, eta3)
+
+    #cond1 = calcConductivity.calcConductivityAna(omegaVec, delta, eta1)
+    #cond2 = calcConductivity.calcConductivityAna(omegaVec, delta, eta2)
+    #cond3 = calcConductivity.calcConductivityAna(omegaVec, delta, eta3)
+
+    #intConductivities = integratedConductivityArr(omegaVec, delta, etas)
+
+    #saveConductivities(cond1, cond2, cond3)
+    #saveIntConductivities(intConductivities)
+    cond1, cond2, cond3 = loadConductivities()
+    intConductivities = loadIntConductivities()
+
+    cond1 = 2. * np.pi * cond1
+    cond2 = 2. * np.pi * cond2
+    cond3 = 2. * np.pi * cond3
 
     fig = plt.figure()
-    fig.set_size_inches(0.75 * 16. / 4., 0.75 * 12 / 4.)
+    fig.set_size_inches(0.65 * 16. / 4., 0.65 * 12 / 4.)
 
     ax = fig.add_subplot(111)
 
-    left, bottom, width, height = [0.675, 0.41, 0.4, 0.3]
-    axIn1 = fig.add_axes([left, bottom, width, height])
+    #left, bottom, width, height = [0.675, 0.41, 0.4, 0.3]
+    #axIn1 = fig.add_axes([left, bottom, width, height])
 
-    left, bottom, width, height = [0.675, 0.85, 0.4, 0.3]
+    left, bottom, width, height = [0.71, 0.41, 0.4, 0.45]
     axIn2 = fig.add_axes([left, bottom, width, height])
+
+    for axis in ['top', 'bottom', 'left', 'right']:
+        ax.spines[axis].set_linewidth(0.5)
+        axIn2.spines[axis].set_linewidth(0.5)
+
 
     ax.plot(omegaVec, np.real(cond2), color = 'lightsteelblue', linewidth = 1.5, linestyle = '-', label = "g = {}".format(0.1))
     ax.plot(omegaVec, np.real(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
@@ -525,41 +531,48 @@ def plotAnalyticalConductivity(eta1, eta2, eta3):
     ax.tick_params(axis='both', which='major', labelsize=fontsize)
 
     ax.set_xlabel('$\omega$', fontsize=fontsize)
-    ax.set_ylabel('Re$(\sigma)$', fontsize=fontsize)
+    ax.set_ylabel(r'Re$(\sigma)[\frac{e^2}{h}]$', fontsize=fontsize)
 
-    axIn1.plot(omegaVec, np.real(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
-    axIn1.plot(omegaVec, np.real(cond2), color = 'lightsteelblue', linewidth = 1.5, linestyle = '-', label = "g = {}".format(0.1))
-    axIn1.plot(omegaVec, np.real(cond3), color = 'black', linewidth = .5, linestyle = '-', label = "g = {}".format(0))
+#    axIn1.plot(omegaVec, np.real(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
+#    axIn1.plot(omegaVec, np.real(cond2), color = 'lightsteelblue', linewidth = 1.5, linestyle = '-', label = "g = {}".format(0.1))
+#    axIn1.plot(omegaVec, np.real(cond3), color = 'black', linewidth = .5, linestyle = '-', label = "g = {}".format(0))
+#
+#    axIn1.set_ylim(0.979, 1.001)
+#    axIn1.set_xlim(-0.001, 0.001)
+#
+#    axIn1.set_yticks([0.98, 1.])
+#    axIn1.set_xticks([])
+#    #axIn1.set_xticklabels([r'$-2$', r'$-1$', r'$0$', r'$1$', r'$2$', ])
+#    axIn1.tick_params(axis='both', which='major', labelsize=fontsize)
 
-    axIn1.set_ylim(0.979, 1.001)
-    axIn1.set_xlim(-0.001, 0.001)
-
-    axIn1.set_yticks([0.98, 1.])
-    axIn1.set_xticks([])
-    #axIn1.set_xticklabels([r'$-2$', r'$-1$', r'$0$', r'$1$', r'$2$', ])
-    axIn1.tick_params(axis='both', which='major', labelsize=fontsize)
-
-    axIn2.plot(etasLabels, gsKinetics, color = 'black', linewidth = 1.)
-    axIn2.plot(etasLabels, 1. / np.pi * intConductivities, color = 'red', linewidth = 1., linestyle = '--')
+    #axIn2.plot(etasLabels, gsKinetics, color = 'black', linewidth = 1., label = r'\langle - e_{\mathrm{kin}} \rangle')
+    axIn2.plot(etasLabels, gsKinetics, color = 'black', linewidth = 1.5, label = r'$\langle - e_{\mathrm{kin}} \rangle$')
+    axIn2.plot(etasLabels, 1. / np.pi * intConductivities, color = 'red', linewidth = 1.5, linestyle = '--', label = r'$\int \sigma(\omega) d \omega$')
     yLimBot = np.amin(gsKinetics) - 0.001
-    yLimTop = np.amax(gsKinetics) + 0.001
+    yLimTop = np.amax(gsKinetics) + 0.004
     axIn2.set_ylim(yLimBot, yLimTop)
-    #axIn2.set_yticks([0.625, 0.635])
+    axIn2.set_yticks([0.633, 0.64])
+    axIn2.set_yticklabels(['$0.633$', '$0.640$'], fontsize = fontsize - 2)
     axIn2.set_xticks([0, 2])
-    axIn2.set_xticklabels(['$g = 0$', '$g = 2$'])
-    axIn2.vlines(0., yLimBot, yLimTop, color = 'black', linestyle = 'dotted', linewidth = 1.)
-    axIn2.vlines(0.1, yLimBot, yLimTop, color = 'lightsteelblue', linestyle = 'dotted', linewidth = 1.)
-    axIn2.vlines(1., yLimBot, yLimTop, color = 'tan', linestyle = 'dotted', linewidth = 1.)
-    axIn2.tick_params(axis='both', which='major', labelsize=fontsize)
+    axIn2.set_xticklabels(['$g = 0$', '$g = 2$'], fontsize = fontsize - 2)
+    axIn2.vlines(0., yLimBot, yLimTop, color = 'black', linestyle = 'dotted', linewidth = 1.5)
+    axIn2.vlines(0.1, yLimBot, yLimTop, color = 'lightsteelblue', linestyle = 'dotted', linewidth = 1.5)
+    axIn2.vlines(1., yLimBot, yLimTop, color = 'tan', linestyle = 'dotted', linewidth = 1.5)
+    axIn2.tick_params(axis='both', which='major', labelsize=fontsize - 2)
 
     #axIn2.set_xlabel('$g$', fontsize=fontsize)
-    axIn2.set_ylabel(r'$-e_{\mathrm{kin}}$', fontsize=fontsize)
+    axIn2.set_ylabel(r'$e[t_h]$', fontsize=fontsize - 2, labelpad=-5)
 
 
     legend = ax.legend(fontsize = fontsize, loc = 'upper center', bbox_to_anchor=(.25, 1.05), edgecolor = 'black', ncol = 1)
     legend.get_frame().set_alpha(0.0)
     legend.get_frame().set_boxstyle('Square', pad=0.0)
     legend.get_frame().set_linewidth(0)
+
+    legend = axIn2.legend(fontsize = fontsize - 2, loc = 'upper right', bbox_to_anchor=(1.03, 1.04), edgecolor = 'black', ncol = 1)
+    legend.get_frame().set_alpha(1.0)
+    legend.get_frame().set_boxstyle('Square', pad=0.0)
+    legend.get_frame().set_linewidth(0.25)
 
     plt.savefig('conductivityGS.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
@@ -572,36 +585,36 @@ def plotAnalyticalConductivityImaginary(eta1, eta2, eta3):
 
     fac = np.sqrt(1 - 2. * eta1 * eta1 / (prms.w0) * gsT)
 
-    omegaVec = np.linspace(-60 , 60, 4000000 , endpoint=True)
-    delta = 0.005
+    omegaVec = np.linspace(-500, 500, 150000 , endpoint=True)
+    #omegaVec = np.linspace(-50, 50, 15000 , endpoint=True)
+    delta = 0.02
 
-    #cond1 = calcConductivity(omegaVec, delta, eta1)
-    #cond2 = calcConductivity(omegaVec, delta, eta2)
-    #cond3 = calcConductivity(omegaVec, delta, eta3)
+    cond1, cond2, cond3 = loadConductivities()
 
-    cond1 = calcConductivity.calcConductivityNum(omegaVec, delta, eta1)
-    cond2 = calcConductivity.calcConductivityNum(omegaVec, delta, eta2)
-    cond3 = calcConductivity.calcConductivityNum(omegaVec, delta, eta3)
-
-    cond1 = cond1 / np.amax(np.imag(cond3))
-    cond2 = cond2 / np.amax(np.imag(cond3))
-    cond3 = cond3 / np.amax(np.imag(cond3))
+    cond1 = 2. * np.pi * cond1
+    cond2 = 2. * np.pi * cond2
+    cond3 = 2. * np.pi * cond3
 
     etas = np.linspace(0., 2., 20) * 1. / np.sqrt(prms.chainLength)
 
     fig = plt.figure()
-    fig.set_size_inches(0.5 * 16. / 4., 0.5 * 12 / 4.)
+    fig.set_size_inches(0.65 * 16. / 4., 0.65 * 12 / 4.)
 
     ax = fig.add_subplot(111)
 
-    left, bottom, width, height = [0.16, 0.65, 0.3, 0.2]
-    axIn1 = fig.add_axes([left, bottom, width, height])
+    #left, bottom, width, height = [0.16, 0.65, 0.3, 0.2]
+    #axIn1 = fig.add_axes([left, bottom, width, height])
+#
+    #left, bottom, width, height = [0.675, 0.14, 0.2, 0.2]
+    #axIn2 = fig.add_axes([left, bottom, width, height])
 
-    left, bottom, width, height = [0.675, 0.14, 0.2, 0.2]
-    axIn2 = fig.add_axes([left, bottom, width, height])
+    for axis in ['top', 'bottom', 'left', 'right']:
+        ax.spines[axis].set_linewidth(0.5)
+    #    axIn2.spines[axis].set_linewidth(0.5)
 
-    ax.plot(omegaVec, np.imag(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
+
     ax.plot(omegaVec, np.imag(cond2), color = 'lightsteelblue', linewidth = 1.5, linestyle = '-', label = "g = {}".format(0.1))
+    ax.plot(omegaVec, np.imag(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
     ax.plot(omegaVec, np.imag(cond3), color = 'black', linewidth = .5, linestyle = '-', label = "g = {}".format(0))
 
 
@@ -615,55 +628,81 @@ def plotAnalyticalConductivityImaginary(eta1, eta2, eta3):
     ax.tick_params(axis='both', which='major', labelsize=fontsize)
 
     ax.set_xlabel('$\omega$', fontsize=fontsize)
-    ax.set_ylabel('Im$(\sigma)$', fontsize=fontsize)
+    ax.set_ylabel(r'Im$(\sigma)[\frac{e^2}{h}]$', fontsize=fontsize)
 
-    axIn1.plot(omegaVec, np.imag(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
-    axIn1.plot(omegaVec, np.imag(cond2), color = 'lightsteelblue', linewidth = 1.5, linestyle = '-', label = "g = {}".format(0.1))
-    axIn1.plot(omegaVec, np.imag(cond3), color = 'black', linewidth = .5, linestyle = '-', label = "g = {}".format(0))
+    #axIn1.plot(omegaVec, np.imag(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
+    #axIn1.plot(omegaVec, np.imag(cond2), color = 'lightsteelblue', linewidth = 1.5, linestyle = '-', label = "g = {}".format(0.1))
+    #axIn1.plot(omegaVec, np.imag(cond3), color = 'black', linewidth = .5, linestyle = '-', label = "g = {}".format(0))
 
-    xlimBot = -1.15
-    xlimTop = -0.85
-    ylimBot = -0.018
-    ylimTop = -0.002
-    axIn1.set_xlim(xlimBot, xlimTop)
-    axIn1.set_ylim(ylimBot, ylimTop)
-    axIn1.set_xticks([])
-    axIn1.set_yticks([])
+    #xlimBot = -1.15
+    #xlimTop = -0.85
+    #ylimBot = -0.018
+    #ylimTop = -0.002
+    #axIn1.set_xlim(xlimBot, xlimTop)
+    #axIn1.set_ylim(ylimBot, ylimTop)
+    #axIn1.set_xticks([])
+    #axIn1.set_yticks([])
 
-    rect = patches.Rectangle((xlimBot, -0.04), xlimTop - xlimBot, 0.07, linewidth=.4, edgecolor='black', facecolor='none', zorder = 100)
-    ax.add_patch(rect)
-    ax.plot([xlimBot, -2.055], [0.03, 0.425], linewidth = .5, color = 'black')
-    ax.plot([xlimTop, -0.3], [0.03, 0.425], linewidth = .5, color = 'black')
+    #rect = patches.Rectangle((xlimBot, -0.04), xlimTop - xlimBot, 0.07, linewidth=.4, edgecolor='black', facecolor='none', zorder = 100)
+    #ax.add_patch(rect)
+    #ax.plot([xlimBot, -2.055], [0.03, 0.425], linewidth = .5, color = 'black')
+    #ax.plot([xlimTop, -0.3], [0.03, 0.425], linewidth = .5, color = 'black')
 
-    axIn2.plot(omegaVec, np.imag(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
-    axIn2.plot(omegaVec, np.imag(cond2), color = 'lightsteelblue', linewidth = 1.5, linestyle = '-', label = "g = {}".format(0.1))
-    axIn2.plot(omegaVec, np.imag(cond3), color = 'black', linewidth = .5, linestyle = '-', label = "g = {}".format(0))
+    #axIn2.plot(omegaVec, np.imag(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
+    #axIn2.plot(omegaVec, np.imag(cond2), color = 'lightsteelblue', linewidth = 1.5, linestyle = '-', label = "g = {}".format(0.1))
+    #axIn2.plot(omegaVec, np.imag(cond3), color = 'black', linewidth = .5, linestyle = '-', label = "g = {}".format(0))
 
-    xlimBot = -0.007
-    xlimTop = -0.003
-    ylimBot = -1.001
-    ylimTop = -0.979
-    axIn2.set_xlim(xlimBot, xlimTop)
-    axIn2.set_ylim(ylimBot, ylimTop)
-    axIn2.set_xticks([])
-    axIn2.set_yticks([-1., -0.98])
-    axIn2.set_yticklabels(['${-}1.0$', '${-}0.98$'])
-    axIn2.tick_params(axis='both', which='major', labelsize=fontsize - 4, pad = 0)
+    #xlimBot = -0.007
+    #xlimTop = -0.003
+    #ylimBot = -1.001
+    #ylimTop = -0.979
+    #axIn2.set_xlim(xlimBot, xlimTop)
+    #axIn2.set_ylim(ylimBot, ylimTop)
+    #axIn2.set_xticks([])
+    #axIn2.set_yticks([-1., -0.98])
+    #axIn2.set_yticklabels(['${-}1.0$', '${-}0.98$'])
+    #axIn2.tick_params(axis='both', which='major', labelsize=fontsize - 4, pad = 0)
 
     #rect = patches.Rectangle((xlimBot, ylimBot), xlimTop - xlimBot, ylimTop - ylimBot, linewidth=.4, edgecolor='black', facecolor='none', zorder = 100)
-    rect = patches.Rectangle((-0.06, -1.025), 0.1, 0.1, linewidth=.4, edgecolor='black', facecolor='none', zorder = 100)
-    ax.add_patch(rect)
+    #rect = patches.Rectangle((-0.06, -1.025), 0.1, 0.1, linewidth=.4, edgecolor='black', facecolor='none', zorder = 100)
+    #ax.add_patch(rect)
 
-    legend = ax.legend(fontsize = fontsize, loc = 'upper center', bbox_to_anchor=(.9, 1.3), edgecolor = 'black', ncol = 1)
-    legend.get_frame().set_alpha(1.0)
+    legend = ax.legend(fontsize = fontsize, loc = 'upper center', bbox_to_anchor=(.25, 1.05), edgecolor = 'black', ncol = 1)
+    legend.get_frame().set_alpha(0.0)
     legend.get_frame().set_boxstyle('Square', pad=0.1)
-    #legend.get_frame().set_linewidth(0)
+    legend.get_frame().set_linewidth(0)
 
     plt.savefig('conductivityGSImaginary.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
+def saveConductivities(cond1, cond2, cond3):
+    file = h5py.File("data/conductivities.h5", 'w')
+    file.create_dataset("cond1", data=cond1)
+    file.create_dataset("cond2", data=cond2)
+    file.create_dataset("cond3", data=cond3)
+    file.close()
 
+
+def saveIntConductivities(intConductivities):
+    file = h5py.File("data/intConductivities.h5", 'w')
+    file.create_dataset("intCond", data=intConductivities)
+    file.close()
+
+def loadConductivities():
+    file = h5py.File("data/conductivities.h5", 'r')
+    cond1 = file["cond1"][()]
+    cond2 = file["cond2"][()]
+    cond3 = file["cond3"][()]
+    file.close()
+    return (cond1, cond2, cond3)
+
+
+def loadIntConductivities():
+    file = h5py.File("data/intConductivities.h5", 'r')
+    intCond = file["intCond"][()]
+    file.close()
+    return intCond
 
 def integratedConductivityArr(omegaVec, delta, etas):
     intConductivity = np.zeros(len(etas))

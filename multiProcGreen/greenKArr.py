@@ -10,11 +10,14 @@ def nonEqGreenMultiProc(kVec, wVec, tAv, eta, damping, cohN):
 
     startTime = time.time()
 
-    gfNonEqCohOnlyKArg = partial(nonEqGreenPoint.gfCohWLesser, wRel = wVec, tAv = tAv, eta = eta, damping = damping, N = cohN)
+    gfNonEqCohOnlyKArg = partial(nonEqGreenPoint.gfCohW, wRel = wVec, tAv = tAv, eta = eta, damping = damping, N = cohN)
+    gfNonEqCohOnlyKArgTurned = partial(nonEqGreenPoint.gfCohWTurned, wRel = wVec, tAv = tAv, eta = eta, damping = damping, N = cohN)
 
     pool = Pool()
 
     gf = pool.map(gfNonEqCohOnlyKArg, kVec)
+    gfTurned = pool.map(gfNonEqCohOnlyKArgTurned, kVec)
+    gf = np.array(gf) + np.array(gfTurned)
     #gf = np.array([nonEqGreenPoint.gfCohWLesser(k, wRel = wVec, tAv = tAv, eta = eta, damping = damping, N = cohN) for k in kVec])
     #print("gf.shape = {}".format(gf.shape))
 

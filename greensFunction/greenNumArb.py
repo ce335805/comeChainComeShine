@@ -48,10 +48,10 @@ def gfNumPointTGreater(kVec, tVec, eta):
 
 
 def gfNumVecTGreater(kVec, tVec, eta, damping):
-    gs = arbOrder.findGS(eta, 3)
-    _, occupations = np.meshgrid(np.ones(tVec.shape), gs[:])
+    #gs = arbOrder.findGS(eta, 3)
+    #_, occupations = np.meshgrid(np.ones(tVec.shape), gs[:])
     GF = gfNumPointTGreater(kVec, tVec, eta)
-    GF = np.multiply(1 - occupations, GF)
+    #GF = np.multiply(1 - occupations, GF)
     dampingArr, _ = np.meshgrid(np.exp(- damping * np.abs(tVec)), np.ones(kVec.shape))
     GF = np.multiply(dampingArr, GF)
 

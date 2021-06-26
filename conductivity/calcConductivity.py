@@ -8,6 +8,7 @@ import scipy.linalg as sciLin
 import fourierTrafo as FT
 from arb_order import arbOrder
 from coherentState import coherentState
+import matplotlib.pyplot as plt
 
 def calcConductivityAna(omegaVec, delta, eta):
     gsT = - 2. / np.pi * prms.chainLength
@@ -17,30 +18,31 @@ def calcConductivityAna(omegaVec, delta, eta):
     drudePart = -1j / (omegaVec + 1j * delta) * gsT / prms.chainLength * (1 - eta ** 2 / (2. * fac) )
 
     currentcurrentPart = - 1j * eta**2 / fac * (1j / (omegaVec - fac * prms.w0 + 1j * delta) - 1j / (omegaVec + fac * prms.w0 + 1j * delta))
+
     cavityPart = gsT ** 2 / prms.chainLength * 1j / (omegaVec + 1j * delta) * currentcurrentPart
     #cavityPart = gsT ** 2 / prms.chainLength * currentcurrentPart
 
-    cond = 0. * drudePart + cavityPart
+    cond = drudePart + cavityPart
     return cond
 
 def calcConductivityNum(omegaVec, delta, eta):
     gsT = - 2. / np.pi * prms.chainLength
 
-    fac = expectationCos(eta)
-    #fac = 1. - eta**2 /(2. * np.sqrt(1. - 2. * eta**2 / prms.w0 * gsT))
-    drudePart = -1j / (omegaVec + 1j * delta) * gsT / prms.chainLength * fac
+    eKinSupp = expectationCos(eta)
+    #eKinSuppAna = 1. - eta**2 /(2. * np.sqrt(1. - 2. * eta**2 / prms.w0 * gsT))
 
-    #currentcurrentPart = eta**2 / fac * (1j / (omegaVec - fac * prms.w0 + 1j * delta) - 1j / (omegaVec + fac * prms.w0 + 1j * delta))
+    drudePart = -1j / (omegaVec + 1j * delta) * gsT / prms.chainLength * eKinSupp
+
     currentcurrentPart = expectationSinSinW(omegaVec, eta, delta)
-    cavityPart = gsT ** 2 / prms.chainLength * 1j / (omegaVec + 1j * delta) * currentcurrentPart
-    #cavityPart = gsT ** 2 / prms.chainLength * currentcurrentPart
-    cond = 0. * drudePart + cavityPart
+    #need extra '-' at omega since I calculate correlator as function of -w
+    #extra conj also because of negative frequencies
+    cavityPart = np.conj(gsT ** 2 / prms.chainLength * 1j / (-omegaVec + 1j * delta) * currentcurrentPart)
+    cond = drudePart + cavityPart
     return cond
 
 def expectationCos(eta):
 
     phGS = getPhGS(eta)
-    gsT = - 2./np.pi * prms.chainLength
     #phGS = coherentState.getSqueezedState(eta, gsT)
     x = eta * (np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) + np.diag(
         np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1))
@@ -49,6 +51,13 @@ def expectationCos(eta):
     cosExpectation = np.dot(np.transpose(np.conj(phGS)), np.dot(cosX, phGS))
 
     return cosExpectation
+
+def gsEffectiveKineticEnergyArrayNum(etaArr):
+    gsT = - 2./np.pi * prms.chainLength
+    gsKinetics = np.zeros(len(etaArr))
+    for etaInd, eta in enumerate(etaArr):
+        gsKinetics[etaInd] = np.real(expectationCos(eta)) * gsT / prms.chainLength
+    return gsKinetics
 
 
 def expectationSinSin(tVec, eta):
@@ -71,9 +80,9 @@ def expectationSinSin(tVec, eta):
         res = np.dot( np.conj(phGS), prod4)
         expectationSin[tInd] = res
 
-    #gsT = - 2. / np.pi * prms.chainLength
-    #fac = np.sqrt(1 - 2. * eta * eta / (prms.w0) * gsT)
-    #expectationSin = eta**2 / fac * np.exp(-1j * prms.w0 * fac * tVec)
+    gsT = - 2. / np.pi * prms.chainLength
+    fac = np.sqrt(1 - 2. * eta * eta / (prms.w0) * gsT)
+    expectationSin = eta**2 / fac * np.exp(-1j * prms.w0 * fac * tVec)
 
     return 1j * expectationSin
 
@@ -97,24 +106,19 @@ def expectationSinSinTurned(tVec, eta):
         res = np.dot( np.conj(phGS), prod4)
         expectationSin[tInd] = res
 
-    #gsT = - 2. / np.pi * prms.chainLength
-    #fac = np.sqrt(1 - 2. * eta * eta / (prms.w0) * gsT)
-    #expectationSin = eta**2 / fac * np.exp(1j * prms.w0 * fac * tVec)
+    gsT = - 2. / np.pi * prms.chainLength
+    fac = np.sqrt(1 - 2. * eta * eta / (prms.w0) * gsT)
+    expectationSin = eta**2 / fac * np.exp(1j * prms.w0 * fac * tVec)
 
     return 1j * expectationSin
 
 
 def expectationSinSinW(wVec, eta, damping):
     tVec = FT.tVecFromWVec(wVec)
-    #take negative sign to get FT with corret prefactor in exponential
-    tVecPos = tVec[len(tVec) // 2: ]
-    #tVecNeg = tVec[ : len(tVec) // 2 + 1]
-    #print(tVecNeg)
-    #expSinSinPos = expectationSinSin(tVecNeg, eta)
-    #expSinSinPosTurned = expectationSinSinTurned(tVecNeg, eta)
+    tVecPos = tVec[len(tVec) // 2 : ]
     expSinSinPos = expectationSinSin(tVecPos, eta)
     expSinSinPosTurned = expectationSinSinTurned(tVecPos, eta)
-    expSinSinPos = expSinSinPos - expSinSinPosTurned
+    expSinSinPos = - expSinSinPos + expSinSinPosTurned
     Zeros = np.zeros((len(tVec)//2), dtype='complex')
     #expSinSin = np.concatenate((expSinSinPos, Zeros), axis=0)
     expSinSin = np.concatenate((Zeros, expSinSinPos), axis=0)

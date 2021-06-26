@@ -26,36 +26,15 @@ def gfPointTCoh(kPoint, tRel, tAv, eta, N):
         np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1))
     sinX = sciLin.sinm(x)
     cosX = sciLin.cosm(x)
-    #iHtSinCosTRel = - 1j * H[None, :, :] * tRel[:, None, None] \
-    #                - 1j * gk * sinX[None, :, :] * tRel[:, None, None] \
-    #                - 1j * eK * cosX[None, :, :] * tRel[:, None, None]
-    #iHTRelMTAv = - 1j * H[None, None, :, :] * (1. * tAv[None, :, None, None] - .5 * tRel[:, None, None, None])
-    #iHTRelPTAv = 1j * H[None, None, :, :] * (1. * tAv[None, :, None, None] + .5 * tRel[:, None, None, None])
 
     HSinCos = H + gk * sinX + eK * cosX
-    #iHTRelMTAv = H[None, None, :, :] * (1. * tAv[None, :, None, None] - .5 * tRel[:, None, None, None])
-    #iHTRelPTAv = H[None, None, :, :] * (1. * tAv[None, :, None, None] + .5 * tRel[:, None, None, None])
 
     timeStop = time.time()
     print("setUpMatricies take: {}".format(timeStop - timeStart))
 
     timeStart = time.time()
 
-    #expiHt, expiHtDash, exptRel = setUpExponentialMatricies(iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel, tAv, tRel)
-
-    #print("iHtSinCosTRel.shape = {}".format(iHtSinCosTRel.shape))
-    #exptRel = np.zeros((len(tRel), prms.maxPhotonNumber, prms.maxPhotonNumber), dtype=complex)
-    #for tRelInd in range(len(tRel)):
-    #    exptRel[tRelInd] = sciLin.expm(iHtSinCosTRel[tRelInd, :, :])
     expiHt, expiHtDash, exptRel = setUpExponentialMatricies(H, HSinCos, tRel, tAv)
-
-    #expiHt = np.zeros((len(tRel), len(tAv), prms.maxPhotonNumber, prms.maxPhotonNumber), dtype=complex)
-    #expiHtDash = np.zeros((len(tRel), len(tAv), prms.maxPhotonNumber, prms.maxPhotonNumber), dtype=complex)
-    #for tAvInd in range(len(tAv)):
-    #    for tRelInd in range(len(tRel)):
-    #        expiHt[tRelInd, tAvInd, :, :] = sciLin.expm(iHTRelPTAv[tRelInd, tAvInd, :, :])
-    #        expiHtDash[tRelInd, tAvInd, :, :] = sciLin.expm(iHTRelMTAv[tRelInd, tAvInd, :, :])
-
 
     timeStop = time.time()
     print("setUpExponentialMatricies take: {}".format(timeStop - timeStart))
@@ -67,6 +46,39 @@ def gfPointTCoh(kPoint, tRel, tAv, eta, N):
 
     return - 1j * GF
 
+def gfPointTCohTurned(kPoint, tRel, tAv, eta, N):
+    phState = coherentState.getCoherentStateForN(N)
+    H = getH(eta)
+
+    timeStart = time.time()
+    #iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel = setUpMatricies(kPoint, H, tAv, tRel, eta)
+
+    gk = - 2. * prms.t * np.sin(kPoint)
+    eK = 2. * prms.t * np.cos(kPoint)
+    x = eta * (np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) + np.diag(
+        np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1))
+    sinX = sciLin.sinm(x)
+    cosX = sciLin.cosm(x)
+
+    HSinCos = H - gk * sinX - eK * cosX
+
+    timeStop = time.time()
+    print("setUpMatricies take: {}".format(timeStop - timeStart))
+
+    timeStart = time.time()
+
+    expiHt, expiHtDash, exptRel = setUpExponentialMatricies(H, HSinCos, tRel, tAv)
+
+    timeStop = time.time()
+    print("setUpExponentialMatricies take: {}".format(timeStop - timeStart))
+
+    timeStart = time.time()
+    GF = evaluateBraKetTurned(expiHt, expiHtDash, exptRel, kPoint, phState, tAv, tRel)
+    timeStop = time.time()
+    print("evaluateBraKet take: {}".format(timeStop - timeStart))
+
+    return + 1j * GF
+
 
 def gfCohExpDamping(kPoint, tRel, tAv, eta, damping, N):
     dampExptRel = np.exp(- damping * np.abs(tRel))
@@ -74,8 +86,16 @@ def gfCohExpDamping(kPoint, tRel, tAv, eta, damping, N):
     GFDamp = GF[:, :] * dampExptRel[:, None]
     return GFDamp
 
+def gfCohExpDampingTurned(kPoint, tRel, tAv, eta, damping, N):
+    dampExptRel = np.exp(- damping * np.abs(tRel))
+    GF = gfPointTCohTurned(kPoint, tRel, tAv, eta, N)
+    GFDamp = GF[:, :] * dampExptRel[:, None]
+    return GFDamp
 
-def gfCohWGreater(kPoint, wRel, tAv, eta, damping, N):
+def gfCohW(kPoint, wRel, tAv, eta, damping, N):
+    if(np.abs(kPoint) < np.pi / 2.):
+        print("returning zero non turned")
+        return np.zeros((len(wRel), len(tAv)))
     tRel = FT.tVecFromWVec(wRel)
     tRelPos = tRel[len(tRel) // 2:]
     GFT = gfCohExpDamping(kPoint, tRelPos, tAv, eta, damping, N)
@@ -83,18 +103,25 @@ def gfCohWGreater(kPoint, wRel, tAv, eta, damping, N):
     GFT = np.concatenate((GFZero, GFT), axis=0)
     _, GFW = FT.FTOneOfTwoTimesPoint(tRel, GFT)
 
-    return GFW
+    if(np.abs(np.abs(kPoint) - np.pi / 2.) < 1e-12):
+        return .5 * GFW
+    else:
+        return GFW
 
-
-def gfCohWLesser(kPoint, wRel, tAv, eta, damping, N):
+def gfCohWTurned(kPoint, wRel, tAv, eta, damping, N):
+    if(np.abs(kPoint) > np.pi / 2.):
+        return np.zeros((len(wRel), len(tAv)))
     tRel = FT.tVecFromWVec(wRel)
-    tRelNeg = tRel[: len(tRel) // 2 + 1]
-    GFT = gfCohExpDamping(kPoint, tRelNeg, tAv, eta, damping, N)
-    GFZero = np.zeros((len(tRel) // 2 - 1, len(tAv)), dtype='complex')
-    GFT = np.concatenate((GFT, GFZero), axis=0)
+    tRelPos = tRel[len(tRel) // 2:]
+    GFT = gfCohExpDampingTurned(kPoint, tRelPos, tAv, eta, damping, N)
+    GFZero = np.zeros((len(tRel) // 2, len(tAv)), dtype='complex')
+    GFT = np.concatenate((GFZero, GFT), axis=0)
     _, GFW = FT.FTOneOfTwoTimesPoint(tRel, GFT)
 
-    return GFW
+    if(np.abs(np.abs(kPoint) - np.pi / 2.) < 1e-12):
+        return .5 * GFW
+    else:
+        return GFW
 
 
 def gfPointTGS(kPoint, tRel, tAv, eta):
@@ -169,6 +196,24 @@ def evaluateBraKet(expiHt, expiHtDash, exptRel, kVec, phState, tAv, tRel):
                 GF[tRelInd, tAvInd] = np.dot(np.conj(phState[:]), prod3[tRelInd, tAvInd, :])
     return GF
 
+def evaluateBraKetTurned(expiHt, expiHtDash, exptRel, kVec, phState, tAv, tRel):
+    prod1 = np.zeros((len(tRel), len(tAv), prms.maxPhotonNumber), dtype='complex')
+    for tAvInd in range(len(tAv)):
+        for tRelInd in range(len(tRel)):
+            prod1[tRelInd, tAvInd, :] = np.dot(np.conj(expiHt[tRelInd, tAvInd, :, :]), phState[:])
+    prod2 = np.zeros((len(tRel), len(tAv), prms.maxPhotonNumber), dtype='complex')
+    for tAvInd in range(len(tAv)):
+        for tRelInd in range(len(tRel)):
+                prod2[tRelInd, tAvInd, :] = np.dot(np.conj(exptRel[tRelInd, :, :]), prod1[tRelInd, tAvInd, :])
+    prod3 = np.zeros((len(tRel), len(tAv), prms.maxPhotonNumber), dtype='complex')
+    for tAvInd in range(len(tAv)):
+        for tRelInd in range(len(tRel)):
+                prod3[tRelInd, tAvInd, :] = np.dot(np.conj(expiHtDash[tRelInd, tAvInd, :, :]), prod2[tRelInd, tAvInd, :])
+    GF = np.zeros((len(tRel), len(tAv)), dtype='complex')
+    for tAvInd in range(len(tAv)):
+        for tRelInd in range(len(tRel)):
+                GF[tRelInd, tAvInd] = np.dot(np.conj(phState[:]), prod3[tRelInd, tAvInd, :])
+    return GF
 
 #def setUpExponentialMatricies(iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel, tAv, tRel):
 #    print("iHtSinCosTRel.shape = {}".format(iHtSinCosTRel.shape))
@@ -201,26 +246,22 @@ def setUpExponentialMatricies(H, HSinCos, tRel, tAv):
             expiHt[tRelInd, tAvInd, :, :] = np.dot(eVecsH, np.dot(np.diag(np.exp(1j * eValsH * (1. * tAvVal + .5 * tRelVal))), np.transpose(np.conj(eVecsH))))
             expiHtDash[tRelInd, tAvInd, :, :] = np.dot(eVecsH, np.dot(np.diag(np.exp(-1j * eValsH * (1. * tAvVal - .5 * tRelVal))), np.transpose(np.conj(eVecsH))))
 
-    print("exptRel.shape = {}".format(exptRel.shape))
-    print("expiHt.shape = {}".format(expiHt.shape))
-    print("expiHtDash.shape = {}".format(expiHtDash.shape))
-
     return expiHt, expiHtDash, exptRel
 
 
-def setUpMatricies(kPoint, H, tAv, tRel, eta):
-    gk = - 2. * prms.t * np.sin(kPoint)
-    eK = 2. * prms.t * np.cos(kPoint)
-    x = eta * (np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) + np.diag(
-        np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1))
-    sinX = sciLin.sinm(x)
-    cosX = sciLin.cosm(x)
-    iHtSinCosTRel = - 1j * H[None, :, :] * tRel[:, None, None] \
-                    - 1j * gk * sinX[None, :, :] * tRel[:, None, None] \
-                    - 1j * eK * cosX[None, :, :] * tRel[:, None, None]
-    iHTRelMTAv = - 1j * H[None, None, :, :] * (1. * tAv[None, :, None, None] - .5 * tRel[:, None, None, None])
-    iHTRelPTAv = 1j * H[None, None, :, :] * (1. * tAv[None, :, None, None] + .5 * tRel[:, None, None, None])
-    return iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel
+#def setUpMatricies(kPoint, H, tAv, tRel, eta):
+#    gk = - 2. * prms.t * np.sin(kPoint)
+#    eK = 2. * prms.t * np.cos(kPoint)
+#    x = eta * (np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) + np.diag(
+#        np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1))
+#    sinX = sciLin.sinm(x)
+#    cosX = sciLin.cosm(x)
+#    iHtSinCosTRel = - 1j * H[None, :, :] * tRel[:, None, None] \
+#                    - 1j * gk * sinX[None, :, :] * tRel[:, None, None] \
+#                    - 1j * eK * cosX[None, :, :] * tRel[:, None, None]
+#    iHTRelMTAv = - 1j * H[None, None, :, :] * (1. * tAv[None, :, None, None] - .5 * tRel[:, None, None, None])
+#    iHTRelPTAv = 1j * H[None, None, :, :] * (1. * tAv[None, :, None, None] + .5 * tRel[:, None, None, None])
+#    return iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel
 
 
 def getPhGS(eta):

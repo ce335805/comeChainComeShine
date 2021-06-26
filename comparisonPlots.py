@@ -9,6 +9,7 @@ def compareArrays(x, y1, y2):
     fig, ax = plt.subplots(nrows=1, ncols=1)
     ax.plot(x, y1, marker = '', color = 'skyblue', linestyle = '-')
     ax.plot(x, y2, marker='', color='black', linestyle='-', linewidth = .5)
+    ax.set_xlim(-3., 3.)
     #ax.plot(x, y3, marker='', color='wheat', linestyle='--')
 #    plt.legend()
     plt.show()

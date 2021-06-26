@@ -62,9 +62,9 @@ def main():
     #ftTests.runAllTests()
     #gsTests.runAllTests()
     #gsIsEigenstate.runAllTests()
-    nonEqTests.runAllTests()
+    #nonEqTests.runAllTests()
     #floquetTests.runAllTests()
-    exit()
+    #exit()
 
     #eta = 1. / np.sqrt(prms.chainLength)
     #gsJ = 0.
@@ -129,64 +129,65 @@ def main():
     #print(gsKintic)
     #exit()
 
-    eta1 = 1. / np.sqrt(prms.chainLength)
-    eta2 = 0.1 / np.sqrt(prms.chainLength)
-    #bPlots.plotAnalyticalConductivity(eta1, eta2, 0.)
-    #bPlots.plotAnalyticalConductivityImaginary(eta1, eta2, 0.)
-    delta = 0.01
-    wVec = np.linspace(-2., 2., 2000)
-    condAna = calcConductivity.calcConductivityAna(wVec, delta, eta1)
-    condNum = calcConductivity.calcConductivityNum(wVec, delta, eta1)
-    compPlot.compareArrays(wVec, np.real(condNum), np.real(condAna))
+#    eta1 = 1. / np.sqrt(prms.chainLength)
+#    eta2 = 0.1 / np.sqrt(prms.chainLength)
+#    bPlots.plotAnalyticalConductivity(eta1, eta2, 0.)
+#    bPlots.plotAnalyticalConductivityImaginary(eta1, eta2, 0.)
+    #delta = 0.02
+    #wVec = np.linspace(-30., 30., 30000, endpoint = False)
+    #condAna = calcConductivity.calcConductivityAna(wVec, delta, eta1)
+    #condNum = calcConductivity.calcConductivityNum(wVec, delta, eta1)
+    #compPlot.compareArrays(wVec, np.real(condNum), np.real(condAna))
+    #compPlot.compareArrays(wVec, np.imag(condNum), np.imag(condAna))
 
-    exit()
+    #exit()
 
     #calculate Green's function
 
 
-    damping = 0.025
-    eta = 1. / np.sqrt(prms.chainLength)
-    kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
-    wVec = np.linspace(-8, 8, 8000, endpoint=False)
-    #gAna2W = greenAna2nd.anaGreenVecW(kVec, wVec, eta, damping)
-    #gfNumInf = greenNumArb.numGreenVecWGreater(kVec, wVec, eta, damping) + greenNumArb.numGreenVecWLesser(kVec, wVec, eta, damping)
-    #GF = gfNumInf
-    #writeGreenToFile.writeGreen("data/eqGreenNum.h5", "gfEq", GF)
-    GF = readGreenFromFile.readGreen("data/eqGreenNum.h5", "gfEq")
-    bPlots.plotSpecLogDashed(wVec, 1. / np.sqrt(2. * np.pi) * np.imag(np.transpose(GF)), eta)
-
+#    damping = 0.025
+#    eta = 1. / np.sqrt(prms.chainLength)
+#    kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
+#    wVec = np.linspace(-8, 8, 8000, endpoint=False)
+#    #gAna2W = greenAna2nd.anaGreenVecW(kVec, wVec, eta, damping)
+#    #gfNumInf = greenNumArb.numGreenVecWGreater(kVec, wVec, eta, damping) + greenNumArb.numGreenVecWLesser(kVec, wVec, eta, damping)
+#    #GF = gfNumInf
+#    #writeGreenToFile.writeGreen("data/eqGreenNum.h5", "gfEq", GF)
+#    GF = readGreenFromFile.readGreen("data/eqGreenNum.h5", "gfEq")
+#    bPlots.plotSpecLogDashed(wVec, 1. / np.sqrt(2. * np.pi) * np.imag(np.transpose(GF)), eta)
+#
+#    exit()
 
     #greenNum1 = greenNum1st.spectralGreater(kVec, wVec, eta, damping)
     #greenAna1 = greenAna1st.spectralGreater(kVec, wVec, eta, damping)
     #compPlot.compareArraysLog(wVec, greenNum1[0, :], greenAna1[0, :])
 
-    exit()
-
+#    exit()
+#
     eta = 2. / np.sqrt(prms.chainLength)
     tau = 2. * np.pi / prms.w0
-    wVec = np.linspace(-4., 4., 2000, endpoint=False)
-    tAv = np.linspace(0. * tau, 1. * tau, 100, endpoint=False)
-    kVec = np.linspace(-np.pi, np.pi, 17, endpoint=True)
+    wVec = np.linspace(-4., 4., 1000, endpoint=False)
+    tauLength = 40
+    tAv = np.linspace(10. * tau, (10 + tauLength) * tau, 50, endpoint=False)
+    kVec = np.linspace(-np.pi, np.pi, 5, endpoint=True)
     damping = .05
-#
+
 #    gWFloquet = floquetKArr.floquetGreenMultiProc(kVec, wVec, tAv, eta, damping, 2)
 #    gWFloquetInt = 1. / (5 * tau) * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
 #    bPlots.greenWaterFallOnlyFloquet(kVec, wVec, gWFloquetInt)
-#
 #    exit()
 
 
     LArr = np.array([102, 102])
-
-    gfFloq = readGreenFromFile.readGreen("data/floquetGreenJ8.h5", "gfFloquet")
-    gfArr = readGreenFromFile.readGreen("data/nonEqGreenJ8.h5", "gfNonEq")
-    print("gfFloquet.shape = {}".format(gfFloq.shape))
-    print("gfArr.shape = {}".format(gfArr.shape))
-    bPlots.greenWaterFall(kVec, wVec, gfArr, LArr, gfFloq, .1)
-    exit()
+#    gfFloq = readGreenFromFile.readGreen("data/floquetGreenJ8.h5", "gfFloquet")
+#    gfArr = readGreenFromFile.readGreen("data/nonEqGreenJ8.h5", "gfNonEq")
+#    print("gfFloquet.shape = {}".format(gfFloq.shape))
+#    print("gfArr.shape = {}".format(gfArr.shape))
+#    bPlots.greenWaterFall(kVec, wVec, gfArr, LArr, gfFloq, .1)
+#    exit()
 
     gfArr = np.zeros((len(LArr), len(kVec), len(wVec)),dtype=complex)
-    gfFloq = np.zeros((len(kVec), len(wVec)),dtype=complex)
+    gfFloq = np.zeros((len(kVec), len(wVec)),dtype=complex) + 1e-5
     for lInd, lVal in enumerate(LArr):
         prms.chainLength = lVal
         prms.numberElectrons = lVal // 2
@@ -201,18 +202,19 @@ def main():
         prms.maxPhotonNumber = 10
 
         gfNonEq = greenKArr.nonEqGreenMultiProc(kVec, wVec, tAv, eta, damping, cohN)
-        gfNonEqN0 = 1. / (21. * tau) * (tAv[1] - tAv[0]) * np.sum(gfNonEq, axis=2)
+        print('gfNonEq.shape = {}'.format(gfNonEq.shape))
+        gfNonEqN0 = 1. / (tauLength * tau) * (tAv[1] - tAv[0]) * np.sum(gfNonEq, axis=2)
 
         gfArr[lInd, :, :] = gfNonEqN0
 
-        if(lInd == len(LArr) - 1):
-            gWFloquet = floquetKArr.floquetGreenMultiProc(kVec, wVec, tAv, eta, damping, cohN)
-            gWFloquetInt = 1. / (21. * tau) * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
-            gfFloq = gWFloquetInt
+        #if(lInd == len(LArr) - 1):
+        #    gWFloquet = floquetKArr.floquetGreenMultiProc(kVec, wVec, tAv, eta, damping, cohN)
+        #    gWFloquetInt = 1. / (tauLength * tau) * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
+        #    gfFloq = gWFloquetInt
 
 
-    writeGreenToFile.writeGreen("data/floquetGreen", "gfFloquet", gfFloq)
-    writeGreenToFile.writeGreen("data/nonEqGreen", "gfNonEq", gfArr)
+    #writeGreenToFile.writeGreen("data/floquetGreen", "gfFloquet", gfFloq)
+    #writeGreenToFile.writeGreen("data/nonEqGreen", "gfNonEq", gfArr)
 
     bPlots.greenWaterFall(kVec, wVec, gfArr, LArr, gfFloq, eta)
 

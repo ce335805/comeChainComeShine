@@ -224,13 +224,13 @@ def setUpExponentialMatricies(H, HSinCos, kVec, tRel, tAv):
     return expiHt, expiHtDash, exptRel
 
 
-def setUpMatricies(H, cosX, eK, gk, sinX, tAv, tRel):
-    iHtSinCosTRel = - 1j * H[None, None, :, :] * tRel[None, :, None, None] \
-                    - 1j * gk[:, None, None, None] * sinX[None, None, :, :] * tRel[None, :, None, None] \
-                    - 1j * eK[:, None, None, None] * cosX[None, None, :, :] * tRel[None, :, None, None]
-    iHTRelMTAv = - 1j * H[None, None, :, :] * (1. * tAv[None, :, None, None] - .5 * tRel[:, None, None, None])
-    iHTRelPTAv = 1j * H[None, None, :, :] * (1. * tAv[None, :, None, None] + .5 * tRel[:, None, None, None])
-    return iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel
+#def setUpMatricies(H, cosX, eK, gk, sinX, tAv, tRel):
+#    iHtSinCosTRel = - 1j * H[None, None, :, :] * tRel[None, :, None, None] \
+#                    - 1j * gk[:, None, None, None] * sinX[None, None, :, :] * tRel[None, :, None, None] \
+#                    - 1j * eK[:, None, None, None] * cosX[None, None, :, :] * tRel[None, :, None, None]
+#    iHTRelMTAv = - 1j * H[None, None, :, :] * (1. * tAv[None, :, None, None] - .5 * tRel[:, None, None, None])
+#    iHTRelPTAv = 1j * H[None, None, :, :] * (1. * tAv[None, :, None, None] + .5 * tRel[:, None, None, None])
+#    return iHTRelMTAv, iHTRelPTAv, iHtSinCosTRel
 
 
 def getPhGS(eta):
