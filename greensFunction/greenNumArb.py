@@ -48,10 +48,13 @@ def gfNumPointTGreater(kVec, tVec, eta):
 
 
 def gfNumVecTGreater(kVec, tVec, eta, damping):
-    #gs = arbOrder.findGS(eta, 3)
-    #_, occupations = np.meshgrid(np.ones(tVec.shape), gs[:])
+    if(len(kVec) == prms.chainLength):
+        gs = arbOrder.findGS(eta, 3)
+    else:
+        gs = np.ones(len(kVec), dtype=complex)
+    _, occupations = np.meshgrid(np.ones(tVec.shape), gs[:])
     GF = gfNumPointTGreater(kVec, tVec, eta)
-    #GF = np.multiply(1 - occupations, GF)
+    GF = np.multiply(1 - occupations, GF)
     dampingArr, _ = np.meshgrid(np.exp(- damping * np.abs(tVec)), np.ones(kVec.shape))
     GF = np.multiply(dampingArr, GF)
 
@@ -96,7 +99,10 @@ def gfNumPointTLesser(kVec, tVec, eta):
 
 
 def gfNumVecTLesser(kVec, tVec, eta, damping):
-    gs = arbOrder.findGS(eta, 3)
+    if(len(kVec) == prms.chainLength):
+        gs = arbOrder.findGS(eta, 3)
+    else:
+        gs = np.ones(len(kVec), dtype=complex)
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[:])
     GF = gfNumPointTLesser(kVec, tVec, eta)
     GF = np.multiply(occupations, GF)

@@ -12,6 +12,7 @@ import fsShift.gsFromFSShift as fsShift
 from conductivity import calcConductivity
 import matplotlib.cm as cm
 import matplotlib.colors
+from mpl_toolkits.mplot3d import Axes3D
 
 import h5py
 
@@ -361,11 +362,11 @@ def greenWaterFall(kVec, wVec, gfNonEq, lArr, gfFloquet, eta):
 
 
             if (kInd == 0):
-                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3., label=labelString)
+                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 1., label=labelString)
 #                axIn1.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
 #                axIn2.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
             else:
-                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
+                ax.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 1.)
 #                axIn1.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
 #                axIn2.plot(wVec, quantumPlot[lInd, kInd, :], marker='', color=color, linestyle='-', linewidth = 3.)
 
@@ -398,7 +399,7 @@ def greenWaterFall(kVec, wVec, gfNonEq, lArr, gfFloquet, eta):
     #ax.text(-1.95, 45, "$\Omega$", fontsize = fontsize + 4)
 
     #rect = patches.Rectangle((-2.6, 2.), 1.5, 12.5, linewidth=1.5, edgecolor='black', facecolor='none', zorder = 100)
-    ax.add_patch(rect)
+    #ax.add_patch(rect)
 
 #    axIn1.set_ylim(2., 2. + 12.5)
 #    axIn1.set_yscale('log', subsy = [0])
@@ -421,7 +422,7 @@ def greenWaterFall(kVec, wVec, gfNonEq, lArr, gfFloquet, eta):
 
 
     #plt.savefig('waterfallWithInsets.pdf', format='pdf', bbox_inches='tight')
-    plt.savefig('waterfallWithInsetsNew.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('waterfallNew.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.show()
 
 
@@ -463,6 +464,140 @@ def greenWaterFallOnlyFloquet(kVec, wVec, gfFloquet):
 
 
     plt.savefig('waterfallFloquet2.pdf', format='pdf', bbox_inches='tight')
+    #plt.show()
+
+
+
+def quantumToFloquetCrossover(wVec, gfArr, gfFloq, etaArr, nArr):
+
+    fig = plt.figure()
+    fig.set_size_inches(.75 * 4., .75 * 4.)
+    ax = fig.add_subplot(111)
+
+    for axis in ['top', 'bottom', 'left', 'right']:
+        ax.spines[axis].set_linewidth(0.5)
+
+    cmap = plt.cm.get_cmap('gist_earth')
+    colorArr = [cmap(0.05), cmap(0.15), cmap(0.25), cmap(0.4), cmap(0.6), cmap(0.8)]
+    ax.plot(-wVec, np.imag(gfFloq) * (.35 * 1e1) ** (len(etaArr) - 1), color = 'red', label = 'Floquet', linewidth = 1., linestyle = '-')
+    for etaInd, eta in enumerate(etaArr):
+        #print(eta)
+        etaLabel = eta * np.sqrt(prms.chainLength)
+        #color = colorArr[etaInd]
+        color = 'black'
+        labelStr = r'$g = {:.2f}$'.format(etaLabel) + r', $| \alpha |^2$' + ' $= {:.1f}$'.format(nArr[etaInd])
+        if(etaInd == 0):
+            ax.plot(-wVec, np.imag(gfArr[etaInd, :]) * (.35 * 1e1) ** etaInd, color = color, label = 'Cavity', linewidth = .6)
+        else:
+            ax.plot(-wVec, np.imag(gfArr[etaInd, :]) * (.35 * 1e1) ** etaInd, color = color, linewidth = .6)
+
+
+    peakPos = 2. * prms.t * np.cos(3. / 8. * np.pi)
+
+    ax.set_yscale('log')
+    ax.set_xlim(-4., 2.5)
+    ax.set_ylabel(r"$A(k = \frac{3}{8}\pi, \omega)$", fontsize = 10, labelpad = 0)
+    ax.set_xlabel(r"$\omega$", fontsize = 10)
+    yLimBot = 1e-2
+    yLimTop = 1e12
+    ax.set_ylim(yLimBot, yLimTop)
+
+    ax.vlines(peakPos, yLimBot, yLimTop, color = 'lightsteelblue', linestyle = '-', linewidth = 0.7)
+    ax.vlines(peakPos + prms.w0, yLimBot, yLimTop, color = 'lightsteelblue', linestyle = '-', linewidth = 0.7)
+    ax.vlines(peakPos - prms.w0, yLimBot, yLimTop, color = 'lightsteelblue', linestyle = '-', linewidth = 0.7)
+
+    #ax.set_yticks([])
+
+    #ax.set_xticks([0., np.pi / 2., np.pi, 1.5 * np.pi, 2. * np.pi])
+    #ax.set_xticklabels(['0', r'$\frac{\pi}{2}$', '$\pi$', r'$\frac{3\pi}{2}$', '$2 \pi$'], fontsize = fontsize)
+
+    #ax.spines['right'].set_visible(False)
+
+    legend = ax.legend(fontsize = fontsize - 4, loc = 'upper right', bbox_to_anchor=(1.0, 1.0), edgecolor = 'black', ncol = 1)
+    legend.get_frame().set_alpha(1.)
+    legend.get_frame().set_boxstyle('Square', pad=0.1)
+    legend.get_frame().set_linewidth(0.0)
+
+    plt.savefig('crossover.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.tight_layout()
+    #plt.show()
+
+def quantumToFloquetCrossover3D(wVec, gfArr, gfFloq, etaArr, nArr):
+
+    fig = plt.figure()
+    fig.set_size_inches(.75 * 4., .75 * 2.)
+    ax = fig.add_subplot(111, projection = '3d')
+
+
+    for axis in ['top', 'bottom', 'left', 'right']:
+        ax.spines[axis].set_linewidth(0.5)
+
+    cmap = plt.cm.get_cmap('gist_earth')
+
+    colorArr = [cmap(0.05), cmap(0.15), cmap(0.25), cmap(0.4), cmap(0.6), cmap(0.8)]
+    for etaInd, eta in enumerate(etaArr):
+        #print(eta)
+        etaLabel = eta * np.sqrt(prms.chainLength)
+        color = colorArr[etaInd]
+        #color = 'black'
+        labelStr = r'$g = {:.2f}$'.format(etaLabel) + r', $| \alpha |^2$' + ' $= {:.1f}$'.format(nArr[etaInd])
+        etaArrY = np.ones(len(wVec)) * etaLabel
+        ax.plot(-wVec, etaArrY, np.log(np.imag(gfArr[etaInd, :])), etaInd, color=color, label=labelStr,linewidth=1.)
+    ax.plot(-wVec, np.ones((len(wVec))) * etaArr[-1] * np.sqrt(prms.chainLength), np.log(np.imag(gfFloq)), color = 'black', label = 'Floquet', linewidth = .35, linestyle = '--')
+
+
+    #ax.set_zscale('log')
+    ax.set_xlim(-4.5, 3.)
+    ax.set_zlabel(r"$\log (A(k = \frac{3}{8}\pi, \omega))$", fontsize = 10, labelpad = 0)
+    ax.set_xlabel(r"$\omega$", fontsize = 10)
+
+    ax.set_yticks([])
+
+    #ax.set_xticks([0., np.pi / 2., np.pi, 1.5 * np.pi, 2. * np.pi])
+    #ax.set_xticklabels(['0', r'$\frac{\pi}{2}$', '$\pi$', r'$\frac{3\pi}{2}$', '$2 \pi$'], fontsize = fontsize)
+
+    #ax.spines['right'].set_visible(False)
+
+    #legend = ax.legend(fontsize = fontsize - 4, loc = 'upper right', bbox_to_anchor=(1.1, 1.7), edgecolor = 'black', ncol = 1)
+    #legend.get_frame().set_alpha(1.)
+    #legend.get_frame().set_boxstyle('Square', pad=0.1)
+    #legend.get_frame().set_linewidth(0.5)
+
+    plt.savefig('crossover.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.tight_layout()
+    #plt.show()
+
+def quantumToFloquetCrossoverAFS(wVec, gfArr, gfFloq, etaArr, nArr):
+
+    fig = plt.figure()
+    fig.set_size_inches(.75 * 4., .75 * 2.)
+    ax = fig.add_subplot(111)
+
+    for axis in ['top', 'bottom', 'left', 'right']:
+        ax.spines[axis].set_linewidth(0.5)
+
+    cmap = plt.cm.get_cmap('gist_earth')
+    colorArr = [cmap(0.05), cmap(0.15), cmap(0.25), cmap(0.4), cmap(0.6), cmap(0.8)]
+    for etaInd, eta in enumerate(etaArr):
+        #print(eta)
+        etaLabel = eta * np.sqrt(prms.chainLength)
+        #color = cmap(nArr[etaInd] / (nArr[-1] + 0.5))
+        color = colorArr[etaInd]
+        labelStr = r'$g = {:.2f}$'.format(etaLabel) + r', $| \alpha |^2$' + ' $= {:.1f}$'.format(nArr[etaInd])
+        ax.plot(-wVec, np.imag(gfArr[etaInd, :]) * (.45 * 1e1) ** etaInd, color = color, label = labelStr, linewidth = 0.7)
+    ax.plot(-wVec, np.imag(gfFloq) * (.45 * 1e1) ** 5, color = 'black', label = 'Floquet', linewidth = .35, linestyle = '--')
+
+
+    ax.set_yscale('log')
+    ax.set_xlim(-3., 4.5)
+    ax.set_ylabel(r"$A(k = \frac{5}{8}\pi, \omega)$", fontsize = 10, labelpad = 0)
+    ax.set_xlabel(r"$\omega$", fontsize = 10)
+
+    #ax.set_xticks([0., np.pi / 2., np.pi, 1.5 * np.pi, 2. * np.pi])
+    #ax.set_xticklabels(['0', r'$\frac{\pi}{2}$', '$\pi$', r'$\frac{3\pi}{2}$', '$2 \pi$'], fontsize = fontsize)
+
+    plt.savefig('crossoverAFS.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.tight_layout()
     #plt.show()
 
 

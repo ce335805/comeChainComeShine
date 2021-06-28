@@ -36,7 +36,6 @@ def anaGreenVecTGreater(kVec, tVec, eta, damping):
     gsJ = eF.J(gs)
     gsT = eF.T(gs)
 
-    #_, occupations = np.meshgrid(np.ones(tVec.shape), gs[0: -1])
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs)
     GF = anaGreenPointTGreater(kVec, tVec, gsJ, eta)
     GF = np.multiply(1 - occupations, GF)

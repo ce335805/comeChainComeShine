@@ -35,12 +35,12 @@ def compareArraysLog(x, y1, y2, y3, y4):
     #saveString = "AwTavEQ" + str(tAv) + ".pdf"
     #plt.savefig(saveString)
 
-def finiteSizeErrors(x, e1, e2, e3, e4):
+def finiteSizeErrors(x, e1, e2):
     fig, ax = plt.subplots(nrows=1, ncols=1)
-    ax.loglog(x, e1, marker = 'x', color = 'lightsteelblue', linestyle = '-', label = 'Mean Error - 1', linewidth = 1.)
-    ax.loglog(x, e2, marker = 'x', color = 'tan', linestyle = '-', label = 'Max Error - 1', linewidth = 1.)
-    ax.loglog(x, e3, marker = 'x', color = 'red', linestyle = '-', label = 'Mean error', linewidth = 1., markersize = 7.)
-    ax.loglog(x, e4, marker = 'x', color = 'mediumseagreen', linestyle = '-', label = 'Max error', linewidth = 1., markersize = 7.)
+    ax.loglog(x, e1, marker = 'x', color = 'tan', linestyle = '-', label = 'Mean Error', linewidth = 1.)
+    ax.loglog(x, e2, marker = 'x', color = 'lightsteelblue', linestyle = '-', label = 'Max Error', linewidth = 1.)
+    #ax.loglog(x, e3, marker = 'x', color = 'red', linestyle = '-', label = 'Mean error', linewidth = 1., markersize = 7.)
+    #ax.loglog(x, e4, marker = 'x', color = 'mediumseagreen', linestyle = '-', label = 'Max error', linewidth = 1., markersize = 7.)
     ax.loglog(x, 1. / (x * np.sqrt(x)) * 2. * 1e1 , marker = '', color = 'black', linestyle = '--', label = r'$\sim 1 / L^{\frac{3}{2}}$')
     ax.loglog(x, 1. / (x) , marker = '', color = 'gray', linestyle = '--', label = r'$\sim 1 / L$')
     ax.loglog(x, 1. / (x**2) * 1e3, marker = '', color = 'grey', linestyle = '--', label = r'$\sim 1 / L^2$')

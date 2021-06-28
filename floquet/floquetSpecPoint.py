@@ -41,7 +41,8 @@ def integrateHPlus(kPoint, tVec, A0):
 
 
 def getA0Coh(eta, N):
-    phState = coherentState.getCoherentStateForN(N)
+    #phState = coherentState.getCoherentStateForN(N)
+    phState = coherentState.getShiftedGS(eta, N)
     apad = np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) + np.diag(
         np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1)
     aAv = np.dot(np.conj(phState), np.dot(eta * apad, phState))

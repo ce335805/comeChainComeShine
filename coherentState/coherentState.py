@@ -1,8 +1,11 @@
 import numpy as np
 import globalSystemParams as prms
 from scipy.special import factorial
-
 import scipy.linalg as sciLin
+from arb_order import photonState as phState
+
+import energyFunctions as eF
+from arb_order import arbOrder
 
 def getCoherentStateForN(N):
     #alpha = np.sqrt(N)
@@ -44,6 +47,20 @@ def getSqueezedState(eta, T):
 
     return ptState
 
+def getShiftedGS(eta, N):
+    alpha = np.sqrt(N)
+
+    a = np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1)
+    aDagger = np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1)
+
+    mat = alpha * aDagger - alpha * a
+    expMat = sciLin.expm(mat)
+
+    ptGS = getPhGS(eta)
+
+    cohState = np.dot(expMat, ptGS)
+
+    return cohState
 
 def aDagOp():
     return np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1)
@@ -69,3 +86,10 @@ def gsEffectiveKineticEnergyArray(etaArr):
         gsKinetics[etaInd] = np.real(gsEffectiveKineticEnergy(eta))
         #gsKinetics[etaInd] = np.real(gsEffectiveKineticEnergyAnalytical(eta))
     return gsKinetics
+
+
+def getPhGS(eta):
+    gs = arbOrder.findGS(eta, 3)
+    gsJ = eF.J(gs)
+    gsT = eF.T(gs)
+    return phState.findPhotonGS([gsT, gsJ], eta, 2)

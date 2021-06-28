@@ -47,7 +47,10 @@ def anaGreenPointTLesser(kPoint, tPoint, gsJ, eta):
 
 
 def anaGreenVecT(kVec, tVec, eta, damping):
-    gs = arbOrder.findGS(eta, 3)
+    if(len(kVec) == prms.chainLength):
+        gs = arbOrder.findGS(eta, 3)
+    else:#don't include occupations if length of kVec doesnt match chain length
+        gs = np.ones(len(kVec), dtype=complex)
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[:])
     gsJ = 0.
     GF = anaGreenPointT(kVec, tVec, gsJ, eta)
@@ -58,7 +61,10 @@ def anaGreenVecT(kVec, tVec, eta, damping):
     return GF
 
 def anaGreenVecTLesser(kVec, tVec, eta, damping):
-    gs = arbOrder.findGS(eta, 3)
+    if(len(kVec) == prms.chainLength):
+        gs = arbOrder.findGS(eta, 3)
+    else:
+        gs = np.ones(kVec.shape, dtype=complex)
     _, occupations = np.meshgrid(np.ones(tVec.shape), gs[:])
     gsJ = 0.
     GF = anaGreenPointTLesser(kVec, tVec, gsJ, eta)

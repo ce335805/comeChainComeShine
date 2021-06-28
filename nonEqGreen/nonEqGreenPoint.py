@@ -14,7 +14,8 @@ import utils
 
 
 def gfPointTCoh(kPoint, tRel, tAv, eta, N):
-    phState = coherentState.getCoherentStateForN(N)
+    #phState = coherentState.getCoherentStateForN(N)
+    phState = coherentState.getShiftedGS(eta, N)
     H = getH(eta)
 
     timeStart = time.time()
@@ -47,7 +48,8 @@ def gfPointTCoh(kPoint, tRel, tAv, eta, N):
     return - 1j * GF
 
 def gfPointTCohTurned(kPoint, tRel, tAv, eta, N):
-    phState = coherentState.getCoherentStateForN(N)
+    #phState = coherentState.getCoherentStateForN(N)
+    phState = coherentState.getShiftedGS(eta, N)
     H = getH(eta)
 
     timeStart = time.time()
@@ -94,7 +96,6 @@ def gfCohExpDampingTurned(kPoint, tRel, tAv, eta, damping, N):
 
 def gfCohW(kPoint, wRel, tAv, eta, damping, N):
     if(np.abs(kPoint) < np.pi / 2.):
-        print("returning zero non turned")
         return np.zeros((len(wRel), len(tAv)))
     tRel = FT.tVecFromWVec(wRel)
     tRelPos = tRel[len(tRel) // 2:]
@@ -104,7 +105,7 @@ def gfCohW(kPoint, wRel, tAv, eta, damping, N):
     _, GFW = FT.FTOneOfTwoTimesPoint(tRel, GFT)
 
     if(np.abs(np.abs(kPoint) - np.pi / 2.) < 1e-12):
-        return .5 * GFW
+        return 1. * GFW
     else:
         return GFW
 
@@ -119,7 +120,7 @@ def gfCohWTurned(kPoint, wRel, tAv, eta, damping, N):
     _, GFW = FT.FTOneOfTwoTimesPoint(tRel, GFT)
 
     if(np.abs(np.abs(kPoint) - np.pi / 2.) < 1e-12):
-        return .5 * GFW
+        return 0. * GFW
     else:
         return GFW
 
@@ -265,15 +266,10 @@ def setUpExponentialMatricies(H, HSinCos, tRel, tAv):
 
 
 def getPhGS(eta):
-    gsJ = 0.
-    gsE = np.zeros(prms.chainLength)
-    gsE[0: prms.numberElectrons // 2 + 1] = 1.
-    gsE[- prms.numberElectrons // 2 + 1:] = 1.
-    kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
-    cosK = np.cos(kVec)
-    gsT = 2. * prms.t * np.sum(np.multiply(cosK, gsE))
-
-    return phState.findPhotonGS([gsT, gsJ], eta, 3)
+    gs = arbOrder.findGS(eta, 3)
+    gsJ = eF.J(gs)
+    gsT = eF.T(gs)
+    return phState.findPhotonGS([gsT, gsJ], eta, 2)
 
 
 def getH(eta):
