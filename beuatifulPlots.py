@@ -13,6 +13,7 @@ from conductivity import calcConductivity
 import matplotlib.cm as cm
 import matplotlib.colors
 from mpl_toolkits.mplot3d import Axes3D
+from arb_order import photonState
 
 import h5py
 
@@ -33,7 +34,7 @@ mpl.rcParams['figure.titlesize'] = 10
 #mpl.rcParams['figure.figsize'] = [7.,5]
 mpl.rcParams['text.usetex'] = True
 
-fontsize = 10
+fontsize = 8
 
 def plotSpec(kVec, wVec, spec):
     spec = np.roll(spec, prms.chainLength // 2 - 1, axis=1)
@@ -199,7 +200,7 @@ def plotSpecLogDashed(wVec, spec, eta):
     ax = fig.add_subplot(111)
 
     for axis in ['top', 'bottom', 'left', 'right']:
-        ax.spines[axis].set_linewidth(0.5)
+        ax.spines[axis].set_linewidth(0.0)
 
     terrainCmap = cm.get_cmap('terrain', 1500)
     newcolors = np.vstack((terrainCmap(np.linspace(0, 0.3, 128)),
@@ -233,12 +234,16 @@ def plotSpecLogDashed(wVec, spec, eta):
     ax.tick_params(axis='both', which='major', labelsize=fontsize)
 
     ax.set_xlabel('$k$', fontsize=fontsize)
-    ax.set_ylabel('$\omega$', fontsize=fontsize, labelpad = -1)
+    ax.set_ylabel('$\omega \, [t]$', fontsize=fontsize, labelpad = -1)
+
+    ax.vlines(3. / 8. * np.pi, -4.1, 4.1, color = 'black', linestyle = '--', linewidth = 1.)
+    plt.gcf().text(0.52, 0.9, r'$k = \frac{3 \pi}{8}$', fontsize=fontsize)
+
 
     yLimBot = spec[-1, prms.chainLength //2] - 0.0001
     yLimTop = spec[-1, prms.chainLength //2] + .4 # + 0.01 for second shakeoff
 
-    cbar.ax.set_ylabel(r'$A(k, \omega)$', rotation=270, fontsize=fontsize, labelpad=15)
+    cbar.ax.set_ylabel(r'$A(k, \omega)$', rotation=270, fontsize=fontsize, labelpad=10)
     #cbar.ax.tick_params(labelsize=fontsize)
 
     plt.savefig('spectralGSNumDashed2.png', format='png', bbox_inches='tight', dpi = 600)
@@ -471,52 +476,116 @@ def greenWaterFallOnlyFloquet(kVec, wVec, gfFloquet):
 def quantumToFloquetCrossover(wVec, gfArr, gfFloq, etaArr, nArr):
 
     fig = plt.figure()
-    fig.set_size_inches(.75 * 4., .75 * 4.)
+    fig.set_size_inches(.5 * 4., .5 * 4.)
     ax = fig.add_subplot(111)
 
-    for axis in ['top', 'bottom', 'left', 'right']:
+    for axis in ['bottom', 'left']:
         ax.spines[axis].set_linewidth(0.5)
+
+    for axis in ['top', 'right']:
+        ax.spines[axis].set_linewidth(0.0)
+
+
 
     cmap = plt.cm.get_cmap('gist_earth')
     colorArr = [cmap(0.05), cmap(0.15), cmap(0.25), cmap(0.4), cmap(0.6), cmap(0.8)]
-    ax.plot(-wVec, np.imag(gfFloq) * (.35 * 1e1) ** (len(etaArr) - 1), color = 'red', label = 'Floquet', linewidth = 1., linestyle = '-')
+    ax.plot(-wVec, np.imag(gfFloq) * (.35 * 1e1) ** (len(etaArr) - 1), color = 'red', label = 'Floquet', linewidth = 1.1, linestyle = '--')
     for etaInd, eta in enumerate(etaArr):
         #print(eta)
         etaLabel = eta * np.sqrt(prms.chainLength)
         #color = colorArr[etaInd]
-        color = 'black'
+        color = cmap(etaInd / (len(etaArr) + 1))
+        #color = 'black'
         labelStr = r'$g = {:.2f}$'.format(etaLabel) + r', $| \alpha |^2$' + ' $= {:.1f}$'.format(nArr[etaInd])
         if(etaInd == 0):
             ax.plot(-wVec, np.imag(gfArr[etaInd, :]) * (.35 * 1e1) ** etaInd, color = color, label = 'Cavity', linewidth = .6)
         else:
             ax.plot(-wVec, np.imag(gfArr[etaInd, :]) * (.35 * 1e1) ** etaInd, color = color, linewidth = .6)
 
+        if(etaInd == 0):
+            plt.gcf().text(.92, 0.135, "${:.0f}$".format(nArr[etaInd]), fontsize=6, color = color)
+
+        if(etaInd == 3):
+            plt.gcf().text(.92, 0.225, "${:.2f}$".format(nArr[etaInd]), fontsize=6, color = color)
+
+        if(etaInd == 6):
+            plt.gcf().text(.92, 0.315, "${:.2f}$".format(nArr[etaInd]), fontsize=6, color = color)
+
+        if(etaInd == 9):
+            plt.gcf().text(.92, 0.405, "${:.1f}$".format(nArr[etaInd]), fontsize=6, color = color)
+
+        if(etaInd == 12):
+            plt.gcf().text(.92, 0.495, "${:.1f}$".format(nArr[etaInd]), fontsize=6, color = color)
+
+        if(etaInd == 15):
+            plt.gcf().text(.92, 0.585, "${:.1f}$".format(nArr[etaInd]), fontsize=6, color = color)
+
+        if(etaInd == 19):
+            plt.gcf().text(.92, 0.705, "${:.0f}$".format(nArr[etaInd]), fontsize=6, color = color)
+
+
+    plt.gcf().text(.7, 0.75, r'$\mathrm{Floquet}$', fontsize=5, color = 'red')
+    plt.gcf().text(.92, .775, r"$\underline{\Delta N_{\mathrm{phot}}^{\mathrm{pump}}}$", fontsize=6, color = 'black')
+
 
     peakPos = 2. * prms.t * np.cos(3. / 8. * np.pi)
 
     ax.set_yscale('log')
     ax.set_xlim(-4., 2.5)
-    ax.set_ylabel(r"$A(k = \frac{3}{8}\pi, \omega)$", fontsize = 10, labelpad = 0)
-    ax.set_xlabel(r"$\omega$", fontsize = 10)
+    ax.set_ylabel(r"$A(k = \frac{3}{8}\pi, \omega)$", fontsize = fontsize, labelpad = 0)
+    ax.set_xlabel(r"$\omega {-} \varepsilon(k) \, [t]$", fontsize = fontsize)
     yLimBot = 1e-2
     yLimTop = 1e12
     ax.set_ylim(yLimBot, yLimTop)
+    epsK = 2. * prms.t * np.cos(3. / 8. * np.pi)
 
-    ax.vlines(peakPos, yLimBot, yLimTop, color = 'lightsteelblue', linestyle = '-', linewidth = 0.7)
-    ax.vlines(peakPos + prms.w0, yLimBot, yLimTop, color = 'lightsteelblue', linestyle = '-', linewidth = 0.7)
-    ax.vlines(peakPos - prms.w0, yLimBot, yLimTop, color = 'lightsteelblue', linestyle = '-', linewidth = 0.7)
+    ax.set_xticks([epsK - 3. * prms.w0, epsK - 2. * prms.w0, epsK - prms.w0, epsK, epsK + prms.w0, epsK + 2. * prms.w0, epsK + 3. * prms.w0])
+    ax.set_xticklabels([r'$-3$', r'$-2$', r'$-1$', r'$0$', r'$1$', r'$2$', r'$3$'], fontsize = 8)
 
-    #ax.set_yticks([])
+    ax.set_yticks([1e-2, 1e1, 1e4, 1e7, 1e10])
+    ax.set_yticklabels([r'$10^{-2}$', r'$10^{1}$', r'$10^{4}$', r'$10^{7}$', r'$10^{10}$'], fontsize = 8)
 
-    #ax.set_xticks([0., np.pi / 2., np.pi, 1.5 * np.pi, 2. * np.pi])
-    #ax.set_xticklabels(['0', r'$\frac{\pi}{2}$', '$\pi$', r'$\frac{3\pi}{2}$', '$2 \pi$'], fontsize = fontsize)
+    ax.vlines(peakPos, yLimBot, yLimTop, color = 'lightsteelblue', linestyle = '-', linewidth = 1.25)
+    ax.vlines(peakPos + prms.w0, yLimBot, yLimTop, color = 'lightsteelblue', linestyle = '-', linewidth = 1.25)
+    ax.vlines(peakPos - prms.w0, yLimBot, yLimTop, color = 'lightsteelblue', linestyle = '-', linewidth = 1.25)
 
-    #ax.spines['right'].set_visible(False)
+    #legend = ax.legend(fontsize = fontsize - 4, loc = 'upper right', bbox_to_anchor=(1.1, 1.01), edgecolor = 'black', ncol = 1)
+    #legend.get_frame().set_alpha(1.)
+    #legend.get_frame().set_boxstyle('Square', pad=0.1)
+    #legend.get_frame().set_linewidth(0.5)
 
-    legend = ax.legend(fontsize = fontsize - 4, loc = 'upper right', bbox_to_anchor=(1.0, 1.0), edgecolor = 'black', ncol = 1)
-    legend.get_frame().set_alpha(1.)
-    legend.get_frame().set_boxstyle('Square', pad=0.1)
-    legend.get_frame().set_linewidth(0.0)
+    #epsString = r'$\varepsilon(k)$'
+    epsStringPW = r'${+} \omega_0$'
+    epsStringMW = r'${-} \omega_0$'
+    #plt.gcf().text(0.475, 0.9, epsString, fontsize=6)
+    plt.gcf().text(0.585, 0.8925, epsStringPW, fontsize=6)
+    plt.gcf().text(0.35, 0.8925, epsStringMW, fontsize=6)
+
+    #ax.arrow(-3., 1e10, 0., 1e1)
+    #ax.arrow(-2.5, 1e7, 0., 1e10, length_includes_head = False, color = 'darkseagreen', width = 0.025, head_width = 0.2, head_length = 0.5, zorder = 100, shape = 'full')
+
+    #arrow = patches.Arrow(-2, 1000, 2, 0, zorder = 100, width = 2)
+    #arrow = patches.FancyArrowPatch((-3.25, 1e1), (-2.4, 5. * 1e9), arrowstyle='->', mutation_scale=10, connectionstyle="arc3,rad=.175", zorder = 100, linewidth=1.5, color = 'black')
+    arrow = patches.FancyArrowPatch((-3.25, 1e1), (-2.4, 5. * 1e10), arrowstyle='->', mutation_scale=10, connectionstyle="arc3,rad=.175", zorder = 100, linewidth=1.5, color = 'black')
+    ax.add_patch(arrow)
+
+    #ax.arrow(2., 1e-1, 0.2, 0., length_includes_head=True, color='black', width=0.0,
+    #         head_width=0.03, head_length=0.05, clip_on = False)
+
+    arrow = patches.FancyArrowPatch((2.5, 1.0 * 1e-2), (2.6, 1.0 * 1e-2), arrowstyle='->', mutation_scale=5, zorder = 100, linewidth=.5, color = 'black', clip_on = False)
+    ax.add_patch(arrow)
+
+    arrow = patches.FancyArrowPatch((-4, 1e10), (-4, 1.0 * 1e13), arrowstyle='->', mutation_scale=5, zorder = 100, linewidth=.5, color = 'black', clip_on = False)
+    ax.add_patch(arrow)
+
+    #plt.text(-3.9, 5. * 1e9, r'$\mathrm{increased}$' + '\n' + '$\mathrm{pump}$' + '\n' + r'$\mathrm{decreased}$' + r'$g$' , fontsize = 6)
+    plt.text(-3.9, 1e10, r'$\mathrm{increased}$' + '\n' + '$\mathrm{pump}$' , fontsize = 6)
+
+    #ax.plot(1, 0, ">k", transform=ax.get_yaxis_transform(), clip_on=False)
+    #ax.plot(0, 1, "^k", transform=ax.get_xaxis_transform(), clip_on=False)
+    #ax.plot(1, 0, ">k", clip_on=False)
+    #ax.plot(0, 1, "^k", clip_on=False)
+
 
     plt.savefig('crossover.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
@@ -636,7 +705,8 @@ def plotAnalyticalConductivity(eta1, eta2, eta3):
     cond3 = 2. * np.pi * cond3
 
     fig = plt.figure()
-    fig.set_size_inches(0.65 * 16. / 4., 0.65 * 12 / 4.)
+    fig.set_size_inches(0.65 * 16. / 4., 0.65 * 8. / 4.)
+    fig.set_size_inches(4., 4.)
 
     ax = fig.add_subplot(111)
 
@@ -650,10 +720,10 @@ def plotAnalyticalConductivity(eta1, eta2, eta3):
         ax.spines[axis].set_linewidth(0.5)
         axIn2.spines[axis].set_linewidth(0.5)
 
-
-    ax.plot(omegaVec, np.real(cond2), color = 'lightsteelblue', linewidth = 1.5, linestyle = '-', label = "g = {}".format(0.1))
-    ax.plot(omegaVec, np.real(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
-    ax.plot(omegaVec, np.real(cond3), color = 'black', linewidth = .5, linestyle = '-', label = "g = {}".format(0))
+    ax.plot(omegaVec, np.real(cond3), color = 'black', linewidth = 1.5, linestyle = '-', label = "g = {}".format(0))
+    #ax.plot(omegaVec, np.real(cond2), color = 'lightsteelblue', linewidth = .5, linestyle = '-', label = "g = {}".format(0.1))
+    ax.plot(omegaVec, np.real(cond2), color = 'lightsteelblue', linewidth = 1.5, linestyle = '--', label = "g = {}".format(0.1))
+    ax.plot(omegaVec, np.real(cond1), color = 'tan', linewidth =1.5, linestyle = '-', label = "g = {}".format(1.))
 
 
     #ax.set_ylim(1e-6, 1e4)
@@ -696,7 +766,7 @@ def plotAnalyticalConductivity(eta1, eta2, eta3):
     axIn2.tick_params(axis='both', which='major', labelsize=fontsize - 2)
 
     #axIn2.set_xlabel('$g$', fontsize=fontsize)
-    axIn2.set_ylabel(r'$e[t_h]$', fontsize=fontsize - 2, labelpad=-5)
+    axIn2.set_ylabel(r'$e[t]$', fontsize=fontsize - 2, labelpad=-5)
 
 
     legend = ax.legend(fontsize = fontsize, loc = 'upper center', bbox_to_anchor=(.25, 1.05), edgecolor = 'black', ncol = 1)
@@ -704,7 +774,7 @@ def plotAnalyticalConductivity(eta1, eta2, eta3):
     legend.get_frame().set_boxstyle('Square', pad=0.0)
     legend.get_frame().set_linewidth(0)
 
-    legend = axIn2.legend(fontsize = fontsize - 2, loc = 'upper right', bbox_to_anchor=(1.03, 1.04), edgecolor = 'black', ncol = 1)
+    legend = axIn2.legend(fontsize = fontsize - 2, loc = 'upper right', bbox_to_anchor=(1.03, 1.05), edgecolor = 'black', ncol = 1)
     legend.get_frame().set_alpha(1.0)
     legend.get_frame().set_boxstyle('Square', pad=0.0)
     legend.get_frame().set_linewidth(0.25)
@@ -748,10 +818,9 @@ def plotAnalyticalConductivityImaginary(eta1, eta2, eta3):
     #    axIn2.spines[axis].set_linewidth(0.5)
 
 
-    ax.plot(omegaVec, np.imag(cond2), color = 'lightsteelblue', linewidth = 1.5, linestyle = '-', label = "g = {}".format(0.1))
-    ax.plot(omegaVec, np.imag(cond1), color = 'tan', linewidth = 1.5, linestyle = '-', label = "g = {}".format(1.))
-    ax.plot(omegaVec, np.imag(cond3), color = 'black', linewidth = .5, linestyle = '-', label = "g = {}".format(0))
-
+    ax.plot(omegaVec, np.imag(cond3), color = 'black', linewidth = 1., linestyle = '-', label = "g = {}".format(0))
+    ax.plot(omegaVec, np.imag(cond2), color = 'lightsteelblue', linewidth = 1., linestyle = '--', label = "g = {}".format(0.1))
+    ax.plot(omegaVec, np.imag(cond1), color = 'tan', linewidth = 1., linestyle = '-', label = "g = {}".format(1.))
 
     #ax.set_ylim(1e-6, 1e4)
     #ax.set_yscale('log')
@@ -1148,4 +1217,45 @@ def plotOccsLs(etasNonNorm, orderH):
     plt.legend()
     plt.show()
 
+def arbitraryEDist():
+    eta = 1.0 / np.sqrt(prms.chainLength)
+
+    #np.random.seed(13)
+    np.random.seed(17)
+
+    LShort = 20
+
+    gsEShort = np.zeros(LShort)
+    gsEShort[:LShort//2] = 1.
+    np.random.shuffle(gsEShort)
+
+    LLong = int(1e6)
+    gsLong = np.zeros(LLong)
+    for indGS, gsOcc in enumerate(gsEShort):
+        binLength = LLong // LShort
+        if(gsOcc == 1):
+            gsLong[indGS * binLength : (indGS + 1) * binLength] = 1.
+
+    kVec = np.linspace(- np.pi, np.pi, LLong)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    bins = np.arange(len(gsEShort))
+    #ax.bar(bins, gsE, log=False, color='black', width=1., fill=False, linewidth = 1.)
+    ax.plot(kVec, gsLong, color = 'black')
+    plt.show()
+
+    LMed = int(1e3)
+    gsMed = np.zeros(LMed)
+    for indGS, gsOcc in enumerate(gsEShort):
+        binLength = LMed // LShort
+        if(gsOcc == 1):
+            gsMed[indGS * binLength : (indGS + 1) * binLength] = 1.
+
+    gsE = np.append(gsMed, np.array([0, 0, 1, 1, 1, 1, 1, 0, 0, 0]))
+    print("gs Integral = {}".format(np.sum(gsE)))
+
+    gsEnergy = photonState.energyFromState(gsE, eta, 3)
+
+    print("gs e = {}".format(gsEnergy / prms.chainLength))
 

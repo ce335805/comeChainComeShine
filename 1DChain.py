@@ -68,6 +68,9 @@ def main():
     #floquetTests.runAllTests()
     #exit()
 
+    beuatifulPlots.arbitraryEDist()
+    exit()
+
     #eta = 1. / np.sqrt(prms.chainLength)
     #gsJ = 0.
     #gs = np.zeros((prms.chainLength))
@@ -131,10 +134,10 @@ def main():
     #print(gsKintic)
     #exit()
 
-#    eta1 = 1. / np.sqrt(prms.chainLength)
-#    eta2 = 0.1 / np.sqrt(prms.chainLength)
-#    bPlots.plotAnalyticalConductivity(eta1, eta2, 0.)
-#    bPlots.plotAnalyticalConductivityImaginary(eta1, eta2, 0.)
+    eta1 = 1. / np.sqrt(prms.chainLength)
+    eta2 = 0.1 / np.sqrt(prms.chainLength)
+    bPlots.plotAnalyticalConductivity(eta1, eta2, 0.)
+    bPlots.plotAnalyticalConductivityImaginary(eta1, eta2, 0.)
     #delta = 0.02
     #wVec = np.linspace(-30., 30., 30000, endpoint = False)
     #condAna = calcConductivity.calcConductivityAna(wVec, delta, eta1)
@@ -142,7 +145,7 @@ def main():
     #compPlot.compareArrays(wVec, np.real(condNum), np.real(condAna))
     #compPlot.compareArrays(wVec, np.imag(condNum), np.imag(condAna))
 
-    #exit()
+    exit()
 
     #calculate Green's function
 
