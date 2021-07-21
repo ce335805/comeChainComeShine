@@ -40,9 +40,13 @@ from finiteSizeScale import gfError
 from conductivity import calcConductivity
 from multiProcGreen import gfNonEqMultiParam
 
+from GiacomosPlot import gsSqueezing
+
 def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))
 
+    gsSqueezing.callGiacomosCode()
+    exit()
 
     #eta  = 1. / np.sqrt(prms.chainLength)
     #numCos = calcConductivity.expectationCos(eta)
@@ -68,21 +72,43 @@ def main():
     #floquetTests.runAllTests()
     #exit()
 
-    beuatifulPlots.arbitraryEDist()
-    exit()
-
-    #eta = 1. / np.sqrt(prms.chainLength)
-    #gsJ = 0.
-    #gs = np.zeros((prms.chainLength))
-    #gs[0: prms.numberElectrons // 2 + 1] = 1.
-    #gs[- prms.numberElectrons // 2 + 1:] = 1.
-    #kVec = np.linspace(-np.pi, np.pi, prms.chainLength, endpoint=False)
-    #gsT = np.sum(-2. * prms.t * np.cos(kVec) * gs)
-    #phGS = phState.findPhotonGS([gsT, gsJ], eta, 3)
-    #nAv = photonState.averagePhotonNumber([gsJ, gsT], eta, 3)
-    #print("nAv = {}".format(nAv))
-    #bPlots.plotPtGSWithCoh(phGS, nAv, eta, gsT)
+    #beuatifulPlots.plotFabry()
     #exit()
+
+    #beuatifulPlots.plotShiftInsetes()
+    #exit()
+
+    #beuatifulPlots.arbitraryEDist()
+    #exit()
+
+
+    origL = prms.chainLength
+    prms.chainLength = 510
+    etaLong = 2. / np.sqrt(prms.chainLength)
+    prms.numberElectrons = prms.chainLength // 2
+    gs = np.zeros((prms.chainLength))
+    gs[0: prms.numberElectrons // 2 + 1] = 1.
+    gs[- prms.numberElectrons // 2 + 1:] = 1.
+    gsJ = eF.J(gs)
+    gsTLong = eF.T(gs)
+    print("gsJ = {}".format(gsJ))
+    phGSL = phState.findPhotonGS([gsTLong, gsJ], etaLong, 3)
+
+    prms.chainLength = 10
+    eta = 2. / np.sqrt(prms.chainLength)
+    prms.numberElectrons = prms.chainLength // 2
+    gs = np.zeros((prms.chainLength))
+    gs[0: prms.numberElectrons // 2 + 1] = 1.
+    gs[- prms.numberElectrons // 2 + 1:] = 1.
+    gsJ = eF.J(gs)
+    gsT = eF.T(gs)
+    print("gsJ = {}".format(gsJ))
+    phGSS = phState.findPhotonGS([gsT, gsJ], eta, 3)
+
+    bPlots.plotPtGSWithCoh(phGSL, phGSS, etaLong, gsTLong)
+
+    prms.chainLength = origL
+    exit()
 
 
     #etasNonNorm = np.linspace(0., 1.5, 7, endpoint = True)
@@ -90,27 +116,25 @@ def main():
     #exit()
 
     #etas = np.linspace(0., 2., 7, endpoint=True) / np.sqrt(prms.chainLength)
+    #etas[3] = np.sqrt((np.pi) / (4. * prms.chainLength)) + 0.001 / np.sqrt(prms.chainLength)
     #beuatifulPlots.plotLandscapesAllOrders(etas, 3)
     #beuatifulPlots.plotLandscapes1Order(etas, 1)
-    #beuatifulPlots.plotLandscapes2Order(etas, 1)
+    #beuatifulPlots.plotLandscapes2Order(etas, 2)
     #exit()
-
-    #etaNonNorm = 1.
-    ##Ls = np.array([90, 110, 210, 310, 410, 610, 810, 1010, 1410, 1810, 2210, 3010, 4010, 5010, 7010, 10010])
-    #Ls = np.array([90, 110, 210, 310, 410, 610, 810, 1010, 5010, 10010, 15010, 20010, 50010, 100010, 500010, 1000010])
-    ##gfError.gfErrorForLs(etaNonNorm, Ls)
-    #meanErr = gfError.getMeanErrors(etaNonNorm, Ls)
-    #maxErr = gfError.getMaxErrors(etaNonNorm, Ls)
-    ##errA1Mean = meanErr[0]
-    #errA2Mean = meanErr
-    ##errA1Max = maxErr[0]
-    #errA2Max = maxErr
-    ##print(errA1Mean)
-    ##print(errA1Max)
-    #print(errA2Mean)
-    #print(errA2Max)
-    #compPlot.finiteSizeErrors(Ls, errA2Mean, errA2Max)
-    #exit()
+#    etaNonNorm = 1.
+#    ##Ls = np.array([90, 110, 210, 310, 410, 610, 810, 1010, 1410, 1810, 2210, 3010, 4010, 5010, 7010, 10010])
+#    #Ls = np.array([90, 110, 210, 310, 410, 610, 810, 1010, 5010, 10010, 15010, 20010, 50010, 100010, 500010, 1000010])
+#    Ls = np.array([610, 810, 1010, 5010, 10010, 15010, 20010, 50010, 100010, 500010, 1000010])
+#    #gfError.gfErrorForLs(etaNonNorm, Ls)
+#    #exit()
+#    meanErr = gfError.getMeanErrors(etaNonNorm, Ls)
+#    maxErr = gfError.getMaxErrors(etaNonNorm, Ls)
+#    meanErr0 = gfError.getMeanErrors0(etaNonNorm, Ls)
+#    maxErr0 = gfError.getMaxErrors0(etaNonNorm, Ls)
+#
+#    beuatifulPlots.finiteSizeErrors(Ls, meanErr, maxErr, meanErr0, maxErr0)
+#    #compPlot.finiteSizeErrors(Ls, errA2Mean, errA2Max)
+#    exit()
 
     #gs = arbOrder.findGS(eta, 3)
     #gsJ = eF.J(gs)
@@ -134,10 +158,10 @@ def main():
     #print(gsKintic)
     #exit()
 
-    eta1 = 1. / np.sqrt(prms.chainLength)
-    eta2 = 0.1 / np.sqrt(prms.chainLength)
-    bPlots.plotAnalyticalConductivity(eta1, eta2, 0.)
-    bPlots.plotAnalyticalConductivityImaginary(eta1, eta2, 0.)
+    #eta1 = 1. / np.sqrt(prms.chainLength)
+    #eta2 = 0.3 / np.sqrt(prms.chainLength)
+    #bPlots.plotAnalyticalConductivity(eta1, eta2, 0.)
+    #bPlots.plotAnalyticalConductivityImaginary(eta1, eta2, 0.)
     #delta = 0.02
     #wVec = np.linspace(-30., 30., 30000, endpoint = False)
     #condAna = calcConductivity.calcConductivityAna(wVec, delta, eta1)
@@ -145,7 +169,7 @@ def main():
     #compPlot.compareArrays(wVec, np.real(condNum), np.real(condAna))
     #compPlot.compareArrays(wVec, np.imag(condNum), np.imag(condAna))
 
-    exit()
+    #exit()
 
     #calculate Green's function
 
@@ -175,21 +199,7 @@ def main():
     kVec = np.array([kPoint])
     damping = .025
 
-#    gWFloquet = floquetKArr.floquetGreenMultiProc(kVec, wVec, tAv, eta, damping, 2)
-#    gWFloquetInt = 1. / (5 * tau) * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
-#    bPlots.greenWaterFallOnlyFloquet(kVec, wVec, gWFloquetInt)
-#    exit()
-
-
-#    etaArr = np.array([2.5, 2., np.sqrt(2.), 1., 1./np.sqrt(2.), 0.5]) / np.sqrt(prms.chainLength)
-#    nArr = np.array([0., 0.1, 0.2, 0.4, 0.8, 1.6])
-#    assert(len(etaArr) == len(nArr))
-
-
-    etaArr = np.array([2.5, 2., 0.5]) / np.sqrt(prms.chainLength)
-    nArr = np.array([0., 0.1, 0.4, 0.8, 3.2, 12.8])
     nArr = np.logspace(np.log10(0.4 / 2.5**2), np.log10(30.), 20, endpoint=True)
-    #nArr = np.logspace(np.log10(15), np.log10(20.), 2, endpoint=True)
     nArr = nArr[1:]#exclude lowest value and replace by GS
     nArr = np.append(np.array([0.]), nArr)
     etaArrNoGS = np.sqrt(.4 / nArr[1:]) / np.sqrt(prms.chainLength)
@@ -200,31 +210,20 @@ def main():
     print('etaArr = {}'.format(etaArr * np.sqrt(prms.chainLength)))
     assert(len(etaArr) == len(nArr))
 
-    #gfArr = np.zeros((len(etaArr), len(kVec), len(wVec)),dtype=complex)
-    #gfFloq = np.zeros((len(kVec), len(wVec)),dtype=complex) + 1e-5
-
     #gfArr = gfNonEqMultiParam.nonEqGreenMultiParamMultiProc(kPoint, wVec, damping, nArr)
-    #gfArr = gfNonEqMultiParam.nonEqGreenMultiParamMultiProcAboveFS(kPoint, wVec, damping, nArr)
-    #writeGreenToFile.writeGreen("data/nonEqGreenEtaAFSMany", "gfNonEq", gfArr)
     #writeGreenToFile.writeGreen("data/nonEqGreenEtaMany", "gfNonEq", gfArr)
 
-
     #tau = 2. * np.pi / prms.w0
-    #tauLength = 1.
-    #tAv = np.linspace(1. * tau, (1. + tauLength) * tau, 20, endpoint=False)
+    #tAv = np.linspace(- .5 * tau, .5  * tau, 20, endpoint=False)
     #gWFloquet = floquetKArr.floquetGreenMultiProc(kVec, wVec, tAv, etaArr[-1], damping, nArr[-1])
-    #gWFloquetInt = 1. / (tauLength * tau) * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
+    #gWFloquetInt = 1. / tau * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
     #gfFloq = gWFloquetInt
     #writeGreenToFile.writeGreen("data/floquetGreen", "gfFloquet", gfFloq)
 
     gfFloq = readGreenFromFile.readGreen("data/floquetGreen", "gfFloquet")
-    #gfFloqAFS = readGreenFromFile.readGreen("data/floquetGreenAFS", "gfFloquet")
     gfArr = readGreenFromFile.readGreen("data/nonEqGreenEtaMany", "gfNonEq")
-    #gfArrAFS = readGreenFromFile.readGreen("data/nonEqGreenEtaAFS", "gfNonEq")
-    #print("gfFloquet.shape = {}".format(gfFloq.shape))
     print("gfArr.shape = {}".format(gfArr.shape))
     bPlots.quantumToFloquetCrossover(wVec, 1. / np.sqrt(2. * np.pi) * gfArr, 1. / np.sqrt(2. * np.pi) * gfFloq[0, :], etaArr, nArr)
-    #bPlots.quantumToFloquetCrossoverAFS(wVec, -1. / np.sqrt(2. * np.pi) * gfArrAFS, 1. / np.sqrt(2. * np.pi) * gfFloqAFS[0, :], etaArr, nArr)
     exit()
 
     #    for etaInd, eta in enumerate(etaArr):

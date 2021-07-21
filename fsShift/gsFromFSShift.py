@@ -69,7 +69,7 @@ def energyMinimaNum(etas, orderH, bins):
     landscapes = getManyEnergyLandscapes(etas, orderH, bins)
     minimaKs = np.zeros(len(etas), dtype = 'double')
     for indEta, eta in enumerate(etas):
-        minimumPos = np.where(landscapes[indEta, :] == np.amin(landscapes[indEta, :]))
+        minimumPos = np.where(np.abs(landscapes[indEta, :] - np.amin(landscapes[indEta, :])) < 1e-8)
         minimumK = np.linspace(0., .5 * np.pi, bins)[minimumPos[0][0]]
         minimaKs[indEta] = minimumK
         #fig = plt.figure()

@@ -9,6 +9,7 @@ def gLesser(kPoint, tRelArr, tAvArr, eta, N):
     A0 = getA0Coh(eta, N)
     print("A0 = {}".format(A0))
 
+    tau = 2. * np.pi / prms.w0
     gRet = np.zeros((len(tRelArr), len(tAvArr)), dtype=complex)
     for tAvInd, tAv in enumerate(tAvArr):
         for tRelInd, tRel in enumerate(tRelArr):
@@ -16,8 +17,8 @@ def gLesser(kPoint, tRelArr, tAvArr, eta, N):
             tDash = tAv - .5 * tRel
             if (t > tDash):
                 continue
-            dHdt = -integrateH(np.linspace(0., t, 1000, endpoint=True), A0)
-            dHdtDash = -integrateH(np.linspace(0., tDash, 1000, endpoint=True), A0)
+            dHdt = -integrateH(np.linspace(-500. * tau, t, 50000, endpoint=True), A0)
+            dHdtDash = -integrateH(np.linspace(- 500. * tau, tDash, 50000, endpoint=True), A0)
             dHdtdtDash = -integrateHPlus(kPoint, np.linspace(tDash, t, 1000, endpoint=True), A0)
             gRet[tRelInd, tAvInd] = np.exp(1j * dHdt) * np.exp(-1j * dHdtDash) * np.exp(-1j * dHdtdtDash)
     return 1j * gRet
