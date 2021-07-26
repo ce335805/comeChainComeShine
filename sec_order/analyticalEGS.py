@@ -10,7 +10,7 @@ import initialState as ini
 
 def findGS1st(eta):
     state = ini.getG0InitialStateAna()
-    return state
+    #return state
     pauliBounds = np.zeros((len(state), 2), dtype='double')
     pauliBounds[0: param.chainLength, 1] = 1.0
     pauliBounds[-1, 1] = np.inf
@@ -46,7 +46,7 @@ def findGS(eta):
 
 def findGSExactSec(eta):
     state = ini.getG0InitialStateAna()
-    return state
+    #return state
     pauliBounds = np.zeros((len(state), 2), dtype='double')
     pauliBounds[0: param.chainLength, 1] = 1.0
     pauliBounds[-1, 1] = np.inf

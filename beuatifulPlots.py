@@ -292,7 +292,7 @@ def plotSpecLogDashed(wVec, spec, eta):
     cbar.ax.set_ylabel(r'$A(k, \omega)$', rotation=270, fontsize=fontsize, labelpad=10)
     #cbar.ax.tick_params(labelsize=fontsize)
 
-    plt.savefig('Fig3a.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('savedPlots/Fig3a.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -514,8 +514,9 @@ def plotPtGSWithCoh(ptGSL, ptGSS, eta, T):
     #tickPatch = patches.Rectangle((2, 1e-2), width = 0., height = 1e-2, linewidth = 0.7, clip_on = False)
     #ax.add_patch(tickPatch)
 
+    #plt.tight_layout()
     #plt.show()
-    plt.savefig('Fig1c.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('savedPlots/Fig1c.png', format='png', bbox_inches='tight', dpi = 600)
 
 
 
@@ -556,6 +557,8 @@ def calculateAndPlotShakeOffs():
     ax.set_yticks([1e0, 1e-1, 1e-2])
     ax.set_yticklabels(['$10^0$', '$10^{-1}$', '$10^{-2}$'])
     plt.legend()
+    plt.tight_layout()
+
     plt.show()
 
 
@@ -842,7 +845,7 @@ def quantumToFloquetCrossover(wVec, gfArr, gfFloq, etaArr, nArr):
     #ax.plot(0, 1, "^k", clip_on=False)
 
 
-    plt.savefig('Fig3b.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('savedPlots/Fig3b.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -896,21 +899,21 @@ def plotAnalyticalConductivity(eta1, eta2, eta3):
     #gsKinetics = -coherentState.gsEffectiveKineticEnergyArray(etas)
     gsKinetics = - calcConductivity.gsEffectiveKineticEnergyArrayNum(etas)
 
-    #cond1 = calcConductivity.calcConductivityNum(omegaVec, delta, eta1)
-    #cond2 = calcConductivity.calcConductivityNum(omegaVec, delta, eta2)
-    #cond3 = calcConductivity.calcConductivityNum(omegaVec, delta, eta3)
+    cond1 = calcConductivity.calcConductivityNum(omegaVec, delta, eta1)
+    cond2 = calcConductivity.calcConductivityNum(omegaVec, delta, eta2)
+    cond3 = calcConductivity.calcConductivityNum(omegaVec, delta, eta3)
 
     #cond1 = calcConductivity.calcConductivityAna(omegaVec, delta, eta1)
     #cond2 = calcConductivity.calcConductivityAna(omegaVec, delta, eta2)
     #cond3 = calcConductivity.calcConductivityAna(omegaVec, delta, eta3)
 
-    #intConductivities = integratedConductivityArr(omegaVec, delta, etas)
+    intConductivities = integratedConductivityArr(omegaVec, delta, etas)
 
 
-    #saveConductivities(cond1, cond2, cond3)
-    #saveIntConductivities(intConductivities)
-    cond1, cond2, cond3 = loadConductivities()
-    intConductivities = loadIntConductivities()
+    saveConductivities(cond1, cond2, cond3)
+    saveIntConductivities(intConductivities)
+    #cond1, cond2, cond3 = loadConductivities()
+    #intConductivities = loadIntConductivities()
 
     cond1 = 2. * np.pi * cond1
     cond2 = 2. * np.pi * cond2
@@ -1010,7 +1013,7 @@ def plotAnalyticalConductivity(eta1, eta2, eta3):
     legend.get_frame().set_linewidth(.5)
 
 
-    plt.savefig('conductivityGS.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('savedPlots/Fig4a.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -1023,7 +1026,7 @@ def plotAnalyticalConductivityImaginary(eta1, eta2, eta3):
 
     omegaVec = np.linspace(-500, 500, 150000 , endpoint=True)
     #omegaVec = np.linspace(-50, 50, 15000 , endpoint=True)
-    delta = 0.02
+    delta = 0.05
 
     cond1, cond2, cond3 = loadConductivities()
 
@@ -1110,7 +1113,7 @@ def plotAnalyticalConductivityImaginary(eta1, eta2, eta3):
     #legend.get_frame().set_boxstyle('Square', pad=0.1)
     #legend.get_frame().set_linewidth(0)
 
-    plt.savefig('conductivityGSImaginary.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('savedPlots/Fig4b.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -1154,16 +1157,16 @@ def plotLandscapesAllOrders(etas, orderH):
     orderH = 3
     bins = 500
 
-    #landscapes = fsShift.getManyEnergyLandscapes(etas, orderH, bins)
+    landscapes = fsShift.getManyEnergyLandscapes(etas, orderH, bins)
     #file = h5py.File("data/landscapes" + str(orderH) + ".h5", 'w')
     #file.create_dataset("landscapes", data=landscapes)
     #file.create_dataset("etas", data=etas)
     #file.close()
 
-    file = h5py.File("data/landscapes" + str(orderH) + ".h5", 'r')
-    landscapes = file["landscapes"][()]
-    etas = file["etas"][()]
-    file.close()
+    #file = h5py.File("data/landscapes" + str(orderH) + ".h5", 'r')
+    #landscapes = file["landscapes"][()]
+    #etas = file["etas"][()]
+    #file.close()
 
     Ls = np.logspace(1., 4., 31, endpoint = True)
     etasNonNorm = etas * np.sqrt(prms.chainLength)
@@ -1256,7 +1259,7 @@ def plotLandscapesAllOrders(etas, orderH):
     legend.get_frame().set_boxstyle('Square', pad=0.1)
     legend.get_frame().set_linewidth(0.0)
 
-    plt.savefig('fsShiftsAllOrders.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('savedPlots/Fig1b.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -1264,16 +1267,16 @@ def plotLandscapes1Order(etas, orderH):
     orderH = 1
     bins = 100
 
-    #landscapes = fsShift.getManyEnergyLandscapes(etas, orderH, bins)
+    landscapes = fsShift.getManyEnergyLandscapes(etas, orderH, bins)
     #file = h5py.File("data/landscapesCrit" + str(orderH) + ".h5", 'w')
     #file.create_dataset("landscapes", data=landscapes)
     #file.create_dataset("etas", data=etas)
     #file.close()
 
-    file = h5py.File("data/landscapesCrit" + str(orderH) + ".h5", 'r')
-    landscapes = file["landscapes"][()]
-    etas = file["etas"][()]
-    file.close()
+    #file = h5py.File("data/landscapesCrit" + str(orderH) + ".h5", 'r')
+    #landscapes = file["landscapes"][()]
+    #etas = file["etas"][()]
+    #file.close()
 
     Ls = np.logspace(1., 4., 11, endpoint = True)
     etasNonNorm = etas * np.sqrt(prms.chainLength)
@@ -1426,7 +1429,7 @@ def plotLandscapes1Order(etas, orderH):
     legend.get_frame().set_boxstyle('Square', pad=0.05)
     legend.get_frame().set_linewidth(0.0)
 
-    plt.savefig('fsShifts1.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('savedPlots/Fig2a.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -1436,10 +1439,10 @@ def plotLandscapes2Order(etas, orderH):
     bins = 100
 
     landscapes = fsShift.getManyEnergyLandscapes(etas, orderH, bins)
-    file = h5py.File("data/landscapesCrit" + str(orderH) + ".h5", 'w')
-    file.create_dataset("landscapes", data=landscapes)
-    file.create_dataset("etas", data=etas)
-    file.close()
+    #file = h5py.File("data/landscapesCrit" + str(orderH) + ".h5", 'w')
+    #file.create_dataset("landscapes", data=landscapes)
+    #file.create_dataset("etas", data=etas)
+    #file.close()
 
     #file = h5py.File("data/landscapes" + str(orderH) + ".h5", 'r')
     #landscapes = file["landscapes"][()]
@@ -1550,7 +1553,7 @@ def plotLandscapes2Order(etas, orderH):
     legend.get_frame().set_boxstyle('Square', pad=0.1)
     legend.get_frame().set_linewidth(0.0)
 
-    plt.savefig('fsShifts2.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('savedPlots/Fig2b.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -1689,9 +1692,10 @@ def plotShiftInsetes():
 
     plt.gcf().text(0.12, .91, r'$n = \frac{1}{2}$', fontsize=fontsize)
 
+    plt.tight_layout()
 
     #plt.show()
-    plt.savefig('shiftInset1.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('savedPlots/Fig1b_shiftInset1.png', format='png', bbox_inches='tight', dpi = 600)
 
 
     #Square 2
@@ -1717,9 +1721,10 @@ def plotShiftInsetes():
     plt.ylim([-0.05, 1.7])
     plt.xlim(-np.pi, np.pi)
     plt.text(-2.9, 1.27, r"$\mathrm{FS}$ $\mathrm{center} = \frac{\pi}{2}$", fontsize=fontsize)
+    plt.tight_layout()
 
     #plt.show()
-    plt.savefig('shiftInset2.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('savedPlots/Fig1b_shiftInset2.png', format='png', bbox_inches='tight', dpi = 600)
 
 
     #Square 3
@@ -1747,7 +1752,8 @@ def plotShiftInsetes():
     plt.xlim(-np.pi, np.pi)
     plt.text(-2.85, 1.4, "$\mathrm{FS}$ $\mathrm{center} = \pi$", fontsize=fontsize)
 
-    plt.savefig('shiftInset3.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('savedPlots/Fig1b_shiftInset3.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.tight_layout()
     #plt.show()
 
 
@@ -1855,5 +1861,7 @@ def plotFabry():
     arrow = patches.FancyArrowPatch((2., 91.), (2., 93.), arrowstyle='->', mutation_scale=7, zorder = 100, linewidth=.5, color = 'black', clip_on = False)
     ax.add_patch(arrow)
 
-    plt.savefig('fabry.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.tight_layout()
+    #plt.show()
+    plt.savefig('savedPlots/Fig1a_Transmittance.png', format='png', bbox_inches='tight', dpi = 600)
 

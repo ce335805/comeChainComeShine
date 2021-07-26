@@ -47,7 +47,7 @@ def nonEqGFParameters(nCoh, kPoint, wVec, damping):
     wTilde = np.sqrt(1. - 2. * eta**2 / prms.w0 * gsT)
     tau = 2. * np.pi / wTilde
     tauLength = 1.
-    tAv = np.linspace(1000. * tau, (1000. + tauLength) * tau, 20, endpoint=False)
+    tAv = np.linspace(200. * tau, (200. + tauLength) * tau, 20, endpoint=False)
     gfNonEq = nonEqGreenPoint.gfCohWTurned(kPoint = kPoint,wRel = wVec, tAv = tAv, eta = eta, damping = damping, N = nCoh)
     gfNonEqN0 = 1. / (tauLength * tau) * (tAv[1] - tAv[0]) * np.sum(gfNonEq, axis=1)
 

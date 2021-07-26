@@ -365,7 +365,7 @@ def callGiacomosCode():
     ax.add_patch(arrow)
 
 
-    #    plt.show()
-    plt.savefig('Fig1d.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.show()
+    plt.savefig('savedPlots/Fig1d.png', format='png', bbox_inches='tight', dpi = 600)
 
 
