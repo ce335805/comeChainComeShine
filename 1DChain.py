@@ -45,8 +45,8 @@ from GiacomosPlot import gsSqueezing
 def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))
 
-    gsSqueezing.callGiacomosCode()
-    exit()
+    #gsSqueezing.callGiacomosCode()
+    #exit()
 
     #eta  = 1. / np.sqrt(prms.chainLength)
     #numCos = calcConductivity.expectationCos(eta)
@@ -82,45 +82,45 @@ def main():
     #exit()
 
 
-    origL = prms.chainLength
-    prms.chainLength = 510
-    etaLong = 2. / np.sqrt(prms.chainLength)
-    prms.numberElectrons = prms.chainLength // 2
-    gs = np.zeros((prms.chainLength))
-    gs[0: prms.numberElectrons // 2 + 1] = 1.
-    gs[- prms.numberElectrons // 2 + 1:] = 1.
-    gsJ = eF.J(gs)
-    gsTLong = eF.T(gs)
-    print("gsJ = {}".format(gsJ))
-    phGSL = phState.findPhotonGS([gsTLong, gsJ], etaLong, 3)
-
-    prms.chainLength = 10
-    eta = 2. / np.sqrt(prms.chainLength)
-    prms.numberElectrons = prms.chainLength // 2
-    gs = np.zeros((prms.chainLength))
-    gs[0: prms.numberElectrons // 2 + 1] = 1.
-    gs[- prms.numberElectrons // 2 + 1:] = 1.
-    gsJ = eF.J(gs)
-    gsT = eF.T(gs)
-    print("gsJ = {}".format(gsJ))
-    phGSS = phState.findPhotonGS([gsT, gsJ], eta, 3)
-
-    bPlots.plotPtGSWithCoh(phGSL, phGSS, etaLong, gsTLong)
-
-    prms.chainLength = origL
-    exit()
+#    origL = prms.chainLength
+#    prms.chainLength = 510
+#    etaLong = 2. / np.sqrt(prms.chainLength)
+#    prms.numberElectrons = prms.chainLength // 2
+#    gs = np.zeros((prms.chainLength))
+#    gs[0: prms.numberElectrons // 2 + 1] = 1.
+#    gs[- prms.numberElectrons // 2 + 1:] = 1.
+#    gsJ = eF.J(gs)
+#    gsTLong = eF.T(gs)
+#    print("gsJ = {}".format(gsJ))
+#    phGSL = phState.findPhotonGS([gsTLong, gsJ], etaLong, 3)
+#
+#    prms.chainLength = 10
+#    eta = 2. / np.sqrt(prms.chainLength)
+#    prms.numberElectrons = prms.chainLength // 2
+#    gs = np.zeros((prms.chainLength))
+#    gs[0: prms.numberElectrons // 2 + 1] = 1.
+#    gs[- prms.numberElectrons // 2 + 1:] = 1.
+#    gsJ = eF.J(gs)
+#    gsT = eF.T(gs)
+#    print("gsJ = {}".format(gsJ))
+#    phGSS = phState.findPhotonGS([gsT, gsJ], eta, 3)
+#
+#    bPlots.plotPtGSWithCoh(phGSL, phGSS, etaLong, gsTLong)
+#
+#    prms.chainLength = origL
+#    exit()
 
 
     #etasNonNorm = np.linspace(0., 1.5, 7, endpoint = True)
     #beuatifulPlots.plotOccsLs(etasNonNorm, 2)
     #exit()
 
-    #etas = np.linspace(0., 2., 7, endpoint=True) / np.sqrt(prms.chainLength)
-    #etas[3] = np.sqrt((np.pi) / (4. * prms.chainLength)) + 0.001 / np.sqrt(prms.chainLength)
-    #beuatifulPlots.plotLandscapesAllOrders(etas, 3)
-    #beuatifulPlots.plotLandscapes1Order(etas, 1)
-    #beuatifulPlots.plotLandscapes2Order(etas, 2)
-    #exit()
+    etas = np.linspace(0., 2., 7, endpoint=True) / np.sqrt(prms.chainLength)
+    etas[3] = np.sqrt((np.pi) / (4. * prms.chainLength)) + 0.001 / np.sqrt(prms.chainLength)
+    beuatifulPlots.plotLandscapesAllOrders(etas, 3)
+    beuatifulPlots.plotLandscapes1Order(etas, 1)
+    beuatifulPlots.plotLandscapes2Order(etas, 2)
+    exit()
 #    etaNonNorm = 1.
 #    ##Ls = np.array([90, 110, 210, 310, 410, 610, 810, 1010, 1410, 1810, 2210, 3010, 4010, 5010, 7010, 10010])
 #    #Ls = np.array([90, 110, 210, 310, 410, 610, 810, 1010, 5010, 10010, 15010, 20010, 50010, 100010, 500010, 1000010])
