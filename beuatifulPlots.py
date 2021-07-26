@@ -1233,7 +1233,7 @@ def plotLandscapesAllOrders(etas, orderH):
     #labelString = "$\omega$ = {:.2f}".format(prms.w0)
     #ax.text(0., .5, labelString, fontsize = 14)
     ax.set_ylim(-.7, 0.7)
-    ax.set_ylabel("$e[t_h]$", fontsize = fontsize, labelpad = -2)
+    ax.set_ylabel("$e_{\psi_{\mathrm{T(FS)}}}[t_h]$", fontsize = fontsize, labelpad = -2)
     ax.set_xlabel("$\mathrm{FS}$ $\mathrm{center}$", fontsize = fontsize)
 
     ax.set_xlim(0., 2. * np.pi)
@@ -1359,7 +1359,7 @@ def plotLandscapes1Order(etas, orderH):
     #ax.text(0., .5, labelString, fontsize = 14)
     ax.set_ylim(-1.8, .9)
     ax.set_xlim(0., 2. * np.pi)
-    ax.set_ylabel("$e[t_h]$", fontsize = fontsize, labelpad = -2)
+    ax.set_ylabel("$e_{\psi_{\mathrm{T(FS)}}}[t_h]$", fontsize = fontsize, labelpad = -2)
     ax.set_xlabel("$\mathrm{FS}$ $\mathrm{center}$", fontsize = fontsize)
 
     ax.set_xticks([0., np.pi / 2., np.pi, 1.5 * np.pi, 2. * np.pi])
@@ -1540,7 +1540,7 @@ def plotLandscapes2Order(etas, orderH):
     #ax.text(0., .5, labelString, fontsize = 14)
     ax.set_ylim(-2.5, 0.9)
     ax.set_xlim(0., 2. * np.pi)
-    ax.set_ylabel("$e[t_h]$", fontsize = fontsize)
+    ax.set_ylabel("$e_{\psi_{\mathrm{T(FS)}}}[t_h]$", fontsize = fontsize)
     ax.set_xlabel("$\mathrm{FS}$ $\mathrm{center}$", fontsize = fontsize)
 
     ax.set_xticks([0., np.pi / 2., np.pi, 1.5 * np.pi, 2. * np.pi])

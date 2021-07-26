@@ -46,77 +46,75 @@ def main():
     print('The length of the to-be-considered 1D chain is {}'.format(prms.chainLength))
 
 
-#    ### Fig 1a
-#    beuatifulPlots.plotFabry()
-#
-#    ### Fig 1b
-#
-#    prms.chainLength = 1010
-#    prms.numberElectrons = prms.chainLength//2
-#    etas = np.linspace(0., 2., 7, endpoint=True) / np.sqrt(prms.chainLength)
-#    etas[3] = np.sqrt((np.pi) / (4. * prms.chainLength)) + 0.001 / np.sqrt(prms.chainLength)
-#    beuatifulPlots.plotLandscapesAllOrders(etas, 3)
-#    #Insets to signify the shifts
-#    beuatifulPlots.plotShiftInsetes()
-#
-#    ###Fig 1c
-#    origL = prms.chainLength
-#    prms.chainLength = 510
-#    etaLong = 2. / np.sqrt(prms.chainLength)
-#    prms.numberElectrons = prms.chainLength // 2
-#    gs = np.zeros((prms.chainLength))
-#    gs[0: prms.numberElectrons // 2 + 1] = 1.
-#    gs[- prms.numberElectrons // 2 + 1:] = 1.
-#    gsJ = eF.J(gs)
-#    gsTLong = eF.T(gs)
-#    print("gsJ = {}".format(gsJ))
-#    phGSL = phState.findPhotonGS([gsTLong, gsJ], etaLong, 3)
-#
-#    prms.chainLength = 10
-#    eta = 2. / np.sqrt(prms.chainLength)
-#    prms.numberElectrons = prms.chainLength // 2
-#    gs = np.zeros((prms.chainLength))
-#    gs[0: prms.numberElectrons // 2 + 1] = 1.
-#    gs[- prms.numberElectrons // 2 + 1:] = 1.
-#    gsJ = eF.J(gs)
-#    gsT = eF.T(gs)
-#    print("gsJ = {}".format(gsJ))
-#    phGSS = phState.findPhotonGS([gsT, gsJ], eta, 3)
-#
-#    bPlots.plotPtGSWithCoh(phGSL, phGSS, etaLong, gsTLong)
-#
-#    prms.chainLength = origL
-#
-#    ### Fig 1d
-#    gsSqueezing.callGiacomosCode()
-#
-#    prms.chainLength = 1010
-#    prms.numberElectrons = prms.chainLength//2
+    ### Fig 1a
+    beuatifulPlots.plotFabry()
 
-#    ### Fig 2
-#    etas = np.linspace(0., 2., 7, endpoint=True) / np.sqrt(prms.chainLength)
-#    etas[3] = np.sqrt((np.pi) / (4. * prms.chainLength)) + 0.001 / np.sqrt(prms.chainLength)
-#    beuatifulPlots.plotLandscapes1Order(etas, 1)
-#    beuatifulPlots.plotLandscapes2Order(etas, 2)
-#
-#
-    #calculate Green's function
+    ### Fig 1b
 
-#    prms.chainLength = 170
-#    prms.maxPhotonNumber = 20
-#    prms.numberElectrons = prms.chainLength//2
+    prms.chainLength = 1010
+    prms.numberElectrons = prms.chainLength//2
+    etas = np.linspace(0., 2., 7, endpoint=True) / np.sqrt(prms.chainLength)
+    etas[3] = np.sqrt((np.pi) / (4. * prms.chainLength)) + 0.001 / np.sqrt(prms.chainLength)
+    beuatifulPlots.plotLandscapesAllOrders(etas, 3)
+    #Insets to signify the shifts
+    beuatifulPlots.plotShiftInsetes()
+
+    ###Fig 1c
+    origL = prms.chainLength
+    prms.chainLength = 510
+    etaLong = 2. / np.sqrt(prms.chainLength)
+    prms.numberElectrons = prms.chainLength // 2
+    gs = np.zeros((prms.chainLength))
+    gs[0: prms.numberElectrons // 2 + 1] = 1.
+    gs[- prms.numberElectrons // 2 + 1:] = 1.
+    gsJ = eF.J(gs)
+    gsTLong = eF.T(gs)
+    print("gsJ = {}".format(gsJ))
+    phGSL = phState.findPhotonGS([gsTLong, gsJ], etaLong, 3)
+
+    prms.chainLength = 10
+    eta = 2. / np.sqrt(prms.chainLength)
+    prms.numberElectrons = prms.chainLength // 2
+    gs = np.zeros((prms.chainLength))
+    gs[0: prms.numberElectrons // 2 + 1] = 1.
+    gs[- prms.numberElectrons // 2 + 1:] = 1.
+    gsJ = eF.J(gs)
+    gsT = eF.T(gs)
+    print("gsJ = {}".format(gsJ))
+    phGSS = phState.findPhotonGS([gsT, gsJ], eta, 3)
+
+    bPlots.plotPtGSWithCoh(phGSL, phGSS, etaLong, gsTLong)
+
+    prms.chainLength = origL
+
+    ### Fig 1d
+    gsSqueezing.callGiacomosCode()
+
+    prms.chainLength = 1010
+    prms.numberElectrons = prms.chainLength//2
+    ### Fig 2
+    etas = np.linspace(0., 2., 7, endpoint=True) / np.sqrt(prms.chainLength)
+    etas[3] = np.sqrt((np.pi) / (4. * prms.chainLength)) + 0.001 / np.sqrt(prms.chainLength)
+    beuatifulPlots.plotLandscapes1Order(etas, 1)
+    beuatifulPlots.plotLandscapes2Order(etas, 2)
+
+
+   #calculate Green's function
+    prms.chainLength = 170
+    prms.maxPhotonNumber = 20
+    prms.numberElectrons = prms.chainLength//2
 
 ####Fig 3 a
-#    damping = 0.025
-#    eta = 1. / np.sqrt(prms.chainLength)
-#    kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
-#    wVec = np.linspace(-8, 8, 8000, endpoint=False)
-#    #gAna2W = greenAna2nd.anaGreenVecW(kVec, wVec, eta, damping)
-#    gfNumInf = greenNumArb.numGreenVecWGreater(kVec, wVec, eta, damping) + greenNumArb.numGreenVecWLesser(kVec, wVec, eta, damping)
-#    GF = gfNumInf
-#    #writeGreenToFile.writeGreen("data/eqGreenNum.h5", "gfEq", GF)
-#    #GF = readGreenFromFile.readGreen("data/eqGreenNum.h5", "gfEq")
-#    bPlots.plotSpecLogDashed(wVec, 1. / np.sqrt(2. * np.pi) * np.imag(np.transpose(GF)), eta)
+    damping = 0.025
+    eta = 1. / np.sqrt(prms.chainLength)
+    kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
+    wVec = np.linspace(-8, 8, 8000, endpoint=False)
+    #gAna2W = greenAna2nd.anaGreenVecW(kVec, wVec, eta, damping)
+    gfNumInf = greenNumArb.numGreenVecWGreater(kVec, wVec, eta, damping) + greenNumArb.numGreenVecWLesser(kVec, wVec, eta, damping)
+    GF = gfNumInf
+    #writeGreenToFile.writeGreen("data/eqGreenNum.h5", "gfEq", GF)
+    #GF = readGreenFromFile.readGreen("data/eqGreenNum.h5", "gfEq")
+    bPlots.plotSpecLogDashed(wVec, 1. / np.sqrt(2. * np.pi) * np.imag(np.transpose(GF)), eta)
 
 
     ####### Fig 3b
@@ -155,8 +153,6 @@ def main():
     #gfArr = readGreenFromFile.readGreen("data/nonEqGreenEtaMany", "gfNonEq")
     #print("gfArr.shape = {}".format(gfArr.shape))
     bPlots.quantumToFloquetCrossover(wVec, 1. / np.sqrt(2. * np.pi) * gfArr, 1. / np.sqrt(2. * np.pi) * gfFloq[0, :], etaArr, nArr)
-
-    exit()
 
     #### Fig 4
     eta1 = 1. / np.sqrt(prms.chainLength)
