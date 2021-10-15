@@ -38,6 +38,7 @@ def nonEqGFParameters(nCoh, kPoint, wVec, damping):
     if(nCoh == 0):
         eta = 2.5 / np.sqrt(prms.chainLength)
     else:
+        #eta = 1. / np.sqrt(prms.chainLength)
         eta = np.sqrt(0.4 / nCoh) / np.sqrt(prms.chainLength)
 
     print("nCoh = {} ; eta = {}".format(nCoh, eta * np.sqrt(prms.chainLength)))

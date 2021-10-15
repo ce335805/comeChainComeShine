@@ -82,45 +82,46 @@ def main():
     #exit()
 
 
-#    origL = prms.chainLength
-#    prms.chainLength = 510
-#    etaLong = 2. / np.sqrt(prms.chainLength)
-#    prms.numberElectrons = prms.chainLength // 2
-#    gs = np.zeros((prms.chainLength))
-#    gs[0: prms.numberElectrons // 2 + 1] = 1.
-#    gs[- prms.numberElectrons // 2 + 1:] = 1.
-#    gsJ = eF.J(gs)
-#    gsTLong = eF.T(gs)
-#    print("gsJ = {}".format(gsJ))
-#    phGSL = phState.findPhotonGS([gsTLong, gsJ], etaLong, 3)
+    #origL = prms.chainLength
+    #prms.chainLength = 510
+    #etaLong = 2. / np.sqrt(prms.chainLength)
+    #prms.numberElectrons = prms.chainLength // 2
+    #gs = np.zeros((prms.chainLength))
+    #gs[0: prms.numberElectrons // 2 + 1] = 1.
+    #gs[- prms.numberElectrons // 2 + 1:] = 1.
+    #gsJ = eF.J(gs)
+    #gsTLong = eF.T(gs)
+    #print("gsJ = {}".format(gsJ))
+    #phGSL = phState.findPhotonGS([gsTLong, gsJ], etaLong, 3)
 #
-#    prms.chainLength = 10
-#    eta = 2. / np.sqrt(prms.chainLength)
-#    prms.numberElectrons = prms.chainLength // 2
-#    gs = np.zeros((prms.chainLength))
-#    gs[0: prms.numberElectrons // 2 + 1] = 1.
-#    gs[- prms.numberElectrons // 2 + 1:] = 1.
-#    gsJ = eF.J(gs)
-#    gsT = eF.T(gs)
-#    print("gsJ = {}".format(gsJ))
-#    phGSS = phState.findPhotonGS([gsT, gsJ], eta, 3)
+    #prms.chainLength = 10
+    #eta = 2. / np.sqrt(prms.chainLength)
+    #prms.numberElectrons = prms.chainLength // 2
+    #gs = np.zeros((prms.chainLength))
+    #gs[0: prms.numberElectrons // 2 + 1] = 1.
+    #gs[- prms.numberElectrons // 2 + 1:] = 1.
+    #gsJ = eF.J(gs)
+    #gsT = eF.T(gs)
+    #print("gsJ = {}".format(gsJ))
+    #phGSS = phState.findPhotonGS([gsT, gsJ], eta, 3)
 #
-#    bPlots.plotPtGSWithCoh(phGSL, phGSS, etaLong, gsTLong)
+    #bPlots.plotPtGSWithCoh(phGSL, phGSS, etaLong, gsTLong)
 #
-#    prms.chainLength = origL
-#    exit()
+    #prms.chainLength = origL
+    #exit()
 
 
     #etasNonNorm = np.linspace(0., 1.5, 7, endpoint = True)
     #beuatifulPlots.plotOccsLs(etasNonNorm, 2)
     #exit()
 
-    etas = np.linspace(0., 2., 7, endpoint=True) / np.sqrt(prms.chainLength)
-    etas[3] = np.sqrt((np.pi) / (4. * prms.chainLength)) + 0.001 / np.sqrt(prms.chainLength)
-    beuatifulPlots.plotLandscapesAllOrders(etas, 3)
-    beuatifulPlots.plotLandscapes1Order(etas, 1)
-    beuatifulPlots.plotLandscapes2Order(etas, 2)
-    exit()
+#    etas = np.linspace(0., 2., 7, endpoint=True) / np.sqrt(prms.chainLength)
+#    etas[3] = np.sqrt((np.pi) / (4. * prms.chainLength)) + 0.001 / np.sqrt(prms.chainLength)
+#    beuatifulPlots.plotLandscapesAllOrders(etas, 3)
+#    beuatifulPlots.plotLandscapes1Order(etas, 1)
+#    beuatifulPlots.plotLandscapes2Order(etas, 2)
+#    exit()
+
 #    etaNonNorm = 1.
 #    ##Ls = np.array([90, 110, 210, 310, 410, 610, 810, 1010, 1410, 1810, 2210, 3010, 4010, 5010, 7010, 10010])
 #    #Ls = np.array([90, 110, 210, 310, 410, 610, 810, 1010, 5010, 10010, 15010, 20010, 50010, 100010, 500010, 1000010])
@@ -174,18 +175,18 @@ def main():
     #calculate Green's function
 
 
-#    damping = 0.025
-#    eta = 1. / np.sqrt(prms.chainLength)
-#    kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
-#    wVec = np.linspace(-8, 8, 8000, endpoint=False)
-#    #gAna2W = greenAna2nd.anaGreenVecW(kVec, wVec, eta, damping)
-#    #gfNumInf = greenNumArb.numGreenVecWGreater(kVec, wVec, eta, damping) + greenNumArb.numGreenVecWLesser(kVec, wVec, eta, damping)
-#    #GF = gfNumInf
-#    #writeGreenToFile.writeGreen("data/eqGreenNum.h5", "gfEq", GF)
-#    GF = readGreenFromFile.readGreen("data/eqGreenNum.h5", "gfEq")
-#    bPlots.plotSpecLogDashed(wVec, 1. / np.sqrt(2. * np.pi) * np.imag(np.transpose(GF)), eta)
+    #damping = 0.025
+    #eta = 1. / np.sqrt(prms.chainLength)
+    #kVec = np.linspace(0, 2. * np.pi, prms.chainLength, endpoint=False)
+    #wVec = np.linspace(-8, 8, 8000, endpoint=False)
+    ##gAna2W = greenAna2nd.anaGreenVecW(kVec, wVec, eta, damping)
+    ##gfNumInf = greenNumArb.numGreenVecWGreater(kVec, wVec, eta, damping) + greenNumArb.numGreenVecWLesser(kVec, wVec, eta, damping)
+    ##GF = gfNumInf
+    ##writeGreenToFile.writeGreen("data/eqGreenNum.h5", "gfEq", GF)
+    #GF = readGreenFromFile.readGreen("data/eqGreenNum.h5", "gfEq")
+    #bPlots.plotSpecLogDashed(wVec, 1. / np.sqrt(2. * np.pi) * np.imag(np.transpose(GF)), eta)
 #
-#    exit()
+    #exit()
 
     #greenNum1 = greenNum1st.spectralGreater(kVec, wVec, eta, damping)
     #greenAna1 = greenAna1st.spectralGreater(kVec, wVec, eta, damping)
@@ -204,24 +205,25 @@ def main():
     nArr = np.append(np.array([0.]), nArr)
     etaArrNoGS = np.sqrt(.4 / nArr[1:]) / np.sqrt(prms.chainLength)
     etaArr = np.append(np.array([2.5 / np.sqrt(prms.chainLength)]), etaArrNoGS)
+    #etaArr = np.ones(len(nArr)) * 1. / np.sqrt(prms.chainLength)
 
     print('nArr = {}'.format(nArr))
 
     print('etaArr = {}'.format(etaArr * np.sqrt(prms.chainLength)))
     assert(len(etaArr) == len(nArr))
 
-    #gfArr = gfNonEqMultiParam.nonEqGreenMultiParamMultiProc(kPoint, wVec, damping, nArr)
-    #writeGreenToFile.writeGreen("data/nonEqGreenEtaMany", "gfNonEq", gfArr)
+    gfArr = gfNonEqMultiParam.nonEqGreenMultiParamMultiProc(kPoint, wVec, damping, nArr)
+    writeGreenToFile.writeGreen("data/nonEqGreenEtaMany", "gfNonEq", gfArr)
 
-    #tau = 2. * np.pi / prms.w0
-    #tAv = np.linspace(- .5 * tau, .5  * tau, 20, endpoint=False)
-    #gWFloquet = floquetKArr.floquetGreenMultiProc(kVec, wVec, tAv, etaArr[-1], damping, nArr[-1])
-    #gWFloquetInt = 1. / tau * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
-    #gfFloq = gWFloquetInt
-    #writeGreenToFile.writeGreen("data/floquetGreen", "gfFloquet", gfFloq)
+    tau = 2. * np.pi / prms.w0
+    tAv = np.linspace(- .5 * tau, .5  * tau, 20, endpoint=False)
+    gWFloquet = floquetKArr.floquetGreenMultiProc(kVec, wVec, tAv, etaArr[-1], damping, nArr[-1])
+    gWFloquetInt = 1. / tau * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
+    gfFloq = gWFloquetInt
+    writeGreenToFile.writeGreen("data/floquetGreen", "gfFloquet", gfFloq)
 
-    gfFloq = readGreenFromFile.readGreen("data/floquetGreen", "gfFloquet")
-    gfArr = readGreenFromFile.readGreen("data/nonEqGreenEtaMany", "gfNonEq")
+    #gfFloq = readGreenFromFile.readGreen("data/floquetGreen", "gfFloquet")
+    #gfArr = readGreenFromFile.readGreen("data/nonEqGreenEtaMany", "gfNonEq")
     print("gfArr.shape = {}".format(gfArr.shape))
     bPlots.quantumToFloquetCrossover(wVec, 1. / np.sqrt(2. * np.pi) * gfArr, 1. / np.sqrt(2. * np.pi) * gfFloq[0, :], etaArr, nArr)
     exit()

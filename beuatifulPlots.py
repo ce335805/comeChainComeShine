@@ -292,7 +292,8 @@ def plotSpecLogDashed(wVec, spec, eta):
     cbar.ax.set_ylabel(r'$A(k, \omega)$', rotation=270, fontsize=fontsize, labelpad=10)
     #cbar.ax.tick_params(labelsize=fontsize)
 
-    plt.savefig('Fig3a.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.savefig('Fig3a.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('Fig3aN20.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -515,7 +516,7 @@ def plotPtGSWithCoh(ptGSL, ptGSS, eta, T):
     #ax.add_patch(tickPatch)
 
     #plt.show()
-    plt.savefig('Fig1c.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('Fig1cN200.png', format='png', bbox_inches='tight', dpi = 600)
 
 
 
@@ -842,7 +843,8 @@ def quantumToFloquetCrossover(wVec, gfArr, gfFloq, etaArr, nArr):
     #ax.plot(0, 1, "^k", clip_on=False)
 
 
-    plt.savefig('Fig3b.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.savefig('Fig3b.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('Fig3bN60.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -1154,16 +1156,16 @@ def plotLandscapesAllOrders(etas, orderH):
     orderH = 3
     bins = 500
 
-    #landscapes = fsShift.getManyEnergyLandscapes(etas, orderH, bins)
-    #file = h5py.File("data/landscapes" + str(orderH) + ".h5", 'w')
-    #file.create_dataset("landscapes", data=landscapes)
-    #file.create_dataset("etas", data=etas)
-    #file.close()
-
-    file = h5py.File("data/landscapes" + str(orderH) + ".h5", 'r')
-    landscapes = file["landscapes"][()]
-    etas = file["etas"][()]
+    landscapes = fsShift.getManyEnergyLandscapes(etas, orderH, bins)
+    file = h5py.File("data/landscapes" + str(orderH) + ".h5", 'w')
+    file.create_dataset("landscapes", data=landscapes)
+    file.create_dataset("etas", data=etas)
     file.close()
+
+    #file = h5py.File("data/landscapes" + str(orderH) + ".h5", 'r')
+    #landscapes = file["landscapes"][()]
+    #etas = file["etas"][()]
+    #file.close()
 
     Ls = np.logspace(1., 4., 31, endpoint = True)
     etasNonNorm = etas * np.sqrt(prms.chainLength)
@@ -1256,7 +1258,9 @@ def plotLandscapesAllOrders(etas, orderH):
     legend.get_frame().set_boxstyle('Square', pad=0.1)
     legend.get_frame().set_linewidth(0.0)
 
-    plt.savefig('fsShiftsAllOrders.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.savefig('fsShiftsAllOrders.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('Fig1b.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.savefig('fsShiftsAllOrders.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -1264,31 +1268,31 @@ def plotLandscapes1Order(etas, orderH):
     orderH = 1
     bins = 100
 
-    #landscapes = fsShift.getManyEnergyLandscapes(etas, orderH, bins)
-    #file = h5py.File("data/landscapesCrit" + str(orderH) + ".h5", 'w')
-    #file.create_dataset("landscapes", data=landscapes)
-    #file.create_dataset("etas", data=etas)
-    #file.close()
-
-    file = h5py.File("data/landscapesCrit" + str(orderH) + ".h5", 'r')
-    landscapes = file["landscapes"][()]
-    etas = file["etas"][()]
+    landscapes = fsShift.getManyEnergyLandscapes(etas, orderH, bins)
+    file = h5py.File("data/landscapesCrit" + str(orderH) + ".h5", 'w')
+    file.create_dataset("landscapes", data=landscapes)
+    file.create_dataset("etas", data=etas)
     file.close()
+
+    #file = h5py.File("data/landscapesCrit" + str(orderH) + ".h5", 'r')
+    #landscapes = file["landscapes"][()]
+    #etas = file["etas"][()]
+    #file.close()
 
     Ls = np.logspace(1., 4., 11, endpoint = True)
     etasNonNorm = etas * np.sqrt(prms.chainLength)
 
-    #photonOccs1 = fsShift.occupationsForLengths(Ls, etasNonNorm, 1, 500)
-    #file = h5py.File("data/occsOneCrit.h5", 'w')
-    #file.create_dataset("occs", data=photonOccs1)
-    #file.close()
+    photonOccs1 = fsShift.occupationsForLengths(Ls, etasNonNorm, 1, 500)
+    file = h5py.File("data/occsOneCrit.h5", 'w')
+    file.create_dataset("occs", data=photonOccs1)
+    file.close()
 
     exactShifts = np.array([0, 0, 0, np.arccos(np.pi / (4. * etas[3]**2 * 1010)), np.arccos(np.pi / (4. * etas[4]**2 * 1010)), np.arccos(np.pi / (4. * etas[5]**2 * 1010)), np.arccos(np.pi / (4. * etas[6]**2 * 1010))])
     shiftPointHeights = np.array([-0.05, -0.2, -0.35, -0.5, -0.73, -1.08, -1.55])
 
-    file = h5py.File("data/occsOneCrit.h5", 'r')
-    photonOccs1 = file["occs"][()]
-    file.close()
+    #file = h5py.File("data/occsOneCrit.h5", 'r')
+    #photonOccs1 = file["occs"][()]
+    #file.close()
 
     fig = plt.figure()
     #fig.set_size_inches(0.6 * 4., 0.6 * 3.)
@@ -1426,7 +1430,8 @@ def plotLandscapes1Order(etas, orderH):
     legend.get_frame().set_boxstyle('Square', pad=0.05)
     legend.get_frame().set_linewidth(0.0)
 
-    plt.savefig('fsShifts1.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('Fig2a.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.savefig('fsShifts1.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -1550,7 +1555,8 @@ def plotLandscapes2Order(etas, orderH):
     legend.get_frame().set_boxstyle('Square', pad=0.1)
     legend.get_frame().set_linewidth(0.0)
 
-    plt.savefig('fsShifts2.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.savefig('fsShifts2.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('Fig2b.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
