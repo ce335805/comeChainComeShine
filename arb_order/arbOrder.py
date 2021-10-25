@@ -11,7 +11,7 @@ import initialState as ini
 
 def findGS(eta, orderH):
     state = ini.getG0InitialStateNum()
-    return state
+    #return state
     #print("initial state = {}".format(state))
     pauliBounds = np.zeros((len(state), 2), dtype='double')
     pauliBounds[0: param.chainLength, 1] = 1.0

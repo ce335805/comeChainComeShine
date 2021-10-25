@@ -30,4 +30,7 @@ def setupPhotonHamiltonianInf(T, J, eta):
     photonEnergies = prms.w0 * np.diag((indices + .5), 0)
     jTerm = J * utils.calcSinAdaggerA(eta)
     tTerm =  T * utils.calcCosAdaggerA(eta)
+#    jTerm = J * prms.reuseSin
+#    tTerm =  T * prms.reuseCos
+
     return photonEnergies + jTerm + tTerm

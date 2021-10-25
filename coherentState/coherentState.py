@@ -92,4 +92,4 @@ def getPhGS(eta):
     gs = arbOrder.findGS(eta, 3)
     gsJ = eF.J(gs)
     gsT = eF.T(gs)
-    return phState.findPhotonGS([gsT, gsJ], eta, 2)
+    return phState.findPhotonGS([gsT, gsJ], eta, 3)

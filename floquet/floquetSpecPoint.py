@@ -26,14 +26,14 @@ def gLesser(kPoint, tRelArr, tAvArr, eta, N):
 
 def integrateH(tVec, A0):
     At = A0 * np.sin(prms.w0 * tVec)
-    T = 4. * prms.t * prms.numberElectrons
+    T = 4. * prms.t * prms.numberElectrons / np.pi
     H = np.cos(At) * T
     return (tVec[1] - tVec[0]) * np.sum(H[: -1])
 
 
 def integrateHPlus(kPoint, tVec, A0):
     At = A0 * np.sin(prms.w0 * tVec)
-    T = 4. * prms.t * prms.numberElectrons
+    T = 4. * prms.t * prms.numberElectrons / np.pi
     H = np.cos(At) * T
     epsK = 2. * prms.t * np.cos(kPoint)
     gK = - 2. * prms.t * np.sin(kPoint)
@@ -46,7 +46,7 @@ def getA0Coh(eta, N):
     phState = coherentState.getShiftedGS(eta, N)
     apad = np.diag(np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), -1) + np.diag(
         np.sqrt(np.arange((prms.maxPhotonNumber - 1)) + 1), +1)
-    aAv = np.dot(np.conj(phState), np.dot(eta * apad, phState))
+    aAv = eta * np.dot(np.conj(phState), np.dot(apad, phState))
     return aAv
 
 

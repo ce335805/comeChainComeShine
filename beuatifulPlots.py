@@ -293,7 +293,7 @@ def plotSpecLogDashed(wVec, spec, eta):
     #cbar.ax.tick_params(labelsize=fontsize)
 
     #plt.savefig('Fig3a.png', format='png', bbox_inches='tight', dpi = 600)
-    plt.savefig('Fig3aN20.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('Fig3aN50.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -516,7 +516,152 @@ def plotPtGSWithCoh(ptGSL, ptGSS, eta, T):
     #ax.add_patch(tickPatch)
 
     #plt.show()
-    plt.savefig('Fig1cN200.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('CompareEDPhGS.png', format='png', bbox_inches='tight', dpi = 600)
+
+
+
+def plotComparisonWithED(edDat, varDat, eta, T):
+    fig = plt.figure()
+    fig.set_size_inches(3., 2.)
+
+    ax = fig.add_subplot(111)
+
+    #left, bottom, width, height = [0.75, 0.4, 0.4, 0.55]
+    #axIn1 = fig.add_axes([left, bottom, width, height])
+
+    for axis in ['top', 'bottom', 'left', 'right']:
+        ax.spines[axis].set_linewidth(0.5)
+        #axIn1.spines[axis].set_linewidth(0.5)
+
+    for axis in ['top', 'right']:
+        ax.spines[axis].set_linewidth(0.0)
+        #axIn1.spines[axis].set_linewidth(0.0)
+
+    myblue5 = '#406080'
+
+    myyellow4 = '#E6BB65'
+
+    frontBarColor = myblue5
+    backBarColor = myyellow4
+
+    bins = np.arange(len(edDat))
+    ax.bar(bins - 0.25, np.abs(varDat), log=True, fc = backBarColor, label ="$VAR$", width = .5, edgecolor ='black', linewidth = 0.25)
+    ax.bar(bins + 0.25, np.abs(edDat), log=True, fc=frontBarColor, label ="$ED$", width = 0.5, edgecolor ='black', linewidth = 0.25)
+
+    #axIn1.bar(bins, np.abs(varDat - edDat), log=True, fc = backBarColor, label ="$VAR - ED$", width = .5, edgecolor ='black', linewidth = 0.25)
+
+    ax.set_ylabel(r'$P(n_{\mathrm{phot}})$', fontsize = fontsize)
+    ax.set_xlabel(r'$n_{\mathrm{phot}}$', fontsize = fontsize)
+
+    #axIn1.set_ylabel(r'$P(n_{\mathrm{phot}})$', fontsize = fontsize)
+    #axIn1.set_ylabel(r'$Difference$', fontsize = fontsize)
+    #axIn1.set_xlabel(r'$n_{\mathrm{phot}}$', fontsize = fontsize)
+
+
+    ax.set_xlim(-1, 21)
+    #axIn1.set_xlim(-1, 21)
+    #axIn1.set_xlim(-1, 43)
+    ax.set_xticks([])
+
+    #axIn1.set_xticks([0, 5, 10, 15, 20])
+
+    ax.set_xticks([0, 10, 20])
+    ax.set_xticklabels(['0', '10', '20'], fontsize = fontsize)
+
+
+    ax.set_ylim(1e-14, 2. * 1e0)
+
+    ax.set_yticks([1e0, 1e-4, 1e-8, 1e-12])
+    ax.set_yticklabels(['$10^{0}$', '$10^{-4}$', '$10^{-8}$', '$10^{-12}$'])
+
+
+    #axIn1.set_ylim(1e-40, 1e-14)
+
+    #axIn1.set_yticks([1e-15, 1e-25, 1e-35])
+    #axIn1.set_yticklabels(['$10^{-15}$', '$10^{-25}$', '$10^{-35}$'])
+
+
+    legend = ax.legend(fontsize = fontsize - 2, loc = 'upper left', bbox_to_anchor=(0.15, 1.1), edgecolor = 'black', ncol = 1)
+    legend.get_frame().set_alpha(1.0)
+    legend.get_frame().set_boxstyle('Square', pad=0.0)
+    legend.get_frame().set_linewidth(0.5)
+
+
+    #axis arrow
+    arrow = patches.FancyArrowPatch((20, 1e-14), (22, 1e-14), arrowstyle='->', mutation_scale=7, zorder = 100, linewidth=.5, color = 'black', clip_on = False)
+    ax.add_patch(arrow)
+
+    arrow = patches.FancyArrowPatch((-1, 1e0), (-1, 2. * 1e1), arrowstyle='->', mutation_scale=7, zorder = 100, linewidth=.5, color = 'black', clip_on = False)
+    ax.add_patch(arrow)
+
+    ##axis arrow
+    #arrow = patches.FancyArrowPatch((19, 1e-40), (22, 1e-40), arrowstyle='->', mutation_scale=7, zorder = 100, linewidth=.5, color = 'black', clip_on = False)
+    #axIn1.add_patch(arrow)
+#
+    #arrow = patches.FancyArrowPatch((-1, 1e-15), (-1, 1e-12), arrowstyle='->', mutation_scale=7, zorder = 100, linewidth=.5, color = 'black', clip_on = False)
+    #axIn1.add_patch(arrow)
+
+    #tickPatch = patches.Rectangle((2, 1e-2), width = 0., height = 1e-2, linewidth = 0.7, clip_on = False)
+    #ax.add_patch(tickPatch)
+
+    #plt.show()
+    plt.savefig('EdVarComparison.png', format='png', bbox_inches='tight', dpi = 600)
+
+
+def plotDifferencesToED(diffDat, eta, T):
+    fig = plt.figure()
+    fig.set_size_inches(3., 2.)
+
+    ax = fig.add_subplot(111)
+
+    left, bottom, width, height = [0.75, 0.4, 0.4, 0.55]
+
+    for axis in ['top', 'bottom', 'left', 'right']:
+        ax.spines[axis].set_linewidth(0.5)
+
+    for axis in ['top', 'right']:
+        ax.spines[axis].set_linewidth(0.0)
+
+    myblue5 = '#406080'
+
+    myyellow4 = '#E6BB65'
+
+    frontBarColor = myblue5
+    backBarColor = myyellow4
+
+    bins = np.arange(len(diffDat))
+    ax.bar(bins, np.abs(diffDat), log=True, fc=backBarColor, label ="$ED$", width = 0.5, edgecolor ='black', linewidth = 0.25)
+
+    ax.set_ylabel(r'$|P(n_{\mathrm{phot}}, ED) - P(n_{\mathrm{phot}}, VAR)|$', fontsize = fontsize)
+    ax.set_xlabel(r'$n_{\mathrm{phot}}$', fontsize = fontsize)
+
+
+    ax.set_xlim(-1, 21)
+    ax.set_xticks([])
+
+    ax.set_xticks([0, 10, 20])
+    ax.set_xticklabels(['0', '10', '20'], fontsize = fontsize)
+
+    ax.set_ylim(1e-40, 1e-14)
+    ax.set_yticks([1e-15, 1e-25, 1e-35])
+    ax.set_yticklabels(['$10^{-15}$', '$10^{-25}$', '$10^{-35}$'])
+
+
+    #legend = ax.legend(fontsize = fontsize - 2, loc = 'upper left', bbox_to_anchor=(0.15, 1.1), edgecolor = 'black', ncol = 1)
+    #legend.get_frame().set_alpha(1.0)
+    #legend.get_frame().set_boxstyle('Square', pad=0.0)
+    #legend.get_frame().set_linewidth(0.5)
+
+
+    #axis arrow
+    arrow = patches.FancyArrowPatch((19, 1e-40), (22, 1e-40), arrowstyle='->', mutation_scale=7, zorder = 100, linewidth=.5, color = 'black', clip_on = False)
+    ax.add_patch(arrow)
+    arrow = patches.FancyArrowPatch((-1, 1e-15), (-1, 1e-12), arrowstyle='->', mutation_scale=7, zorder = 100, linewidth=.5, color = 'black', clip_on = False)
+    ax.add_patch(arrow)
+
+    #plt.show()
+    plt.savefig('EdVarDifference.png', format='png', bbox_inches='tight', dpi = 600)
+
 
 
 
@@ -844,7 +989,150 @@ def quantumToFloquetCrossover(wVec, gfArr, gfFloq, etaArr, nArr):
 
 
     #plt.savefig('Fig3b.png', format='png', bbox_inches='tight', dpi = 600)
-    plt.savefig('Fig3bN60.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('Fig3bN130Constg.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.tight_layout()
+    #plt.show()
+
+def quantumToFloquetCrossoverConstg(wVec, gfArr, gfFloq, etaArr, nArr):
+
+    assert(prms.chainLength == 90)
+
+    fig = plt.figure()
+    fig.set_size_inches(.65 * 4., .65 * 4.)
+    ax = fig.add_subplot(111)
+
+    for axis in ['bottom', 'left']:
+        ax.spines[axis].set_linewidth(0.5)
+
+    for axis in ['top', 'right']:
+        ax.spines[axis].set_linewidth(0.0)
+
+
+    ###make color array
+    colorArr = np.zeros((len(etaArr), 3))
+    startColor = (0.1, 0.35, .9)
+    endColor = (.85, 1., 0.0)
+    for colorInd, color in enumerate(colorArr):
+        linFac = colorInd / (len(colorArr) - 1)
+        tempColor = np.array((startColor[0] + linFac * (endColor[0] - startColor[0]), startColor[1] + (endColor[1] - startColor[1]) * linFac, startColor[2] + (endColor[2] - startColor[2]) * linFac ))
+        colorArr[colorInd, :] = tempColor
+
+    colorArr = np.flip(colorArr, axis = 0)
+    #print(colorArr)
+
+    cmap = plt.cm.get_cmap('gist_earth')
+    #colorArr = [cmap(0.05), cmap(0.15), cmap(0.25), cmap(0.4), cmap(0.6), cmap(0.8)]
+    for etaInd, eta in enumerate(etaArr):
+        #print(eta)
+        etaLabel = eta * np.sqrt(prms.chainLength)
+        #color = colorArr[etaInd]
+        #color = cmap(etaInd / (len(etaArr) + 1))
+        #color = 'black'
+        hsv = (colorArr[etaInd][0], colorArr[etaInd][1], colorArr[etaInd][2])
+        color = matplotlib.colors.hsv_to_rgb(hsv)
+        labelStr = r'$g = {:.2f}$'.format(etaLabel) + r', $| \alpha |^2$' + ' $= {:.1f}$'.format(nArr[etaInd])
+        ax.plot(-wVec, np.imag(gfArr[etaInd, :]) * (.35 * 1e1) ** etaInd, color = color, linewidth = 1.2)
+
+        boxProps = dict(boxstyle='square', facecolor='white', alpha=1., linewidth = 0., fill = True, pad = 0.15)
+
+        color = 'black'
+
+        if(etaInd == 0):
+            plt.gcf().text(.86, 0.135, "${:.0f}$".format(nArr[etaInd]), fontsize=8, color = color, alpha = 1., bbox = boxProps)
+            #plt.gcf().text(.8, 0.135, "${:.0f}$".format(nArr[etaInd]), fontsize=8, color = color, alpha = 1., bbox = boxProps)
+
+        if(etaInd == 3):
+            plt.gcf().text(.8, 0.2275, "${:.2f}$".format(nArr[etaInd]), fontsize=8, color = color, alpha = 1., bbox = boxProps)
+
+        if(etaInd == 6):
+            plt.gcf().text(.8, 0.3175, "${:.2f}$".format(nArr[etaInd]), fontsize=8, color = color, alpha = 1., bbox = boxProps)
+
+        if(etaInd == 9):
+            plt.gcf().text(.825, 0.4075, "${:.1f}$".format(nArr[etaInd]), fontsize=8, color = color, alpha = 1., bbox = boxProps)
+            #plt.gcf().text(.8, 0.4075, "${:.1f}$".format(nArr[etaInd]), fontsize=8, color = color, alpha = 1., bbox = boxProps)
+
+        if(etaInd == 12):
+            plt.gcf().text(.825, 0.4975, "${:.1f}$".format(nArr[etaInd]), fontsize=8, color = color, alpha = 1., bbox = boxProps)
+            #plt.gcf().text(.8, 0.4975, "${:.1f}$".format(nArr[etaInd]), fontsize=8, color = color, alpha = 1., bbox = boxProps)
+
+        if(etaInd == 15):
+            plt.gcf().text(.825, 0.5875, "${:.1f}$".format(nArr[etaInd]), fontsize=8, color = color, alpha = 1., bbox = boxProps)
+            #plt.gcf().text(.8, 0.5875, "${:.1f}$".format(nArr[etaInd]), fontsize=8, color = color, alpha = 1., bbox = boxProps)
+
+        if(etaInd == 19):
+            plt.gcf().text(.835, 0.705, "${:.0f}$".format(nArr[etaInd]), fontsize=8, color = color, alpha = 1., bbox = boxProps)
+            #plt.gcf().text(.8, 0.705, "${:.0f}$".format(nArr[etaInd]), fontsize=8, color = color, alpha = 1., bbox = boxProps)
+
+    ax.plot(-wVec, np.imag(gfFloq) * (.35 * 1e1) ** (len(etaArr) - 1), color = 'red', label = 'Floquet', linewidth = 1.1, linestyle = '--', dashes = (3.5, 2.))
+    #ax.plot(-wVec, np.imag(gfFloq) * (.35 * 1e1) ** (len(etaArr) - 1), color = 'red', label = 'Floquet', linewidth = 1.1, linestyle = '--', dashes = (3., 2.))
+
+
+    plt.gcf().text(.14, 0.705, r'$\mathrm{Floquet}$', fontsize=8, color = 'red', alpha = 1., bbox = boxProps)
+    plt.gcf().text(.725, .775, r"$\underline{\Delta N_{\mathrm{phot}}^{\mathrm{pump}}}$", fontsize=fontsize, color = 'black')
+
+
+    peakPos = 2. * prms.t * np.cos(3. / 8. * np.pi)
+
+    ax.set_yscale('log')
+    ax.set_xlim(-4., 2.5)
+    ax.set_ylabel(r"$A(k = \frac{3}{8}\pi, \omega)$", fontsize = fontsize, labelpad = 0)
+    ax.set_xlabel(r"$\omega {-} \varepsilon(k) \, [t_h]$", fontsize = fontsize)
+    yLimBot = 1e-2
+    yLimTop = 1e12
+    ax.set_ylim(yLimBot, yLimTop)
+    epsK = 2. * prms.t * np.cos(3. / 8. * np.pi)
+
+    ax.set_xticks([epsK - 3. * prms.w0, epsK - 2. * prms.w0, epsK - prms.w0, epsK, epsK + prms.w0, epsK + 2. * prms.w0, epsK + 3. * prms.w0])
+    ax.set_xticklabels([r'$-3$', r'$-2$', r'$-1$', r'$0$', r'$1$', r'$2$', r'$3$'], fontsize = 8)
+
+    ax.set_yticks([1e-2, 1e1, 1e4, 1e7, 1e10])
+    ax.set_yticklabels([r'$10^{-2}$', r'$10^{1}$', r'$10^{4}$', r'$10^{7}$', r'$10^{10}$'], fontsize = 8)
+
+    vlineColor = '#7397C0'
+    ax.vlines(peakPos, yLimBot, yLimTop, color = vlineColor, linestyle = '-', linewidth = 1.25)
+    ax.vlines(peakPos + prms.w0, yLimBot, yLimTop, color = vlineColor, linestyle = '-', linewidth = 1.25)
+    ax.vlines(peakPos - prms.w0, yLimBot, yLimTop, color = vlineColor, linestyle = '-', linewidth = 1.25)
+
+    #legend = ax.legend(fontsize = fontsize - 4, loc = 'upper right', bbox_to_anchor=(1.1, 1.01), edgecolor = 'black', ncol = 1)
+    #legend.get_frame().set_alpha(1.)
+    #legend.get_frame().set_boxstyle('Square', pad=0.1)
+    #legend.get_frame().set_linewidth(0.5)
+
+    #epsString = r'$\varepsilon(k)$'
+    epsStringPW = r'${+} \omega_0$'
+    epsStringMW = r'${-} \omega_0$'
+    #plt.gcf().text(0.475, 0.9, epsString, fontsize=6)
+    plt.gcf().text(0.585, 0.8925, epsStringPW, fontsize=fontsize)
+    plt.gcf().text(0.35, 0.8925, epsStringMW, fontsize=fontsize)
+
+    #ax.arrow(-3., 1e10, 0., 1e1)
+    #ax.arrow(-2.5, 1e7, 0., 1e10, length_includes_head = False, color = 'darkseagreen', width = 0.025, head_width = 0.2, head_length = 0.5, zorder = 100, shape = 'full')
+
+    #arrow = patches.Arrow(-2, 1000, 2, 0, zorder = 100, width = 2)
+    #arrow = patches.FancyArrowPatch((-3.25, 1e1), (-2.4, 5. * 1e9), arrowstyle='->', mutation_scale=10, connectionstyle="arc3,rad=.175", zorder = 100, linewidth=1.5, color = 'black')
+    arrow = patches.FancyArrowPatch((-3.05, 1e1), (-2.2, 5. * 1e10), arrowstyle='->', mutation_scale=10, connectionstyle="arc3,rad=.175", zorder = 100, linewidth=1.5, color = 'black')
+    ax.add_patch(arrow)
+
+    #ax.arrow(2., 1e-1, 0.2, 0., length_includes_head=True, color='black', width=0.0,
+    #         head_width=0.03, head_length=0.05, clip_on = False)
+
+    arrow = patches.FancyArrowPatch((2.5, 1.0 * 1e-2), (2.6, 1.0 * 1e-2), arrowstyle='->', mutation_scale=5, zorder = 100, linewidth=.5, color = 'black', clip_on = False)
+    ax.add_patch(arrow)
+
+    arrow = patches.FancyArrowPatch((-4, 1e10), (-4, 1.0 * 1e13), arrowstyle='->', mutation_scale=5, zorder = 100, linewidth=.5, color = 'black', clip_on = False)
+    ax.add_patch(arrow)
+
+    #plt.text(-3.9, 5. * 1e9, r'$\mathrm{increased}$' + '\n' + '$\mathrm{pump}$' + '\n' + r'$\mathrm{decreased}$' + r'$g$' , fontsize = 6)
+    plt.text(-3.4, 2. * 1e10, r'$\mathrm{increased}$' + '\n' + '$\mathrm{pump}$' , fontsize = fontsize)
+
+    #ax.plot(1, 0, ">k", transform=ax.get_yaxis_transform(), clip_on=False)
+    #ax.plot(0, 1, "^k", transform=ax.get_xaxis_transform(), clip_on=False)
+    #ax.plot(1, 0, ">k", clip_on=False)
+    #ax.plot(0, 1, "^k", clip_on=False)
+
+
+    plt.savefig('Fig3bN100.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.savefig('Fig3bConstg.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -1012,7 +1300,7 @@ def plotAnalyticalConductivity(eta1, eta2, eta3):
     legend.get_frame().set_linewidth(.5)
 
 
-    plt.savefig('conductivityGS.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('Fig4aN50.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -1112,7 +1400,7 @@ def plotAnalyticalConductivityImaginary(eta1, eta2, eta3):
     #legend.get_frame().set_boxstyle('Square', pad=0.1)
     #legend.get_frame().set_linewidth(0)
 
-    plt.savefig('conductivityGSImaginary.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('Fig4bN50.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -1130,7 +1418,7 @@ def saveIntConductivities(intConductivities):
     file.close()
 
 def loadConductivities():
-    file = h5py.File("data/conductivities.h5", 'r')
+    file = h5py.File("clusterData/conductivitiesN50.h5", 'r')
     cond1 = file["cond1"][()]
     cond2 = file["cond2"][()]
     cond3 = file["cond3"][()]
@@ -1139,7 +1427,7 @@ def loadConductivities():
 
 
 def loadIntConductivities():
-    file = h5py.File("data/intConductivities.h5", 'r')
+    file = h5py.File("clusterData/intConductivitiesN50.h5", 'r')
     intCond = file["intCond"][()]
     file.close()
     return intCond
@@ -1153,6 +1441,9 @@ def integratedConductivityArr(omegaVec, delta, etas):
     return intConductivity * prms.chainLength
 
 def plotLandscapesAllOrders(etas, orderH):
+    assert (prms.maxPhotonNumber == 100)
+    assert (prms.chainLength == 1010)
+
     orderH = 3
     bins = 500
 
@@ -1220,7 +1511,15 @@ def plotLandscapesAllOrders(etas, orderH):
         hsv = (colorArr[indEta][0], colorArr[indEta][1], colorArr[indEta][2])
         color = matplotlib.colors.hsv_to_rgb(hsv)
 
-        ax.plot(xArr, landscapes[indEta, :] / prms.chainLength, color = color, label = r'g = {:.2f}'.format(etaLabel), linewidth = 1.5)
+        if(indEta == 0):
+            ax.plot(xArr, landscapes[indEta, :] / prms.chainLength, color = color, label = r'g = {:.0f}'.format(etaLabel), linewidth = 1.5)
+
+        elif(indEta == 6):
+            ax.plot(xArr, landscapes[indEta, :] / prms.chainLength, color=color, label=r'g = {:.0f}'.format(etaLabel),
+                    linewidth=1.5)
+        else:
+            ax.plot(xArr, landscapes[indEta, :] / prms.chainLength, color = color, label = r'g = {:.2f}'.format(etaLabel), linewidth = 1.5)
+
 
         #if(etaLabel == 1.):
         #    eGSRand = 0.10872966341211296
@@ -1259,7 +1558,7 @@ def plotLandscapesAllOrders(etas, orderH):
     legend.get_frame().set_linewidth(0.0)
 
     #plt.savefig('fsShiftsAllOrders.png', format='png', bbox_inches='tight', dpi = 600)
-    plt.savefig('Fig1b.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('Fig1bN100.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.savefig('fsShiftsAllOrders.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
@@ -1811,6 +2110,47 @@ def finiteSizeErrors(x, e1, e2, e3, e4):
 
 
     plt.savefig('finiteSize.png', format='png', bbox_inches='tight', dpi = 600)
+    #plt.show()
+
+def finiteConvergenceSizeHilbert(x, errNPhot, relErrn0, relErrn2, relErrn4, relErrn8, relErrn16, relErrn32):
+    fig, ax = plt.subplots(nrows=1, ncols=1)
+
+    fig.set_size_inches(5., 2.2)
+
+    for axis in ['top', 'bottom', 'left', 'right']:
+        ax.spines[axis].set_linewidth(0.5)
+
+    myblue = '#406080'
+    myyellow = '#E6BB65'
+
+    myred = '#C37161'
+    ax.set_yscale('log')
+
+    ax.plot(x, errNPhot, marker = 'o', color = myyellow, linestyle = '-', label = r'$N_{\mathrm{phot}} = \langle a^{\dag}a \rangle$', linewidth = .5, markersize = 3., markeredgecolor = 'black', markeredgewidth = 0.25, zorder = 100)
+    ax.plot(x, relErrn0, marker = 'v', color = myblue, linestyle = '-', label = r'$P\left(n_{\mathrm{phot}} = 0\right)$', linewidth = .5, markersize = 3., markeredgecolor = 'black', markeredgewidth = 0.25)
+    ax.plot(x, relErrn2, marker = '^', color = 'lightcoral', linestyle = '-', label = r'$P\left(n_{\mathrm{phot}} = 2\right)$', linewidth = .5, markersize = 3., markeredgecolor = 'black', markeredgewidth = 0.25)
+    ax.plot(x, relErrn4, marker = 's', color = 'olive', linestyle = '-', label = r'$P\left(n_{\mathrm{phot}} = 4\right)$', linewidth = .5, markersize = 3., markeredgecolor = 'black', markeredgewidth = 0.25)
+    ax.plot(x[1:], relErrn8[1:], marker = 'P', color = 'powderblue', linestyle = '-', label = r'$P\left(n_{\mathrm{phot}} = 8\right)$', linewidth = .5, markersize = 3., markeredgecolor = 'black', markeredgewidth = 0.25)
+    ax.plot(x[2:], relErrn16[2:], marker = 'X', color = 'darkmagenta', linestyle = '-', label = r'$P\left(n_{\mathrm{phot}} = 16\right)$', linewidth = .5, markersize = 3., markeredgecolor = 'black', markeredgewidth = 0.25)
+    ax.plot(x[5:], relErrn32[5:], marker = '>', color = 'sandybrown', linestyle = '-', label = r'$P\left(n_{\mathrm{phot}} = 32\right)$', linewidth = .5, markersize = 3., markeredgecolor = 'black', markeredgewidth = 0.25)
+
+
+    ax.set_xlabel('$N_{\mathrm{max}}^{\mathrm{boson}}$', fontsize = fontsize, labelpad = 0.)
+    ax.set_ylabel('Rel. Err. to $N_{\mathrm{max}}^{\mathrm{boson}} = 200$', fontsize = fontsize, labelpad = 0.)
+
+    #ax.set_xlabel("$L$", fontsize = fontsize - 2)
+    #ax.set_ylabel(r"$\frac{G_{\mathrm{num}} - G_{\mathrm{ana}}}{G_{\mathrm{num}} + G_{\mathrm{ana}}}$", fontsize = fontsize - 2)
+    #axInTop.set_ylabel('$\log (N_{\mathrm{pt}})$', fontsize = 7, rotation = 0)
+    #axInTop.yaxis.set_label_coords(-0.24, .8)
+
+    legend = ax.legend(fontsize = fontsize, loc = 'upper left', bbox_to_anchor=(0.25, 1.0), edgecolor = 'black', ncol = 2)
+    legend.get_frame().set_alpha(1.)
+    legend.get_frame().set_boxstyle('Square', pad=0.1)
+    legend.get_frame().set_linewidth(0.0)
+
+
+
+    plt.savefig('finiteSizeHilbertSpace.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.show()
 
 

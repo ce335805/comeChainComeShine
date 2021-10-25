@@ -17,7 +17,7 @@ def nonEqGreenMultiParamMultiProc(kPoint, wVec, damping, nArr):
     gfNonEqPartial = partial(nonEqGFParameters, kPoint = kPoint, wVec = wVec, damping = damping)
     #gfNonEqCohOnlyKArgTurned = partial(nonEqGreenPoint.gfCohWTurned, wRel = wVec, tAv = tAv, eta = eta, damping = damping, N = cohN)
 
-    pool = Pool()
+    pool = Pool(4)
 
     gf = pool.map(gfNonEqPartial, nArr)
     gf = np.array(gf)
@@ -36,10 +36,11 @@ def nonEqGreenMultiParamMultiProc(kPoint, wVec, damping, nArr):
 def nonEqGFParameters(nCoh, kPoint, wVec, damping):
 
     if(nCoh == 0):
-        eta = 2.5 / np.sqrt(prms.chainLength)
+        eta = .5 / np.sqrt(prms.chainLength)
+        #eta = 2.5 / np.sqrt(prms.chainLength)
     else:
-        #eta = 1. / np.sqrt(prms.chainLength)
-        eta = np.sqrt(0.4 / nCoh) / np.sqrt(prms.chainLength)
+        eta = .5 / np.sqrt(prms.chainLength)
+        #eta = np.sqrt(0.4 / nCoh) / np.sqrt(prms.chainLength)
 
     print("nCoh = {} ; eta = {}".format(nCoh, eta * np.sqrt(prms.chainLength)))
 

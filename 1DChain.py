@@ -5,6 +5,7 @@ import numpy as np
 import h5py
 import comparisonPlots as compPlot
 import multiProcGreen
+import utils
 from automatedTests import gfTests
 from automatedTests import ftTests
 from automatedTests import gsTests
@@ -39,6 +40,8 @@ from fileHandling import readGreenFromFile
 from finiteSizeScale import gfError
 from conductivity import calcConductivity
 from multiProcGreen import gfNonEqMultiParam
+import arb_order.photonState as ptState
+
 
 from GiacomosPlot import gsSqueezing
 
@@ -48,19 +51,103 @@ def main():
     #gsSqueezing.callGiacomosCode()
     #exit()
 
-    #eta  = 1. / np.sqrt(prms.chainLength)
-    #numCos = calcConductivity.expectationCos(eta)
-    #gsT = - 2. / np.pi * prms.chainLength
-    #wTilde = np.sqrt(1 - 2. * eta**2 / prms.w0 * gsT)
-    #anaCos = 1. - eta**2 * prms.w0 / (2. * wTilde)
-    #print("numCos = {}".format(numCos))
-    #print("anacos = {}".format(anaCos))
-    #wVec = np.linspace(-250., 250., 2000, endpoint=False)
-    #tVec = FT.tVecFromWVec(wVec)
-    #damping = 0.025
-    #expSinSinT = calcConductivity.expectationSinSin(tVec, eta)
-    #expSinSinAna = eta**2 * prms.w0 / wTilde * np.exp(-1j * wTilde * tVec)
-    #compPlot.compareArrays(tVec, expSinSinT - expSinSinAna, expSinSinAna - expSinSinAna)
+
+    ###convergence in boson cutoff
+    eta = 1./np.sqrt(prms.chainLength)
+
+    prms.reuseSin = utils.calcSinAdaggerA(eta)
+    prms.reuseCos = utils.calcCosAdaggerA(eta)
+
+    #prms.maxPhotonNumber = 100
+    gs = arbOrder.findGS(eta, 3)
+    print(gs)
+    print("gs particle Number difference = {}".format(utils.electronNumberZero(gs)))
+    gsJ = eF.J(gs)
+    print("gsJ = {}".format(gsJ))
+
+    trueGS = np.zeros(prms.chainLength, dtype='double')
+    trueGS[ : prms.numberElectrons // 2 + 1] = 1.0
+    trueGS[ prms.chainLength - prms.numberElectrons//2: ] = 1.0
+
+    gsEnergy = ptState.energyFromState(trueGS, eta, 3)
+    calculatedGSEnergy = ptState.energyFromState(gs, eta, 3)
+
+    print("energy - gsEnergy = {}".format(calculatedGSEnergy - gsEnergy))
+
+    exit()
+#
+    #gsT = eF.T(gs)
+    #GS200 = phState.findPhotonGS([gsT, gsJ], eta, 3)
+    #GS200 = GS200 * GS200
+    #nPhot200 = photonState.averagePhotonNumber([gsT, gsJ], eta, 3)
+#
+    ##compareCutoffs = np.array([10, 20, 30, 50, 70, 100, 150])
+    #compareCutoffs = np.array([4, 8, 16, 20, 30, 40, 50, 60, 80, 100, 120, 150, 180]) + 1
+    #errNPhots = np.zeros((len(compareCutoffs)))
+    #maxErr = np.zeros((len(compareCutoffs)))
+    #relErrn0 = np.zeros((len(compareCutoffs)))
+    #relErrn2 = np.zeros((len(compareCutoffs)))
+    #relErrn4 = np.zeros((len(compareCutoffs)))
+    #relErrn8 = np.zeros((len(compareCutoffs)))
+    #relErrn16 = np.zeros((len(compareCutoffs)))
+    #relErrn32 = np.zeros((len(compareCutoffs)))
+#
+    #for nMaxInd, nMax in enumerate(compareCutoffs):
+    #    prms.maxPhotonNumber = nMax
+    #    gs = arbOrder.findGS(eta, 3)
+    #    gsJ = eF.J(gs)
+    #    print("gsJ = {}".format(gsJ))
+    #    gsT = eF.T(gs)
+    #    nPhotN = photonState.averagePhotonNumber([gsT, gsJ], eta, 3)
+    #    errNPhots[nMaxInd] =2. *  (nPhotN - nPhot200) / (nPhotN + nPhot200)
+    #    GSN = phState.findPhotonGS([gsT, gsJ], eta, 3)
+    #    GSN = GSN * GSN
+    #    compareCutOff = np.amin([nMax, 31])
+    #    maxRelErr = 2. * np.amax((GSN[:compareCutOff:2] - GS200[:compareCutOff:2]) / (GSN[:compareCutOff:2] + GS200[:compareCutOff:2]))
+    #    #maxRelErr = .5 * np.amax((GSN[::2] - GS200[:nMax:2]) / (GSN[::2] + GS200[:nMax:2]))
+    #    maxErr[nMaxInd] = maxRelErr
+    #    relErrn0[nMaxInd] = 2 * np.abs((GSN[0] - GS200[0]) / (GSN[0] + GS200[0]))
+    #    relErrn2[nMaxInd] = 2 * np.abs((GSN[2] - GS200[2]) / (GSN[2] + GS200[2]))
+    #    relErrn4[nMaxInd] = 2 * np.abs((GSN[4] - GS200[4]) / (GSN[4] + GS200[4]))
+    #    if(nMax < 9): continue
+    #    relErrn8[nMaxInd] = 2 * np.abs((GSN[8] - GS200[8]) / (GSN[8] + GS200[8]))
+    #    if(nMax < 17): continue
+    #    relErrn16[nMaxInd] = 2 * np.abs((GSN[16] - GS200[16]) / (GSN[16] + GS200[16]))
+    #    if(nMax < 33): continue
+    #    relErrn32[nMaxInd] = 2 * np.abs((GSN[16] - GS200[16]) / (GSN[16] + GS200[16]))
+    #    #print(GSN[:6:2])
+#
+    #bPlots.finiteConvergenceSizeHilbert(compareCutoffs, np.abs(errNPhots), np.abs(relErrn0), np.abs(relErrn2), np.abs(relErrn4), np.abs(relErrn8), np.abs(relErrn16), np.abs(relErrn32))
+#
+#
+    #print(errNPhots)
+    #print(maxErr)
+#
+    #exit()
+
+
+
+    ###compare to Giacomos ED result
+    #eta = 1./np.sqrt(prms.chainLength)
+#
+    #edGS = np.load('data/check_1.npy')
+    #print(edGS)
+    #print(np.sum(edGS))
+#
+    #gs = arbOrder.findGS(eta, 3)
+    #gsJ = eF.J(gs)
+    ##print("gsJ = {}".format(gsJ))
+    #gsT = eF.T(gs)
+    ##print("gsT = {}".format(gsT))
+    ##print("gsT continuous = {}".format(4. * prms.t * prms.numberElectrons / np.pi))
+    #varGS = phState.findPhotonGS([gsT, gsJ], eta, 3)
+    #varGS = varGS[:21]
+    #varGS = varGS * varGS
+#
+    #print(varGS)
+    #print(varGS - edGS)
+    ##bPlots.plotComparisonWithED(edGS, varGS, eta, gsT)
+    ##bPlots.plotDifferencesToED(np.abs(edGS - varGS), eta, gsT)
     #exit()
 
     #matrixDiagonalization.runAllTests()
@@ -115,12 +202,12 @@ def main():
     #beuatifulPlots.plotOccsLs(etasNonNorm, 2)
     #exit()
 
-#    etas = np.linspace(0., 2., 7, endpoint=True) / np.sqrt(prms.chainLength)
-#    etas[3] = np.sqrt((np.pi) / (4. * prms.chainLength)) + 0.001 / np.sqrt(prms.chainLength)
-#    beuatifulPlots.plotLandscapesAllOrders(etas, 3)
-#    beuatifulPlots.plotLandscapes1Order(etas, 1)
-#    beuatifulPlots.plotLandscapes2Order(etas, 2)
-#    exit()
+    #etas = np.linspace(0., 2., 7, endpoint=True) / np.sqrt(prms.chainLength)
+    #etas[3] = np.sqrt((np.pi) / (4. * prms.chainLength)) + 0.001 / np.sqrt(prms.chainLength)
+    #beuatifulPlots.plotLandscapesAllOrders(etas, 3)
+    #beuatifulPlots.plotLandscapes1Order(etas, 1)
+    #beuatifulPlots.plotLandscapes2Order(etas, 2)
+    #exit()
 
 #    etaNonNorm = 1.
 #    ##Ls = np.array([90, 110, 210, 310, 410, 610, 810, 1010, 1410, 1810, 2210, 3010, 4010, 5010, 7010, 10010])
@@ -137,18 +224,6 @@ def main():
 #    #compPlot.finiteSizeErrors(Ls, errA2Mean, errA2Max)
 #    exit()
 
-    #gs = arbOrder.findGS(eta, 3)
-    #gsJ = eF.J(gs)
-    #gsT = eF.T(gs)
-    #gsJ = 0.
-    #gsT = - 2. / np.pi * prms.chainLength
-    #eta = 1. / np.sqrt(prms.chainLength)
-    #phGS = phState.findPhotonGS([gsT, gsJ], eta, 3)
-    #phGSAna = coherentState.getSqueezedState(eta, gsT)
-    #print(phGS)
-    #print("")
-    #print(phGSAna)
-    #exit()
 
     #eta = 1. / np.sqrt(prms.chainLength)
     #gsT = - 2. / np.pi * prms.chainLength
@@ -183,7 +258,7 @@ def main():
     ##gfNumInf = greenNumArb.numGreenVecWGreater(kVec, wVec, eta, damping) + greenNumArb.numGreenVecWLesser(kVec, wVec, eta, damping)
     ##GF = gfNumInf
     ##writeGreenToFile.writeGreen("data/eqGreenNum.h5", "gfEq", GF)
-    #GF = readGreenFromFile.readGreen("data/eqGreenNum.h5", "gfEq")
+    #GF = readGreenFromFile.readGreen("clusterData/eqGreenNumN50.h5", "gfEq")
     #bPlots.plotSpecLogDashed(wVec, 1. / np.sqrt(2. * np.pi) * np.imag(np.transpose(GF)), eta)
 #
     #exit()
@@ -205,27 +280,27 @@ def main():
     nArr = np.append(np.array([0.]), nArr)
     etaArrNoGS = np.sqrt(.4 / nArr[1:]) / np.sqrt(prms.chainLength)
     etaArr = np.append(np.array([2.5 / np.sqrt(prms.chainLength)]), etaArrNoGS)
-    #etaArr = np.ones(len(nArr)) * 1. / np.sqrt(prms.chainLength)
+    #etaArr = np.ones(len(nArr)) * .5 / np.sqrt(prms.chainLength)
 
     print('nArr = {}'.format(nArr))
 
     print('etaArr = {}'.format(etaArr * np.sqrt(prms.chainLength)))
     assert(len(etaArr) == len(nArr))
 
-    gfArr = gfNonEqMultiParam.nonEqGreenMultiParamMultiProc(kPoint, wVec, damping, nArr)
-    writeGreenToFile.writeGreen("data/nonEqGreenEtaMany", "gfNonEq", gfArr)
+    #gfArr = gfNonEqMultiParam.nonEqGreenMultiParamMultiProc(kPoint, wVec, damping, nArr)
+    #writeGreenToFile.writeGreen("data/nonEqGreenEtaMany", "gfNonEq", gfArr)
 
-    tau = 2. * np.pi / prms.w0
-    tAv = np.linspace(- .5 * tau, .5  * tau, 20, endpoint=False)
-    gWFloquet = floquetKArr.floquetGreenMultiProc(kVec, wVec, tAv, etaArr[-1], damping, nArr[-1])
-    gWFloquetInt = 1. / tau * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
-    gfFloq = gWFloquetInt
-    writeGreenToFile.writeGreen("data/floquetGreen", "gfFloquet", gfFloq)
+    #tau = 2. * np.pi / prms.w0
+    #tAv = np.linspace(- .5 * tau, .5  * tau, 20, endpoint=False)
+    #gWFloquet = floquetKArr.floquetGreenMultiProc(kVec, wVec, tAv, etaArr[-1], damping, nArr[-1])
+    #gWFloquetInt = 1. / tau * (tAv[1] - tAv[0]) * np.sum(gWFloquet, axis=2)
+    #gfFloq = gWFloquetInt
+    #writeGreenToFile.writeGreen("data/floquetGreen", "gfFloquet", gfFloq)
 
-    #gfFloq = readGreenFromFile.readGreen("data/floquetGreen", "gfFloquet")
-    #gfArr = readGreenFromFile.readGreen("data/nonEqGreenEtaMany", "gfNonEq")
+    gfFloq = readGreenFromFile.readGreen("clusterData/floquetGreenN100", "gfFloquet")
+    gfArr = readGreenFromFile.readGreen("clusterData/nonEqGreenEtaManyN100", "gfNonEq")
     print("gfArr.shape = {}".format(gfArr.shape))
-    bPlots.quantumToFloquetCrossover(wVec, 1. / np.sqrt(2. * np.pi) * gfArr, 1. / np.sqrt(2. * np.pi) * gfFloq[0, :], etaArr, nArr)
+    bPlots.quantumToFloquetCrossoverConstg(wVec, 1. / np.sqrt(2. * np.pi) * gfArr, 1. / np.sqrt(2. * np.pi) * gfFloq[0, :], etaArr, nArr)
     exit()
 
     #    for etaInd, eta in enumerate(etaArr):
