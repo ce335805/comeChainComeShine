@@ -53,28 +53,29 @@ def main():
 
 
     ###convergence in boson cutoff
-    eta = 1./np.sqrt(prms.chainLength)
-
-    prms.reuseSin = utils.calcSinAdaggerA(eta)
-    prms.reuseCos = utils.calcCosAdaggerA(eta)
-
-    #prms.maxPhotonNumber = 100
-    gs = arbOrder.findGS(eta, 3)
-    print(gs)
-    print("gs particle Number difference = {}".format(utils.electronNumberZero(gs)))
-    gsJ = eF.J(gs)
-    print("gsJ = {}".format(gsJ))
-
-    trueGS = np.zeros(prms.chainLength, dtype='double')
-    trueGS[ : prms.numberElectrons // 2 + 1] = 1.0
-    trueGS[ prms.chainLength - prms.numberElectrons//2: ] = 1.0
-
-    gsEnergy = ptState.energyFromState(trueGS, eta, 3)
-    calculatedGSEnergy = ptState.energyFromState(gs, eta, 3)
-
-    print("energy - gsEnergy = {}".format(calculatedGSEnergy - gsEnergy))
-
-    exit()
+    #eta = 1./np.sqrt(prms.chainLength)
+#
+    #prms.reuseSin = utils.calcSinAdaggerA(eta)
+    #prms.reuseCos = utils.calcCosAdaggerA(eta)
+#
+    ##prms.maxPhotonNumber = 100
+    #gs = arbOrder.findGS(eta, 3)
+    #print(gs)
+    #print("gs particle Number difference = {}".format(utils.electronNumberZero(gs)))
+    #gsJ = eF.J(gs)
+    #print("gsJ = {}".format(gsJ))
+    #print("gsT = {}".format(eF.T(gs)))
+#
+    #trueGS = np.zeros(prms.chainLength, dtype='double')
+    #trueGS[ : prms.numberElectrons // 2 + 1] = 1.0
+    #trueGS[ prms.chainLength - prms.numberElectrons//2: ] = 1.0
+#
+    #gsEnergy = ptState.energyFromState(trueGS, eta, 3)
+    #calculatedGSEnergy = ptState.energyFromState(gs, eta, 3)
+#
+    #print("energy - gsEnergy = {}".format(calculatedGSEnergy - gsEnergy))
+#
+    #exit()
 #
     #gsT = eF.T(gs)
     #GS200 = phState.findPhotonGS([gsT, gsJ], eta, 3)
@@ -172,10 +173,13 @@ def main():
     #origL = prms.chainLength
     #prms.chainLength = 510
     #etaLong = 2. / np.sqrt(prms.chainLength)
+    #prms.reuseSin = utils.calcSinAdaggerA(etaLong)
+    #prms.reuseCos = utils.calcCosAdaggerA(etaLong)
     #prms.numberElectrons = prms.chainLength // 2
-    #gs = np.zeros((prms.chainLength))
-    #gs[0: prms.numberElectrons // 2 + 1] = 1.
-    #gs[- prms.numberElectrons // 2 + 1:] = 1.
+    ##gs = np.zeros((prms.chainLength))
+    ##gs[0: prms.numberElectrons // 2 + 1] = 1.
+    ##gs[- prms.numberElectrons // 2 + 1:] = 1.
+    #gs = arbOrder.findGS(etaLong, 3)
     #gsJ = eF.J(gs)
     #gsTLong = eF.T(gs)
     #print("gsJ = {}".format(gsJ))
@@ -183,10 +187,13 @@ def main():
 #
     #prms.chainLength = 10
     #eta = 2. / np.sqrt(prms.chainLength)
+    #prms.reuseSin = utils.calcSinAdaggerA(eta)
+    #prms.reuseCos = utils.calcCosAdaggerA(eta)
     #prms.numberElectrons = prms.chainLength // 2
-    #gs = np.zeros((prms.chainLength))
-    #gs[0: prms.numberElectrons // 2 + 1] = 1.
-    #gs[- prms.numberElectrons // 2 + 1:] = 1.
+    ##gs = np.zeros((prms.chainLength))
+    ##gs[0: prms.numberElectrons // 2 + 1] = 1.
+    ##gs[- prms.numberElectrons // 2 + 1:] = 1.
+    #gs = arbOrder.findGS(eta, 3)
     #gsJ = eF.J(gs)
     #gsT = eF.T(gs)
     #print("gsJ = {}".format(gsJ))
@@ -260,7 +267,7 @@ def main():
     ##writeGreenToFile.writeGreen("data/eqGreenNum.h5", "gfEq", GF)
     #GF = readGreenFromFile.readGreen("clusterData/eqGreenNumN50.h5", "gfEq")
     #bPlots.plotSpecLogDashed(wVec, 1. / np.sqrt(2. * np.pi) * np.imag(np.transpose(GF)), eta)
-#
+##
     #exit()
 
     #greenNum1 = greenNum1st.spectralGreater(kVec, wVec, eta, damping)
@@ -297,9 +304,10 @@ def main():
     #gfFloq = gWFloquetInt
     #writeGreenToFile.writeGreen("data/floquetGreen", "gfFloquet", gfFloq)
 
-    gfFloq = readGreenFromFile.readGreen("clusterData/floquetGreenN100", "gfFloquet")
-    gfArr = readGreenFromFile.readGreen("clusterData/nonEqGreenEtaManyN100", "gfNonEq")
+    gfFloq = readGreenFromFile.readGreen("clusterData/floquetGreenN130Constg", "gfFloquet")
+    gfArr = readGreenFromFile.readGreen("clusterData/nonEqGreenEtaManyConstgN130", "gfNonEq")
     print("gfArr.shape = {}".format(gfArr.shape))
+    #bPlots.quantumToFloquetCrossover(wVec, 1. / np.sqrt(2. * np.pi) * gfArr, 1. / np.sqrt(2. * np.pi) * gfFloq[0, :], etaArr, nArr)
     bPlots.quantumToFloquetCrossoverConstg(wVec, 1. / np.sqrt(2. * np.pi) * gfArr, 1. / np.sqrt(2. * np.pi) * gfFloq[0, :], etaArr, nArr)
     exit()
 

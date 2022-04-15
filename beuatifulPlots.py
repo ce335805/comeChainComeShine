@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+
+import energyFunctions
 import globalSystemParams as prms
 from matplotlib import ticker
 from matplotlib.colors import LogNorm
@@ -15,6 +17,7 @@ import matplotlib.colors
 from arb_order import photonState
 from GiacomosPlot import gsSqueezing
 import h5py
+from arb_order import arbOrder
 
 
 #mpl.use("pgf")
@@ -516,7 +519,7 @@ def plotPtGSWithCoh(ptGSL, ptGSS, eta, T):
     #ax.add_patch(tickPatch)
 
     #plt.show()
-    plt.savefig('CompareEDPhGS.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('Fig1cN100.png', format='png', bbox_inches='tight', dpi = 600)
 
 
 
@@ -989,7 +992,7 @@ def quantumToFloquetCrossover(wVec, gfArr, gfFloq, etaArr, nArr):
 
 
     #plt.savefig('Fig3b.png', format='png', bbox_inches='tight', dpi = 600)
-    plt.savefig('Fig3bN130Constg.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('Fig3bN100.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
 
@@ -1131,7 +1134,7 @@ def quantumToFloquetCrossoverConstg(wVec, gfArr, gfFloq, etaArr, nArr):
     #ax.plot(0, 1, "^k", clip_on=False)
 
 
-    plt.savefig('Fig3bN100.png', format='png', bbox_inches='tight', dpi = 600)
+    plt.savefig('Fig3bN130.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.savefig('Fig3bConstg.png', format='png', bbox_inches='tight', dpi = 600)
     #plt.tight_layout()
     #plt.show()
@@ -1173,10 +1176,10 @@ def quantumToFloquetCrossoverAFS(wVec, gfArr, gfFloq, etaArr, nArr):
 def plotAnalyticalConductivity(eta1, eta2, eta3):
 
     gsT = - 2. / np.pi * prms.chainLength
-
     fac = np.sqrt(1 - 2. * eta1 * eta1 / (prms.w0) * gsT)
 
-    omegaVec = np.linspace(-500, 500, 150000 , endpoint=True)
+    omegaVec = np.linspace(-1000, 1000, 300000 , endpoint=True)
+    #omegaVec = np.linspace(-500, 500, 150000 , endpoint=True)
     #omegaVec = np.linspace(-50, 50, 15000 , endpoint=True)
     #omegaVec = np.linspace(-5, 5, 1500 , endpoint=True)
     delta = 0.05
@@ -1311,7 +1314,7 @@ def plotAnalyticalConductivityImaginary(eta1, eta2, eta3):
 
     fac = np.sqrt(1 - 2. * eta1 * eta1 / (prms.w0) * gsT)
 
-    omegaVec = np.linspace(-500, 500, 150000 , endpoint=True)
+    omegaVec = np.linspace(-1000, 1000, 300000 , endpoint=True)
     #omegaVec = np.linspace(-50, 50, 15000 , endpoint=True)
     delta = 0.02
 
@@ -2162,11 +2165,12 @@ def plotFabry():
         I = 1 / (((1 - X) ** 2) + 4 * X * (np.sin(x)) ** 2)
         return I
 
+    #x = np.linspace(2, 10.5, 4000)
     x = np.linspace(2, 10.5, 4000)
     y = 18 * I(x, R)
 
     fig, ax = plt.subplots(dpi=600)
-    fig.set_size_inches(0.8 * 2., 0.8 * 1.)
+    fig.set_size_inches(3., .8)
 
     for axis in ['top', 'bottom', 'left', 'right']:
         ax.spines[axis].set_linewidth(0.5)
@@ -2179,23 +2183,42 @@ def plotFabry():
     # fig = plt.gcf()
     # ax = fig.gca()
 
-    ax.vlines(np.pi, 4, 88, "cornflowerblue", linewidth=2)
-    ax.text(np.pi + 0.5, 80, r'$\omega_{0}$', fontsize=fontsize)
+    modelledSection = np.arange(2.7, 2. * np.pi - 2.7, .05)
+    #ax.fill_between(modelledSection, np.zeros(len(modelledSection)), 18 * I(modelledSection, R), color = '#406080')
+    #ax.fill_between(modelledSection, np.zeros(len(modelledSection)), 18 * I(modelledSection, R), color = '#68B2E6')
+    ax.fill_between(modelledSection, np.zeros(len(modelledSection)), 18 * I(modelledSection, R), color = '#66A2CD')
+
+    rect = patches.Rectangle((2.67, 0), 2. * np.pi - 2. * 2.68, 65, linewidth=.7, facecolor='none', linestyle='-', edgecolor = 'red', zorder = 101)
+    ax.add_patch(rect)
+
+    #ax.vlines(np.pi, 4, 88, "cornflowerblue", linewidth=2)
+    #ax.text(np.pi + 0.5, 80, r'$\omega_{0}$', fontsize=fontsize)
     ax.plot(x, y, "black", linewidth=0.9)
     ax.set_aspect(0.05)
-    ax.set_xticks([])
+    ax.set_xticks([np.pi])
     ax.set_yticks([])
     ax.set_yticklabels([])
-    ax.set_xticklabels([])
+    ax.set_xticklabels(["$\omega_0$"])
     #ax.axes.xaxis.set_visible(False)
     #ax.axes.yaxis.set_visible(False)
     ax.set_xlim(2., 10.5)
     ax.set_ylim(4., 92)
+    ax.xaxis.set_label_coords(1.05, -0.025)
 
     ax.set_xlabel('$\omega$', fontsize = fontsize)
-    ax.set_ylabel('Transmittance', fontsize = fontsize)
+    ax.set_ylabel(r'$\mathrm{Coupling}(g)$', fontsize = fontsize)
 
-    arrow = patches.FancyArrowPatch((10., 4.), (11.2, 4.), arrowstyle='->', mutation_scale=7, zorder = 100, linewidth=.5, color = 'black', clip_on = False)
+    ax.text(np.pi + 2., 95, r'$\mathrm{modelled}$' + ' ' + r'$\mathrm{coupling}$', fontsize=fontsize)
+
+    arrow = patches.FancyArrowPatch((np.pi + .5, 60.), (np.pi + 3., 92.), arrowstyle='<-', mutation_scale=5, zorder = 100, linewidth=.7, color = 'red', clip_on = False)
+    ax.add_patch(arrow)
+
+    ax.text(np.pi - .5, 100, r'$\Delta \omega$', fontsize=fontsize)
+
+    arrow = patches.FancyArrowPatch((2.5, 95.), (2. * np.pi - 2.5, 95.), arrowstyle='<->', mutation_scale=5, zorder = 100, linewidth=.5, color = 'black', clip_on = False)
+    ax.add_patch(arrow)
+
+    arrow = patches.FancyArrowPatch((10.0, 4.), (11.5, 4.), arrowstyle='->', mutation_scale=7, zorder = 100, linewidth=.5, color = 'black', clip_on = False)
     ax.add_patch(arrow)
 
     arrow = patches.FancyArrowPatch((2., 91.), (2., 93.), arrowstyle='->', mutation_scale=7, zorder = 100, linewidth=.5, color = 'black', clip_on = False)

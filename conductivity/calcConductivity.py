@@ -26,7 +26,9 @@ def calcConductivityAna(omegaVec, delta, eta):
     return cond
 
 def calcConductivityNum(omegaVec, delta, eta):
-    gsT = - 2. / np.pi * prms.chainLength
+    gs = arbOrder.findGS(eta, 3)
+    gsT = eF.T(gs)
+    #gsT = - 2. / np.pi * prms.chainLength
 
     eKinSupp = expectationCos(eta)
     #eKinSuppAna = 1. - eta**2 /(2. * np.sqrt(1. - 2. * eta**2 / prms.w0 * gsT))
@@ -53,9 +55,10 @@ def expectationCos(eta):
     return cosExpectation
 
 def gsEffectiveKineticEnergyArrayNum(etaArr):
-    gsT = - 2./np.pi * prms.chainLength
     gsKinetics = np.zeros(len(etaArr))
     for etaInd, eta in enumerate(etaArr):
+        gs = arbOrder.findGS(eta, 3)
+        gsT = eF.T(gs)
         gsKinetics[etaInd] = np.real(expectationCos(eta)) * gsT / prms.chainLength
     return gsKinetics
 
@@ -138,8 +141,8 @@ def getPhGS(eta):
     gs = arbOrder.findGS(eta, 3)
     gsJ = eF.J(gs)
     gsT = eF.T(gs)
-    gsJ = 0.
-    gsT = - 2. / np.pi * prms.chainLength
+    #gsJ = 0.
+    #gsT = - 2. / np.pi * prms.chainLength
 
     return phState.findPhotonGS([gsT, gsJ], eta, 3)
 

@@ -10,7 +10,8 @@ import initialState as ini
 
 
 def findGS(eta, orderH):
-    state = ini.getG0InitialStateNum()
+    state = ini.getInitialStateConst()
+    #state = ini.getInitialStateShuffle()
     #return state
     #print("initial state = {}".format(state))
     pauliBounds = np.zeros((len(state), 2), dtype='double')
@@ -24,6 +25,9 @@ def findGS(eta, orderH):
         print('The optimization was : --- SUCCESSFULL! ---')
     else:
         print('The optimization: --- FAILED! ---')
+
+    print("jGS = {}".format(eF.J(result.x)))
+    print("tGS = {}".format(eF.T(result.x)))
 
     return result.x
 

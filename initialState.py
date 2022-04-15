@@ -1,10 +1,21 @@
 import numpy as np
 import globalSystemParams as prms
+import random
 
 
-def getG0InitialStateNum():
+def getInitialStateConst():
     initialState = np.zeros(prms.chainLength, dtype='double') + .5
     return initialState
+
+
+def getInitialStateShuffle():
+    random.seed(13)
+    initialState = np.zeros(prms.chainLength, dtype='double')
+    initialState[: prms.numberElectrons] = 1.
+    random.shuffle(initialState)
+    #print(initialState)
+    return initialState
+
 
 def getG0InitialStateShift(initialShift):
     initialState = np.zeros(prms.chainLength, dtype='double')
